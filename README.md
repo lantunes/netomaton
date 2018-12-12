@@ -56,6 +56,6 @@ This repository contains examples of implementations of
 various kinds of collective computation models, all implemented using
 the Netomaton framework. Follow the link to see the source code:
 
-* [Density Classification with a Watts-Strogatz small-world graph](https://github.com/lantunes/netomaton/blob/master/demos/small_world_density_classification_demo.py)
+* [Density Classification with a Watts-Strogatz small-world graph](https://github.com/lantunes/netomaton/blob/master/demos/small_world_density_classification)
 
-* [1D Cellular Automaton with Totalistic Rule 777](https://github.com/lantunes/netomaton/blob/master/demos/totalistic_ca_demo.py)
+* [1D Cellular Automaton with Totalistic Rule 777](https://github.com/lantunes/netomaton/blob/master/demos/totalistic_ca)
