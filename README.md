@@ -18,6 +18,40 @@ between models, and imagine new models that borrow features from existing
 examples. It aims to provide a software architecture for understanding
 and exploring the nature of computation in potentially dynamic networks.
 
+### What are Network Automata?
+
+A Network Automaton is a discrete dynamical system comprised of a collection
+of cells (the computational units) causally connected to eachother, as
+specified by a network-defining adjacency matrix. The cells adopt states
+at each timestep of the network's evolution, as prescribed by an activity
+function, *f*. Moreover, the network's topology can also change over time, as
+prescribed by a connectivity function, *g*.
+
+The network's topology is specified by the adjacency matrix, **A**, which
+is of size _N_<sub>tot</sub> *X* _N_<sub>tot</sub>, where _N_<sub>tot</sub>
+represents the total number of nodes (i.e. cells) in the network. Each
+non-zero entry in **A** represents the existence of a link. The value of
+the entry represents a weight. The matrix **A** contains information about
+the existence of links, and their direction.
+
+The network is evolved for *T* timeteps. The activity of the network is
+defined by the activities of all its nodes, and is represented by **S**<sub>*t*</sub>,
+where *t* is a particular timestep. During each timestep, the activity
+function *f* is invoked, followed by the connectivity function *g*, such
+that:
+
+**S**<sub>*t+1*</sub> = *f*(**A**<sub>*t*</sub>, **S**<sub>*t*</sub>)
+
+**A**<sub>*t+1*</sub> = *g*(**A**<sub>*t*</sub>, **S**<sub>*t*</sub>)
+
+
+A network may have nodes added or removed at any given timestep, however,
+this framework will consider that a network has a total fixed number of
+nodes at all times, and that nodes may become connected or fully
+disconnected from the network instead.
+
+### Examples
+
 This repository contains examples of implementations of
 various kinds of collective computation models, all implemented using
 the Netomaton framework. Follow the link to see the source code:
