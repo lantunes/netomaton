@@ -16,12 +16,14 @@ class AdjacencyMatrix:
             raise Exception("There must be at least 3 cells")
         adjacency_matrix = [[0. for j in range(n)] for i in range(n)]
         if boundary == "periodic":
-            for r, row in enumerate(adjacency_matrix):
+            for w, row in enumerate(adjacency_matrix):
                 for c, _ in enumerate(row):
-                    if r == c:
-                        adjacency_matrix[r][c] = 1.
-                        adjacency_matrix[r][c - 1] = 1.
-                        adjacency_matrix[r][(c + 1) % len(adjacency_matrix[r])] = 1.
+                    if w == c:
+                        adjacency_matrix[w][c] = 1.
+                        for i in range(r):
+                            adjacency_matrix[w][c - (1 + i)] = 1.
+                        for i in range(r):
+                            adjacency_matrix[w][(c + (1 + i)) % len(adjacency_matrix[w])] = 1.
         return adjacency_matrix
 
     @staticmethod

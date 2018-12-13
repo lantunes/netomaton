@@ -164,6 +164,11 @@ class TestActivityRule(unittest.TestCase):
                                             activity_rule=r.activity_rule)
         np.testing.assert_equal(expected, activities[::19])
 
+    def test_ca_density_classification(self):
+        expected = self._convert_to_matrix("ca_density_classification.ca")
+        actual = self._evolve_binary_ca(expected, r=3, rule=6667021275756174439087127638698866559)
+        np.testing.assert_equal(expected, actual)
+
     @staticmethod
     def _convert_to_matrix(filename):
         with open(os.path.join(THIS_DIR, 'resources', filename), 'r') as content_file:
@@ -181,6 +186,15 @@ class TestActivityRule(unittest.TestCase):
         adjacencies = AdjacencyMatrix.cellular_automaton(n=size, r=1)
         activities, connectivities = evolve(adjacencies, initial_conditions, timesteps=rows,
                                             activity_rule=lambda n, c, t: ActivityRule.nks_ca_rule(n, c, rule))
+        return activities
+
+    @staticmethod
+    def _evolve_binary_ca(expected, r, rule):
+        rows, size = len(expected), len(expected[0])
+        initial_conditions = expected[0]
+        adjacencies = AdjacencyMatrix.cellular_automaton(n=size, r=r)
+        activities, connectivities = evolve(adjacencies, initial_conditions, timesteps=rows,
+                                            activity_rule=lambda n, c, t: ActivityRule.binary_ca_rule(n, c, rule))
         return activities
 
     @staticmethod

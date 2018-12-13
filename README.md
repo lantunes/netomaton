@@ -60,6 +60,8 @@ the Netomaton framework. Follow the link to see the source code:
 
 * [1D Cellular Automaton with Totalistic Rule 777](https://github.com/lantunes/netomaton/blob/master/demos/totalistic_ca)
 
+* [Density Classification with Evolved Cellular Automata](https://github.com/lantunes/netomaton/blob/master/demos/ca_density_classification)
+
 * [Density Classification with a Watts-Strogatz small-world graph](https://github.com/lantunes/netomaton/blob/master/demos/small_world_density_classification)
 
 * [Hopfield Network](https://github.com/lantunes/netomaton/blob/master/demos/hopfield_net)
