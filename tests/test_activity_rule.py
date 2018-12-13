@@ -150,7 +150,7 @@ class TestActivityRule(unittest.TestCase):
         adjacencies = AdjacencyMatrix.cellular_automaton(n=21)
         initial_conditions = [0]*10 + [1] + [0]*10
         r = AsynchronousRule(apply_rule=lambda n, c, t: ActivityRule.nks_ca_rule(n, c, 60), update_order=range(1, 20))
-        activities, connectivities = evolve(adjacencies, initial_conditions, timesteps=19*20,
+        activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=19*20,
                                             activity_rule=r.activity_rule)
         np.testing.assert_equal(expected, activities[::19])
 
@@ -160,7 +160,7 @@ class TestActivityRule(unittest.TestCase):
         initial_conditions = [0]*10 + [1] + [0]*10
         update_order = [19, 11, 4, 9, 6, 16, 10, 2, 17, 1, 12, 15, 5, 3, 8, 18, 7, 13, 14]
         r = AsynchronousRule(apply_rule=lambda n, c, t: ActivityRule.nks_ca_rule(n, c, 90), update_order=update_order)
-        activities, connectivities = evolve(adjacencies, initial_conditions, timesteps=19*20,
+        activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=19*20,
                                             activity_rule=r.activity_rule)
         np.testing.assert_equal(expected, activities[::19])
 
@@ -184,7 +184,7 @@ class TestActivityRule(unittest.TestCase):
         rows, size = len(expected), len(expected[0])
         initial_conditions = expected[0]
         adjacencies = AdjacencyMatrix.cellular_automaton(n=size, r=1)
-        activities, connectivities = evolve(adjacencies, initial_conditions, timesteps=rows,
+        activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=rows,
                                             activity_rule=lambda n, c, t: ActivityRule.nks_ca_rule(n, c, rule))
         return activities
 
@@ -193,7 +193,7 @@ class TestActivityRule(unittest.TestCase):
         rows, size = len(expected), len(expected[0])
         initial_conditions = expected[0]
         adjacencies = AdjacencyMatrix.cellular_automaton(n=size, r=r)
-        activities, connectivities = evolve(adjacencies, initial_conditions, timesteps=rows,
+        activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=rows,
                                             activity_rule=lambda n, c, t: ActivityRule.binary_ca_rule(n, c, rule))
         return activities
 
@@ -202,6 +202,6 @@ class TestActivityRule(unittest.TestCase):
         rows, size = len(expected), len(expected[0])
         initial_conditions = expected[0]
         adjacencies = AdjacencyMatrix.cellular_automaton(n=size, r=1)
-        activities, connectivities = evolve(adjacencies, initial_conditions, timesteps=rows,
+        activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=rows,
                                             activity_rule=lambda n, c, t: ActivityRule.totalistic_ca(n, k, rule))
         return activities

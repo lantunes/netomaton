@@ -36,4 +36,4 @@ class TestFunctions(unittest.TestCase):
                 self.assertEqual([0, 3, 4], n.neighbour_indices)
                 self.assertEqual([1., 1., .8], n.weights)
 
-        evolve(adjacencies, initial_conditions, timesteps=2, activity_rule=evaluate_neighbourhoods)
+        evolve(initial_conditions, adjacencies, timesteps=2, activity_rule=evaluate_neighbourhoods)

@@ -61,7 +61,7 @@ if __name__ == '__main__':
 
     initial_conditions = half_two
 
-    activities, connectivities = evolve(hopfield_net.adjacency_matrix, initial_conditions, timesteps=155,
+    activities, connectivities = evolve(initial_conditions, hopfield_net.adjacency_matrix, timesteps=155,
                                         activity_rule=hopfield_net.activity_rule)
 
     # view the weights, stored in the adjacency matrix

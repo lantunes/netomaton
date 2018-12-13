@@ -19,7 +19,7 @@ initial_conditions = np.random.randint(0, 2, 149)
 
 print("density of 1s: %s" % (np.count_nonzero(initial_conditions) / 149))
 
-activities, connectivities = evolve(adjacencies, initial_conditions, n_steps=149,
+activities, connectivities = evolve(initial_conditions, adjacencies, n_steps=149,
                                     activity_rule=lambda n, c, t: ActivityRule.majority_rule(n))
 
 plot_grid(activities)

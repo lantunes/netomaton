@@ -64,7 +64,7 @@ half_two = [-1 if x == 0 else x for x in half_two]
 
 initial_conditions = half_two
 
-activities, connectivities = evolve(hopfield_net.adjacency_matrix, initial_conditions, timesteps=155,
+activities, connectivities = evolve(initial_conditions, hopfield_net.adjacency_matrix, timesteps=155,
                                     activity_rule=hopfield_net.activity_rule)
 
 # view the time evolution of the Hopfield net as it completes the given pattern

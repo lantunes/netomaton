@@ -36,7 +36,7 @@ class Neighbourhood(object):
         return self._current_activity
 
 
-def evolve(adjacency_matrix, initial_conditions, timesteps, activity_rule, connectivity_rule=ConnectivityRule.noop):
+def evolve(initial_conditions, adjacency_matrix, timesteps, activity_rule, connectivity_rule=ConnectivityRule.noop):
     """
     Evolves a network defined by the given adjacency matrix with the given initial conditions, for the specified
     number of timesteps, using the given activity and connectivity rules. Note that if A(t) is the adjacency matrix at
@@ -44,8 +44,8 @@ def evolve(adjacency_matrix, initial_conditions, timesteps, activity_rule, conne
     rule, and G is a function describing an activity rule, then A(t+1) and S(t+1) are defined as follows:
     A(t+1) = F(A(t), S(t))
     S(t+1) = G(A(t), S(t))
-    :param adjacency_matrix: the adjacency matrix defining the network
     :param initial_conditions: the initial activities of the network
+    :param adjacency_matrix: the adjacency matrix defining the network
     :param timesteps: the number of steps in the evolution of the network
     :param activity_rule: the rule that will determine the activity of a cell in the network
     :param connectivity_rule: the rule that will determine the connectivity of the network
