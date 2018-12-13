@@ -1,10 +1,10 @@
 from netomaton import *
 
 
-initial_conditions = np.random.randint(0, 2, 149)
-
 # set r to 3, for a neighbourhood size of 7
 adjacencies = AdjacencyMatrix.cellular_automaton(149, r=3)
+
+initial_conditions = np.random.randint(0, 2, 149)
 
 # Mitchell et al. discovered this rule using a Genetic Algorithm
 rule_number = 6667021275756174439087127638698866559
