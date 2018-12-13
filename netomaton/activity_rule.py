@@ -1,5 +1,6 @@
 import numpy as np
 from statistics import mode, StatisticsError
+from collections import deque
 
 
 class ActivityRule:
@@ -39,3 +40,64 @@ class ActivityRule:
         except StatisticsError:
             # a StatisticsError is raised if there is a tie, and there is no single most common element
             return np.random.choice(neighbourhood.activities)
+
+    @staticmethod
+    def _bits_to_int(bits):
+        total = 0
+        for shift, j in enumerate(bits[::-1]):
+            if j:
+                total += 1 << shift
+        return total
+
+    @staticmethod
+    def _int_to_bits(num, num_digits):
+        converted = list(map(int, bin(num)[2:]))
+        return np.pad(converted, (num_digits - len(converted), 0), 'constant')
+
+    @staticmethod
+    def shift_to_center(activities, cell_indices, cell_index):
+        center = len(activities) // 2
+        shifted = deque(activities)
+        shifted.rotate(center - cell_indices.index(cell_index))
+        return list(shifted)
+
+    @staticmethod
+    def binary_ca_rule(neighbourhood, cell_index, rule, scheme=None):
+        """
+        Converts the given rule number to a binary representation, and uses this to determine the value to return.
+        The process is approximately described as:
+        1. convert state to int, so [1,0,1] -> 5, call this state_int
+        2. convert rule to binary, so 254 -> [1,1,1,1,1,1,1,0], call this rule_bin_array
+        3. new value is rule_bin_array[7 - state_int]
+             we subtract 7 from state_int to be consistent with the numbering scheme used in NKS
+             in NKS, rule 254 for a 1D binary cellular automaton is described as:
+            [1,1,1]  [1,1,0]  [1,0,1]  [1,0,0]  [0,1,1]  [0,1,0]  [0,0,1]  [0,0,0]
+               1        1        1        1        1        1        1        0
+        If None is provided for the scheme parameter, the neighbourhoods are listed in lexicographic order (the reverse of
+        the NKS convention). If 'nks' is provided for the scheme parameter, the NKS convention is used for listing the
+        neighbourhoods.
+        :param neighbourhood: the automaton neighbourhood for a cell; the activities are a binary array of length 2r + 1
+        :param cell_index: the cell index of the cell for which this rule is being invoked
+        :param rule: an int indicating the cellular automaton rule number
+        :param scheme: can be None (default) or 'nks'; if 'nks' is given, the rule numbering scheme used in NKS is used
+        :return: the result, 0 or 1, of applying the given rule on the given state
+        """
+        # shift the activities so that the current cell's activity is in the center
+        activities = ActivityRule.shift_to_center(neighbourhood.activities, neighbourhood.neighbour_indices, cell_index)
+        state_int = ActivityRule._bits_to_int(activities)
+        n = 2**len(activities)
+        rule_bin_array = ActivityRule._int_to_bits(rule, n)
+        if scheme == 'nks':
+            return rule_bin_array[(n-1) - state_int]
+        return rule_bin_array[state_int]
+
+    @staticmethod
+    def nks_ca_rule(neighbourhood, cell_index, rule):
+        """
+        A convenience function, that calls binary_rule with scheme = 'nks'.
+        :param neighbourhood: the automaton neighbourhood for a cell; the activities are a binary array of length 2r + 1
+        :param cell_index: the cell index of the cell for which this rule is being invoked
+        :param rule: an int indicating the cellular automaton rule number
+        :return:
+        """
+        return ActivityRule.binary_ca_rule(neighbourhood, cell_index, rule, scheme='nks')

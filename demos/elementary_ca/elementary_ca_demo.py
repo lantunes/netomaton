@@ -5,9 +5,9 @@ if __name__ == '__main__':
 
     adjacencies = AdjacencyMatrix.cellular_automaton(n=200)
 
-    initial_conditions = [0]*100 + [1] + [0]*99
+    initial_conditions = [0] * 100 + [1] + [0] * 99
 
     activities, connectivities = evolve(adjacencies, initial_conditions, timesteps=100,
-                                        activity_rule=lambda n, c, t: ActivityRule.totalistic_ca(n, k=3, rule=777))
+                                        activity_rule=lambda n, c, t: ActivityRule.nks_ca_rule(n, c, 30))
 
     plot_grid(activities)
