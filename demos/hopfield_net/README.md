@@ -78,3 +78,5 @@ See the following resources for some more information on Hopfield nets:
 * https://en.wikipedia.org/wiki/Hopfield_network
 
 * http://neupy.com/2015/09/20/discrete_hopfield_network.html
+
+> J. J. Hopfield, "Neural networks and physical systems with emergent collective computational abilities", Proceedings of the National Academy of Sciences of the USA, vol. 79 no. 8 pp. 2554–2558, April 1982.
