@@ -10,6 +10,8 @@ Netomaton already comes with a Hopfield Net implementation. To use it,
 we must first train the network, by giving it a set of patterns:
 
 ```python
+from netomaton import *
+
 zero = [
     0, 1, 1, 1, 0,
     1, 0, 0, 0, 1,
