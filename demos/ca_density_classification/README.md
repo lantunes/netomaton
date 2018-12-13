@@ -17,6 +17,8 @@ A very effective cellular automaton that solves this problem most of
 the time was found using a Genetic Algorithm.
 
 ```python
+from netomaton import *
+
 initial_conditions = np.random.randint(0, 2, 149)
 
 # set r to 3, for a neighbourhood size of 7
