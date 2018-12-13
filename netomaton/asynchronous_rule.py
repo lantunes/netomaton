@@ -9,12 +9,12 @@ class AsynchronousRule:
     the details of sequential cellular automata, see the Chapter 9, Section 10 Notes on Sequential cellular
     automata in NKS.
     """
-    def __init__(self, apply_rule, update_order=None, num_cells=None, randomize_each_cycle=False):
+    def __init__(self, activity_rule, update_order=None, num_cells=None, randomize_each_cycle=False):
         """
         Constructs an asynchronous rule out of a given rule. Either the update_order or num_cells parameter must be
         specified. If no update_order is given, then the num_cells parameter must be specified, and an update order
         list will be constructed and shuffled.
-        :param apply_rule: the rule that will be made asynchronous
+        :param activity_rule: the rule that will be made asynchronous
         :param update_order: a list containing the indices of the cells in the automaton, specifying the update order;
                              only the cells specified in the list will be updated
         :param num_cells: the total number of cells in the automaton
@@ -22,7 +22,7 @@ class AsynchronousRule:
         """
         if update_order is None and num_cells is None:
             raise Exception("either update_order or num_cells must be specified")
-        self._apply_rule = apply_rule
+        self._activity_rule = activity_rule
         if update_order is not None:
             self._update_order = update_order
         else:
@@ -43,7 +43,7 @@ class AsynchronousRule:
             self._check_for_end_of_cycle()
             return n.current_activity
         self._check_for_end_of_cycle()
-        return self._apply_rule(n, c, t)
+        return self._activity_rule(n, c, t)
 
     def _should_update(self, c,):
         return c == self._update_order[self._curr]

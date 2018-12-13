@@ -1,13 +1,8 @@
-import unittest
-
+from .rule_test import *
 from netomaton import *
 
-import os
 
-THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-
-
-class TestActivityRule(unittest.TestCase):
+class TestActivityRule(RuleTest):
 
     def test_majority_rule(self):
         actual = ActivityRule.majority_rule(Neighbourhood([1, 2, 1, 3, 4], [0, 1, 2, 3, 4], [1., 1., 1., 1., 1.], 0))
@@ -145,39 +140,10 @@ class TestActivityRule(unittest.TestCase):
         shifted = ActivityRule.shift_to_center(activities, cell_indices, cell_index)
         self.assertEquals([3, 4, 5, 1, 2], shifted)
 
-    def test_sequential_left_to_right(self):
-        expected = self._convert_to_matrix("rule60_sequential_simple_init.ca")
-        adjacencies = AdjacencyMatrix.cellular_automaton(n=21)
-        initial_conditions = [0]*10 + [1] + [0]*10
-        r = AsynchronousRule(apply_rule=lambda n, c, t: ActivityRule.nks_ca_rule(n, c, 60), update_order=range(1, 20))
-        activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=19*20,
-                                            activity_rule=r.activity_rule)
-        np.testing.assert_equal(expected, activities[::19])
-
-    def test_sequential_random(self):
-        expected = self._convert_to_matrix("rule90_sequential_simple_init.ca")
-        adjacencies = AdjacencyMatrix.cellular_automaton(n=21)
-        initial_conditions = [0]*10 + [1] + [0]*10
-        update_order = [19, 11, 4, 9, 6, 16, 10, 2, 17, 1, 12, 15, 5, 3, 8, 18, 7, 13, 14]
-        r = AsynchronousRule(apply_rule=lambda n, c, t: ActivityRule.nks_ca_rule(n, c, 90), update_order=update_order)
-        activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=19*20,
-                                            activity_rule=r.activity_rule)
-        np.testing.assert_equal(expected, activities[::19])
-
     def test_ca_density_classification(self):
         expected = self._convert_to_matrix("ca_density_classification.ca")
         actual = self._evolve_binary_ca(expected, r=3, rule=6667021275756174439087127638698866559)
         np.testing.assert_equal(expected, actual)
-
-    @staticmethod
-    def _convert_to_matrix(filename):
-        with open(os.path.join(THIS_DIR, 'resources', filename), 'r') as content_file:
-            content = content_file.read()
-        content = content.replace('{{', '')
-        content = content.replace('}}', '')
-        content = content.replace('{', '')
-        content = content.replace('},', ';')
-        return np.matrix(content, dtype=np.int).tolist()
 
     @staticmethod
     def _evolve_nks_ca(expected, rule):
