@@ -54,20 +54,20 @@ disconnected from the network instead.
 
 This repository contains examples of implementations of
 various kinds of collective computation models, all implemented using
-the Netomaton framework. Follow the link to see the source code:
+the Netomaton framework. Follow the link to learn more:
 
-* [Elementary Cellular Automaton Rule 30](https://github.com/lantunes/netomaton/blob/master/demos/elementary_ca)
+* [Elementary Cellular Automaton Rule 30](https://github.com/lantunes/netomaton/blob/master/demos/elementary_ca/README.md)
 
-* [1D Cellular Automaton with Totalistic Rule 777](https://github.com/lantunes/netomaton/blob/master/demos/totalistic_ca)
+* [1D Cellular Automaton with Totalistic Rule 777](https://github.com/lantunes/netomaton/blob/master/demos/totalistic_ca/README.md)
 
-* [Reversible 1D Cellular Automata](https://github.com/lantunes/netomaton/blob/master/demos/reversible_ca)
+* [Reversible 1D Cellular Automata](https://github.com/lantunes/netomaton/blob/master/demos/reversible_ca/README.md)
 
-* [Density Classification with Evolved 1D Cellular Automata](https://github.com/lantunes/netomaton/blob/master/demos/ca_density_classification)
+* [Density Classification with Evolved 1D Cellular Automata](https://github.com/lantunes/netomaton/blob/master/demos/ca_density_classification/README.md)
 
-* [Density Classification with a Watts-Strogatz small-world graph](https://github.com/lantunes/netomaton/blob/master/demos/small_world_density_classification)
+* [Density Classification with a Watts-Strogatz small-world graph](https://github.com/lantunes/netomaton/blob/master/demos/small_world_density_classification/README.md)
 
-* [Asynchronous Automata](https://github.com/lantunes/netomaton/blob/master/demos/asynchronous_automata)
+* [Asynchronous Automata](https://github.com/lantunes/netomaton/blob/master/demos/asynchronous_automata/README.md)
 
-* [Continuous Automata](https://github.com/lantunes/netomaton/blob/master/demos/continuous_automata)
+* [Continuous Automata](https://github.com/lantunes/netomaton/blob/master/demos/continuous_automata/README.md)
 
-* [Hopfield Network](https://github.com/lantunes/netomaton/blob/master/demos/hopfield_net)
+* [Hopfield Network](https://github.com/lantunes/netomaton/blob/master/demos/hopfield_net/README.md)

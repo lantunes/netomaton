@@ -34,6 +34,8 @@ plot_grid(activities)
 ```
 <img src="https://raw.githubusercontent.com/lantunes/cellpylib/master/resources/density_classification.png" width="50%"/>
 
+The full source code for this example can be found [here](https://github.com/lantunes/netomaton/blob/master/demos/ca_density_classification/ca_density_classification_demo.py).
+
 For more information, see:
 
 > Melanie Mitchell, James P. Crutchfield, and Rajarshi Das, "Evolving Cellular Automata with Genetic Algorithms: A Review of Recent Work", In Proceedings of the First International Conference on Evolutionary Computation and Its Applications (EvCA'96), Russian Academy of Sciences (1996).

@@ -73,6 +73,8 @@ plot2d_animate(activities, reshape=(155, 6, 5))
 
 <img src="https://raw.githubusercontent.com/lantunes/netomaton/master/resources/hopfield.gif" width="65%"/>
 
+The full source code for this example can be found [here](https://github.com/lantunes/netomaton/blob/master/demos/hopfield_net/hopfield_net_demo.py).
+
 See the following resources for some more information on Hopfield nets:
 
 * https://en.wikipedia.org/wiki/Hopfield_network

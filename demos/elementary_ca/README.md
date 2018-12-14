@@ -19,3 +19,5 @@ plot_grid(activities)
 ```
 
 <img src="https://raw.githubusercontent.com/lantunes/netomaton/master/resources/rule30.png" width="50%"/>
+
+The full source code for this example can be found [here](https://github.com/lantunes/netomaton/blob/master/demos/elementary_ca/elementary_ca_demo.py).

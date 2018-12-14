@@ -21,3 +21,5 @@ plot_grid(activities)
 ```
 
 <img src="https://raw.githubusercontent.com/lantunes/netomaton/master/resources/tot3_rule777.png" width="50%"/>
+
+The full source code for this example can be found [here](https://github.com/lantunes/netomaton/blob/master/demos/totalistic_ca/totalistic_ca_demo.py).

@@ -27,3 +27,5 @@ activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=1
 plot_grid(activities)
 ```
 <img src="https://raw.githubusercontent.com/lantunes/netomaton/master/resources/continuous_ca.png" width="40%"/>
+
+The full source code for this example can be found [here](https://github.com/lantunes/netomaton/blob/master/demos/continuous_automata/continuous_automata_demo.py).

@@ -35,3 +35,5 @@ activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=1
 plot_grid(activities[::19])
 ```
 <img src="https://raw.githubusercontent.com/lantunes/netomaton/master/resources/rule60async.png" width="40%"/>
+
+The full source code for this example can be found [here](https://github.com/lantunes/netomaton/blob/master/demos/asynchronous_automata/asynchronous_automata_demo.py).
