@@ -34,4 +34,4 @@ activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=1
 # plot every 19th row, including the first, as a cycle is completed every 19 rows
 plot_grid(activities[::19])
 ```
-<img src="https://raw.githubusercontent.com/lantunes/netomaton/master/resources/rule60async.png" width="50%"/>
+<img src="https://raw.githubusercontent.com/lantunes/netomaton/master/resources/rule60async.png" width="40%"/>
