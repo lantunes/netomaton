@@ -66,4 +66,6 @@ the Netomaton framework. Follow the link to see the source code:
 
 * [Density Classification with a Watts-Strogatz small-world graph](https://github.com/lantunes/netomaton/blob/master/demos/small_world_density_classification)
 
+* [Asynchronous Automata](https://github.com/lantunes/netomaton/blob/master/demos/asynchronous_automata)
+
 * [Hopfield Network](https://github.com/lantunes/netomaton/blob/master/demos/hopfield_net)
