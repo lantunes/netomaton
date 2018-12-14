@@ -6,7 +6,7 @@ timestep. For this reason, it doesn't matter in what order the cells are
 updated. However, it is sometimes beneficial to update the states of the
 cells asynchronously. There are various ways to implement such behaviour,
 but normally one specifies an update order for the cells, or one allows the
-cells to updated in a random order, such that a cell's state is based
+cells to be updated in a random order, such that a cell's state is based
 on the activity of its neighbourhood immediately. In practice, this means
 that, in each "timestep", only a single cell is updated. The "true" timestep
 is complete once all cells have been updated in an update cycle.
