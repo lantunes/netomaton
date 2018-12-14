@@ -68,4 +68,6 @@ the Netomaton framework. Follow the link to see the source code:
 
 * [Asynchronous Automata](https://github.com/lantunes/netomaton/blob/master/demos/asynchronous_automata)
 
+* [Continuous Automata](https://github.com/lantunes/netomaton/blob/master/demos/continuous_automata)
+
 * [Hopfield Network](https://github.com/lantunes/netomaton/blob/master/demos/hopfield_net)
