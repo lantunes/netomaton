@@ -43,7 +43,7 @@ The second cellular automata (the bottom plot) is carefully constructed so that 
 an apparently more disordered state, and evolves to something more ordered, contrary to what
 we typically expect to observe in Nature. The average cell Shannon entropies are also plotted,
 and are computed using the built-in function `average_cell_entropy`. (Note that the cellular automata
-along the bottom of the plots above describe the time evolution going from right-to-left instead
+along the bottom of the plots above describe the time evolution going from left-to-right instead
 of the usual top-to-bottom.)
 
 The source code for these examples can be found
