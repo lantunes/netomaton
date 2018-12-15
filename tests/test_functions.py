@@ -1,6 +1,6 @@
 import unittest
 
-from netomaton import *
+import netomaton as ntm
 
 
 class TestFunctions(unittest.TestCase):
@@ -36,4 +36,86 @@ class TestFunctions(unittest.TestCase):
                 self.assertEqual([0, 3, 4], n.neighbour_indices)
                 self.assertEqual([1., 1., .8], n.weights)
 
-        evolve(initial_conditions, adjacencies, timesteps=2, activity_rule=evaluate_neighbourhoods)
+        ntm.evolve(initial_conditions, adjacencies, timesteps=2, activity_rule=evaluate_neighbourhoods)
+
+    def test_init_simple_1(self):
+        arr = ntm.init_simple(1)
+        self.assertEqual(len(arr), 1)
+        self.assertEqual(len(arr[0]), 1)
+        self.assertEqual(arr[0][0], 1)
+
+    def test_init_simple_1_val2(self):
+        arr = ntm.init_simple(1, val=2)
+        self.assertEqual(len(arr), 1)
+        self.assertEqual(len(arr[0]), 1)
+        self.assertEqual(arr[0][0], 2)
+
+    def test_init_simple_3(self):
+        arr = ntm.init_simple(3)
+        self.assertEqual(len(arr), 1)
+        self.assertEqual(len(arr[0]), 3)
+        self.assertEqual(arr[0][0], 0)
+        self.assertEqual(arr[0][1], 1)
+        self.assertEqual(arr[0][2], 0)
+        
+    def test_init_random_3(self):
+        arr = ntm.init_random(3, empty_value=9)
+        self.assertEqual(len(arr), 1)
+        self.assertEqual(len(arr[0]), 3)
+        self.assertTrue(0 <= arr[0][0] <= 1)
+        self.assertTrue(0 <= arr[0][1] <= 1)
+        self.assertTrue(0 <= arr[0][2] <= 1)
+
+    def test_init_random_3_k3(self):
+        arr = ntm.init_random(3, k=3, empty_value=9)
+        self.assertEqual(len(arr), 1)
+        self.assertEqual(len(arr[0]), 3)
+        self.assertTrue(0 <= arr[0][0] <= 2)
+        self.assertTrue(0 <= arr[0][1] <= 2)
+        self.assertTrue(0 <= arr[0][2] <= 2)
+
+    def test_init_random_3_k3_n1(self):
+        arr = ntm.init_random(3, k=3, n_randomized=1, empty_value=9)
+        self.assertEqual(len(arr), 1)
+        self.assertEqual(len(arr[0]), 3)
+        self.assertEqual(arr[0][0], 9)
+        self.assertTrue(0 <= arr[0][1] <= 2)
+        self.assertEqual(arr[0][2], 9)
+
+    def test_init_random_3_k3_n0(self):
+        arr = ntm.init_random(3, k=3, n_randomized=0, empty_value=9)
+        self.assertEqual(len(arr), 1)
+        self.assertEqual(len(arr[0]), 3)
+        self.assertEqual(arr[0][0], 9)
+        self.assertEqual(arr[0][1], 9)
+        self.assertEqual(arr[0][2], 9)
+
+    def test_init_random_3_k3_n3(self):
+        arr = ntm.init_random(3, k=3, n_randomized=3, empty_value=9)
+        self.assertEqual(len(arr), 1)
+        self.assertEqual(len(arr[0]), 3)
+        self.assertTrue(0 <= arr[0][0] <= 2)
+        self.assertTrue(0 <= arr[0][1] <= 2)
+        self.assertTrue(0 <= arr[0][2] <= 2)
+
+    def test_init_random_3_k3_n2(self):
+        arr = ntm.init_random(3, k=3, n_randomized=2, empty_value=9)
+        self.assertEqual(len(arr), 1)
+        self.assertEqual(len(arr[0]), 3)
+        self.assertTrue(0 <= arr[0][0] <= 2)
+        self.assertTrue(0 <= arr[0][1] <= 2)
+        self.assertEqual(arr[0][2], 9)
+
+    def test_init_random_1_k3_n1(self):
+        arr = ntm.init_random(1, k=3, n_randomized=1, empty_value=9)
+        self.assertEqual(len(arr), 1)
+        self.assertEqual(len(arr[0]), 1)
+        self.assertTrue(0 <= arr[0][0] <= 2)
+
+    def test_init_random_1_k3_n0(self):
+        arr = ntm.init_random(1, k=3, n_randomized=0, empty_value=9)
+        self.assertEqual(len(arr), 1)
+        arr = arr[0]
+        self.assertEqual(len(arr), 1)
+        self.assertEqual(arr[0], 9)
+
