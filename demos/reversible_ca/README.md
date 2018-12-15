@@ -42,7 +42,9 @@ the Second Law of Thermodynamics. The following cellular automata are described 
 The second cellular automata (the bottom plot) is carefully constructed so that it begins in
 an apparently more disordered state, and evolves to something more ordered, contrary to what
 we typically expect to observe in Nature. The average cell Shannon entropies are also plotted,
-and are computed using the built-in function `average_cell_entropy`.
+and are computed using the built-in function `average_cell_entropy`. (Note that the cellular automata
+along the bottom of the plots above describe the time evolution going from right-to-left instead
+of the usual top-to-bottom.)
 
 The source code for these examples can be found
 [here](https://github.com/lantunes/netomaton/blob/master/demos/reversible_ca/rule122R_entropy_demo.py) and
