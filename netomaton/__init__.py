@@ -5,3 +5,4 @@ from .connectivity_rule import *
 from .asynchronous_rule import *
 from .hopfield_net import *
 from .reversible_rule import *
+from .analysis import *
