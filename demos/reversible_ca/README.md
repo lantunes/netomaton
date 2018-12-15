@@ -37,11 +37,16 @@ the Second Law of Thermodynamics. The following cellular automata are described 
 
 <img src="https://raw.githubusercontent.com/lantunes/netomaton/master/resources/rule122R.png" width="50%"/>
 
+In the cellular automaton above, initial conditions represent a highly ordered state. The systems evolves
+to increasingly disordered states, and, as expected, the entropy of the system increases with time.
+
 <img src="https://raw.githubusercontent.com/lantunes/netomaton/master/resources/rule122Rb.png" width="50%"/>
 
-The second cellular automata (the bottom plot) is carefully constructed so that it begins in
+The cellular automata above is carefully constructed so that it begins in
 an apparently more disordered state, and evolves to something more ordered, contrary to what
-we typically expect to observe in Nature. The average cell Shannon entropies are also plotted,
+we typically expect to observe in Nature.
+
+The average cell Shannon entropies are also plotted in the two preceding figures,
 and are computed using the built-in function `average_cell_entropy`. (Note that the cellular automata
 along the bottom of the plots above describe the time evolution going from left-to-right instead
 of the usual top-to-bottom.)
