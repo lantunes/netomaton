@@ -56,9 +56,9 @@ This repository contains examples of implementations of
 various kinds of collective computation models, all implemented using
 the Netomaton framework. Follow the link to learn more:
 
-* [Elementary Cellular Automaton Rule 30](https://github.com/lantunes/netomaton/blob/master/demos/elementary_ca/README.md)
+* [Elementary Cellular Automata](https://github.com/lantunes/netomaton/blob/master/demos/elementary_ca/README.md)
 
-* [1D Cellular Automaton with Totalistic Rule 777](https://github.com/lantunes/netomaton/blob/master/demos/totalistic_ca/README.md)
+* [1D Cellular Automata with Totalistic Rules](https://github.com/lantunes/netomaton/blob/master/demos/totalistic_ca/README.md)
 
 * [Reversible 1D Cellular Automata](https://github.com/lantunes/netomaton/blob/master/demos/reversible_ca/README.md)
 
@@ -69,5 +69,7 @@ the Netomaton framework. Follow the link to learn more:
 * [Asynchronous Automata](https://github.com/lantunes/netomaton/blob/master/demos/asynchronous_automata/README.md)
 
 * [Continuous Automata](https://github.com/lantunes/netomaton/blob/master/demos/continuous_automata/README.md)
+
+* [Langton's Lambda and Measures of Complexity](https://github.com/lantunes/netomaton/blob/master/demos/langtons_lambda/README.md)
 
 * [Hopfield Network](https://github.com/lantunes/netomaton/blob/master/demos/hopfield_net/README.md)

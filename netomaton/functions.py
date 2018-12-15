@@ -95,7 +95,7 @@ def init_simple(size, val=1, dtype=np.int):
     """
     x = np.zeros(size, dtype=dtype)
     x[len(x)//2] = val
-    return np.array([x]).tolist()
+    return x.tolist()
 
 
 def init_random(size, k=2, n_randomized=None, empty_value=0, dtype=np.int):
@@ -121,13 +121,22 @@ def init_random(size, k=2, n_randomized=None, empty_value=0, dtype=np.int):
         rand_nums = np.random.randint(k, size=n_randomized, dtype=dtype)
     else:
         rand_nums = np.random.uniform(0, k - 1, size=n_randomized).astype(dtype)
-    return np.array([np.pad(np.array(rand_nums), (pad_left, pad_right), 'constant', constant_values=empty_value)]).tolist()
+    return np.array(np.pad(np.array(rand_nums), (pad_left, pad_right), 'constant', constant_values=empty_value)).tolist()
 
 
 def plot_grid(activities, title=''):
     cmap = plt.get_cmap('Greys')
     plt.title(title)
     plt.imshow(activities, interpolation='none', cmap=cmap)
+    plt.show()
+
+
+def plot_grid_multiple(ca_list, titles):
+    cmap = plt.get_cmap('Greys')
+    for i in range(0, len(ca_list)):
+        plt.figure(i)
+        plt.title(titles[i])
+        plt.imshow(ca_list[i], interpolation='none', cmap=cmap)
     plt.show()
 
 

@@ -1,4 +1,4 @@
-### Elementary Cellular Automaton Rule 30
+### Elementary Cellular Automata
 
 This example demonstrates the Rule 30 Elementary Cellular Automaton. Currently, only 1- and 2-dimensional _k_-color
 cellular automata with periodic boundary conditions are supported. The size of the neighbourhood can be adjusted. The
