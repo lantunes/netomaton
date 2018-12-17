@@ -74,7 +74,7 @@ the Netomaton framework. Follow the link to learn more:
 
 * [2D Cellular Automata](https://github.com/lantunes/netomaton/blob/master/demos/totalistic_ca2d/README.md)
 
-* [Game of Life](https://github.com/lantunes/netomaton/blob/master/demos/game_of_life/README.md)
+* [Conway's Game of Life](https://github.com/lantunes/netomaton/blob/master/demos/game_of_life/README.md)
 
 * [Hopfield Network](https://github.com/lantunes/netomaton/blob/master/demos/hopfield_net/README.md)
 

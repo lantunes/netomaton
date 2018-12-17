@@ -1,6 +1,4 @@
-### Game of Life
-
-
+### Conway's Game of Life
 
 <img src="https://raw.githubusercontent.com/lantunes/netomaton/master/resources/game_of_life.gif" width="65%"/>
 
