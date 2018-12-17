@@ -1,0 +1,60 @@
+The cellular automata in the .ca-ending files in this directory were obtained from:
+
+rule0_simple_init.ca:
+http://atlas.wolfram.com/01/01/0/01_01_16_0.html
+
+rule0_random_init.ca:
+http://atlas.wolfram.com/01/01/0/01_01_21_0.html
+
+rule30_simple_init.ca:
+http://atlas.wolfram.com/01/01/30/01_01_16_30.html
+
+rule30_random_init.ca:
+http://atlas.wolfram.com/01/01/30/01_01_21_30.html
+
+rule126_simple_init.ca:
+http://atlas.wolfram.com/01/01/126/01_01_16_126.html
+
+rule126_random_init.ca:
+http://atlas.wolfram.com/01/01/126/01_01_21_126.html
+
+rule225_simple_init.ca:
+http://atlas.wolfram.com/01/01/225/01_01_16_225.html
+
+rule225_random_init.ca:
+http://atlas.wolfram.com/01/01/225/01_01_21_225.html
+
+rule255_simple_init.ca:
+http://atlas.wolfram.com/01/01/255/01_01_16_255.html
+
+rule255_random_init.ca:
+http://atlas.wolfram.com/01/01/255/01_01_21_255.html
+
+tot3_rule777_random_init.ca:
+http://atlas.wolfram.com/01/02/777/01_02_21_777.html
+
+tot3_rule777_simple_init.ca:
+http://atlas.wolfram.com/01/02/777/01_02_16_777.html
+
+tot4_rule107396_random_init.ca:
+http://atlas.wolfram.com/01/03/107396/01_03_21_107396.html
+
+tot4_rule107396_simple_init.ca:
+http://atlas.wolfram.com/01/03/107396/01_03_16_107396.html
+
+tot_rule26_2d_n5_simple_init.ca:
+CellularAutomaton[<|"TotalisticCode" -> 26, "Dimension" -> 2,"Neighborhood" -> 5|>, PadLeft[{{1}}, {60, 60}, 0, Floor[{60, 60}/2]], 30]
+
+tot_rule126_2d_n9_simple_init.ca:
+CellularAutomaton[<|"TotalisticCode" -> 126, "Dimension" -> 2,"Neighborhood" -> 9|>, PadLeft[{{1}}, {60, 60}, 0, Floor[{60, 60}/2]], 30]
+
+rule150R_simple_init.ca:
+CellularAutomaton[{Mod[Total[Flatten[#]], 2] &, {}, {{-1, 0}, {0, -1}, {0, 0}, {0, 1}}, 2}, {{{1}, {1}}, 0}, 100]
+
+rule60_sequential_simple_init.ca:
+NKS Notes on Chapter 9, section 10: "Sequential cellular automata"
+http://www.wolframscience.com/nks/notes-9-10--sequential-cellular-automata/
+
+rule90_sequential_simple_init.ca:
+NKS Notes on Chapter 9, section 10: "Sequential cellular automata"
+http://www.wolframscience.com/nks/notes-9-10--sequential-cellular-automata/

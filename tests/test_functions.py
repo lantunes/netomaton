@@ -107,3 +107,27 @@ class TestFunctions(unittest.TestCase):
         self.assertEqual(len(arr), 1)
         self.assertEqual(arr[0], 9)
 
+    def test_init_simple2d_1x1(self):
+        arr = ntm.init_simple2d(rows=1, cols=1)
+        self.assertEqual(len(arr), 1)
+        self.assertEqual(arr[0], 1)
+
+    def test_init_simple2d_1x1_val2(self):
+        arr = ntm.init_simple2d(rows=1, cols=1, val=2)
+        self.assertEqual(len(arr), 1)
+        self.assertEqual(arr[0], 2)
+
+    def test_init_simple2d_2x2(self):
+        arr = ntm.init_simple2d(rows=2, cols=2)
+        self.assertEqual(len(arr), 4)
+        self.assertEqual(arr, [0, 0, 0, 1])
+
+    def test_init_simple2d_3x3(self):
+        arr = ntm.init_simple2d(rows=3, cols=3)
+        self.assertEqual(len(arr), 9)
+        self.assertEqual(arr, [0, 0, 0, 0, 1, 0, 0, 0, 0])
+
+    def test_init_simple2d_2x3(self):
+        arr = ntm.init_simple2d(rows=2, cols=3)
+        self.assertEqual(len(arr), 6)
+        self.assertEqual(arr, [0, 0, 0, 0, 1, 0])

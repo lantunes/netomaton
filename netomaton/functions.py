@@ -124,7 +124,24 @@ def init_random(size, k=2, n_randomized=None, empty_value=0, dtype=np.int):
     return np.array(np.pad(np.array(rand_nums), (pad_left, pad_right), 'constant', constant_values=empty_value)).tolist()
 
 
-def plot_grid(activities, title=''):
+def init_simple2d(rows, cols, val=1, dtype=np.int):
+    """
+    Returns a list initialized with zeroes, with its center value set to the specified value, or 1 by default, when the
+    list is reshaped according to the given number of rows and columns.
+    :param rows: the number of rows
+    :param cols: the number of columns
+    :param val: the value to be used in the center of the matrix (1, by default)
+    :param dtype: the data type
+    :return: a list with size rows * cols, with the center value initialized to the specified value, or 1 by default
+    """
+    x = np.zeros((rows, cols), dtype=dtype)
+    x[x.shape[0]//2][x.shape[1]//2] = val
+    return np.array(x).reshape(rows * cols).tolist()
+
+
+def plot_grid(activities, shape=None, slice=-1, title=''):
+    if shape is not None:
+        activities = np.array(activities).reshape((len(activities), shape[0], shape[1])).tolist()[slice]
     cmap = plt.get_cmap('Greys')
     plt.title(title)
     plt.imshow(activities, interpolation='none', cmap=cmap)
@@ -140,9 +157,9 @@ def plot_grid_multiple(ca_list, titles):
     plt.show()
 
 
-def plot2d_animate(activities, title='', reshape=None, save=False):
-    if reshape is not None:
-        activities = np.reshape(activities, reshape)
+def animate(activities, title='', shape=None, save=False):
+    if shape is not None:
+        activities = np.reshape(activities, (len(activities), shape[0], shape[1]))
     cmap = plt.get_cmap('Greys')
     fig = plt.figure()
     plt.title(title)

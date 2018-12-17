@@ -72,4 +72,26 @@ the Netomaton framework. Follow the link to learn more:
 
 * [Langton's Lambda and Measures of Complexity](https://github.com/lantunes/netomaton/blob/master/demos/langtons_lambda/README.md)
 
+* [2D Cellular Automata](https://github.com/lantunes/netomaton/blob/master/demos/totalistic_ca2d/README.md)
+
+* [Game of Life](https://github.com/lantunes/netomaton/blob/master/demos/game_of_life/README.md)
+
 * [Hopfield Network](https://github.com/lantunes/netomaton/blob/master/demos/hopfield_net/README.md)
+
+### About this project
+
+Netomaton arose from a personal need to reconcile various models of collective
+computation. In what fundamental ways does a neural network differ from a
+cellular automaton? What can a Boltmann Machine do that other models can't?
+These are the questions that this library aspires to help answer.
+
+Netomaton tries to make accessible any model of collective computation.
+In so doing, it adopts certain generalizations and abstractions that,
+while providing a common language for discussing disparate kinds of
+models, incur a cost in terms of increased runtime complexity. The cost
+of being very general is less than ideal runtime performance, as any
+given implementation is not optimized for a specific setting. For
+example, regarding neural networks roughly as a series of matrix
+multiplications allows one to take advantage of software and hardware
+that can do those operations quickly. The focus of Netomaton is not on
+practicality, but on flexibility.

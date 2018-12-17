@@ -101,3 +101,21 @@ class ActivityRule:
         :return:
         """
         return ActivityRule.binary_ca_rule(neighbourhood, cell_index, rule, scheme='nks')
+
+    @staticmethod
+    def game_of_life_rule(neighbourhood):
+        activities = neighbourhood.activities
+        center_cell = activities[len(activities) // 2]
+        total = np.sum(activities)
+        if center_cell == 1:
+            if total - 1 < 2:
+                return 0  # Any live cell with fewer than two live neighbours dies, as if caused by underpopulation.
+            if total - 1 == 2 or total - 1 == 3:
+                return 1  # Any live cell with two or three live neighbours lives on to the next generation.
+            if total - 1 > 3:
+                return 0  # Any live cell with more than three live neighbours dies, as if by overpopulation.
+        else:
+            if total == 3:
+                return 1  # Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+            else:
+                return 0

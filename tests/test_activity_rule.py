@@ -145,6 +145,16 @@ class TestActivityRule(RuleTest):
         actual = self._evolve_binary_ca(expected, r=3, rule=6667021275756174439087127638698866559)
         np.testing.assert_equal(expected, actual)
 
+    def test_tot_rule126_2d_n9_simple_init(self):
+        expected = self._convert_to_matrix2d("tot_rule126_2d_n9_simple_init.ca")
+        actual = self._evolve_totalistic_ca2d(expected, 126, 'Moore')
+        np.testing.assert_equal(expected, actual)
+
+    def test_tot_rule26_2d_n5_simple_init(self):
+        expected = self._convert_to_matrix2d("tot_rule26_2d_n5_simple_init.ca")
+        actual = self._evolve_totalistic_ca2d(expected, 26, 'von Neumann')
+        np.testing.assert_equal(expected, actual)
+
     @staticmethod
     def _evolve_nks_ca(expected, rule):
         rows, size = len(expected), len(expected[0])
@@ -171,3 +181,12 @@ class TestActivityRule(RuleTest):
         activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=rows,
                                             activity_rule=lambda n, c, t: ActivityRule.totalistic_ca(n, k, rule))
         return activities
+
+    @staticmethod
+    def _evolve_totalistic_ca2d(expected, rule, neighbourhood):
+        steps, rows, size = len(expected), len(expected[0]), len(expected[0][0])
+        initial_conditions = np.array(expected[0]).reshape(rows * size).tolist()
+        adjacencies = AdjacencyMatrix.cellular_automaton2d(rows=rows, cols=size, r=1, neighbourhood=neighbourhood)
+        activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=steps,
+                                            activity_rule=lambda n, c, t: ActivityRule.totalistic_ca(n, k=2, rule=rule))
+        return np.array(activities).reshape((steps, rows, size)).tolist()

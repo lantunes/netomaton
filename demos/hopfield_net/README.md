@@ -68,7 +68,7 @@ activities, connectivities = evolve(initial_conditions, hopfield_net.adjacency_m
                                     activity_rule=hopfield_net.activity_rule)
 
 # view the time evolution of the Hopfield net as it completes the given pattern
-plot2d_animate(activities, reshape=(155, 6, 5))
+animate(activities, shape=(6, 5))
 ```
 
 <img src="https://raw.githubusercontent.com/lantunes/netomaton/master/resources/hopfield.gif" width="65%"/>
