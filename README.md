@@ -94,5 +94,5 @@ of being very general is a less than ideal runtime performance, as any
 given implementation is not optimized for a specific setting. For
 example, regarding neural networks roughly as a series of matrix
 multiplications allows one to take advantage of software and hardware
-that can do those operations quickly. The focus of Netomaton is not on
-practicality, but on flexibility.
+that can do those operations quickly. The focus of Netomaton, on the
+other hand, is not on practicality, but on flexibility.
