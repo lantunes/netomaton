@@ -58,7 +58,10 @@ class ActivityRule:
     def shift_to_center(activities, cell_indices, cell_index):
         center = len(activities) // 2
         shifted = deque(activities)
-        shifted.rotate(center - cell_indices.index(cell_index))
+
+        def index_of(arr, val):
+            return np.where(arr == val)[0][0] if type(arr) == np.ndarray else arr.index(val)
+        shifted.rotate(center - index_of(cell_indices, cell_index))
         return list(shifted)
 
     @staticmethod

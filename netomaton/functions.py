@@ -53,34 +53,32 @@ def evolve(initial_conditions, adjacency_matrix, timesteps, activity_rule, conne
     """
     if len(initial_conditions) != len(adjacency_matrix[0]):
         raise Exception("the length of the initial conditions list does not match the given adjacency matrix")
-    activities_over_time = [initial_conditions]
-    connectivities_over_time = [adjacency_matrix]
+    activities_over_time = np.zeros((timesteps, len(initial_conditions)), dtype=np.dtype(type(initial_conditions[0])))
+    activities_over_time[0] = initial_conditions
+
+    connectivities_over_time = np.zeros((timesteps, len(adjacency_matrix), len(adjacency_matrix)), dtype=np.dtype(type(adjacency_matrix[0][0])))
+    connectivities_over_time[0] = adjacency_matrix
 
     num_cells = len(adjacency_matrix[0])
 
-    for timestep in range(1, timesteps):
-        last_activities = activities_over_time[-1]
-        last_connectivities = connectivities_over_time[-1]
-        activities = []
+    for t in range(1, timesteps):
+        last_activities = activities_over_time[t - 1]
+        last_connectivities = connectivities_over_time[t - 1]
 
         last_connectivities_transposed = np.array(last_connectivities).T
 
         for cell_index in range(num_cells):
-            ngh_activities = []
-            ngh_cell_indices = []
-            ngh_weights = []
             # use the transpose of the adjacency matrix to get the cells that are inputs to a given cell defined by a row
-            for i, val in enumerate(last_connectivities_transposed[cell_index]):
-                if val != 0.:
-                    ngh_activities.append(last_activities[i])
-                    ngh_cell_indices.append(i)
-                    ngh_weights.append(val)
-            activity = activity_rule(Neighbourhood(ngh_activities, ngh_cell_indices, ngh_weights, last_activities[cell_index]), cell_index, timestep)
-            activities.append(activity)
+            row = last_connectivities_transposed[cell_index]
+            nonzero_indices = np.nonzero(row)[0]
+            ngh_activities = last_activities[nonzero_indices]
+            ngh_cell_indices = nonzero_indices
+            ngh_weights = row[nonzero_indices]
+            activity = activity_rule(Neighbourhood(ngh_activities, ngh_cell_indices, ngh_weights, last_activities[cell_index]), cell_index, t)
+            activities_over_time[t][cell_index] = activity
 
-        activities_over_time.append(activities)
-        connectivities = connectivity_rule(last_connectivities, last_activities, timestep)
-        connectivities_over_time.append(connectivities)
+        connectivities = connectivity_rule(last_connectivities, last_activities, t)
+        connectivities_over_time[t] = connectivities
 
     return activities_over_time, connectivities_over_time
 
@@ -148,16 +146,20 @@ def plot_grid(activities, shape=None, slice=-1, title=''):
     plt.show()
 
 
-def plot_grid_multiple(ca_list, titles):
+def plot_grid_multiple(ca_list, shape=None, slice=-1, titles=None):
     cmap = plt.get_cmap('Greys')
     for i in range(0, len(ca_list)):
         plt.figure(i)
-        plt.title(titles[i])
-        plt.imshow(ca_list[i], interpolation='none', cmap=cmap)
+        if titles is not None:
+            plt.title(titles[i])
+        activities = list(ca_list[i])
+        if shape is not None:
+            activities = np.array(activities).reshape((len(activities), shape[0], shape[1])).tolist()[slice]
+        plt.imshow(activities, interpolation='none', cmap=cmap)
     plt.show()
 
 
-def animate(activities, title='', shape=None, save=False):
+def animate(activities, title='', shape=None, save=False, interval=50):
     if shape is not None:
         activities = np.reshape(activities, (len(activities), shape[0], shape[1]))
     cmap = plt.get_cmap('Greys')
@@ -171,7 +173,7 @@ def animate(activities, title='', shape=None, save=False):
             i['index'] = 0
         im.set_array(activities[i['index']])
         return im,
-    ani = animation.FuncAnimation(fig, updatefig, interval=50, blit=True)
+    ani = animation.FuncAnimation(fig, updatefig, interval=interval, blit=True)
     if save:
         ani.save('evolved.gif', dpi=80, writer="imagemagick")
     plt.show()
