@@ -26,4 +26,4 @@ if __name__ == '__main__':
         titles.append(r'$\lambda$ = %s, $\widebar{H}$ = %s, $\widebar{I}$ = %s' %
                       (lambda_vals[i], "{:.4}".format(avg_cell_entropy), "{:.4}".format(avg_mutual_information)))
 
-    ntm.plot_grid_multiple(ca_list, titles)
+    ntm.plot_grid_multiple(ca_list, titles=titles)
