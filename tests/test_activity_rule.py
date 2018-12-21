@@ -157,8 +157,8 @@ class TestActivityRule(RuleTest):
 
     @staticmethod
     def _evolve_nks_ca(expected, rule):
-        rows, size = len(expected), len(expected[0])
-        initial_conditions = expected[0]
+        rows, size = expected.shape
+        initial_conditions = np.array(expected[0]).flatten()
         adjacencies = AdjacencyMatrix.cellular_automaton(n=size, r=1)
         activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=rows,
                                             activity_rule=lambda n, c, t: ActivityRule.nks_ca_rule(n, c, rule))
@@ -166,8 +166,8 @@ class TestActivityRule(RuleTest):
 
     @staticmethod
     def _evolve_binary_ca(expected, r, rule):
-        rows, size = len(expected), len(expected[0])
-        initial_conditions = expected[0]
+        rows, size = expected.shape
+        initial_conditions = np.array(expected[0]).flatten()
         adjacencies = AdjacencyMatrix.cellular_automaton(n=size, r=r)
         activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=rows,
                                             activity_rule=lambda n, c, t: ActivityRule.binary_ca_rule(n, c, rule))
@@ -175,8 +175,8 @@ class TestActivityRule(RuleTest):
 
     @staticmethod
     def _evolve_totalistic_ca(expected, k, rule):
-        rows, size = len(expected), len(expected[0])
-        initial_conditions = expected[0]
+        rows, size = expected.shape
+        initial_conditions = np.array(expected[0]).flatten()
         adjacencies = AdjacencyMatrix.cellular_automaton(n=size, r=1)
         activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=rows,
                                             activity_rule=lambda n, c, t: ActivityRule.totalistic_ca(n, k, rule))
@@ -184,9 +184,9 @@ class TestActivityRule(RuleTest):
 
     @staticmethod
     def _evolve_totalistic_ca2d(expected, rule, neighbourhood):
-        steps, rows, size = len(expected), len(expected[0]), len(expected[0][0])
-        initial_conditions = np.array(expected[0]).reshape(rows * size).tolist()
+        steps, rows, size = expected.shape
+        initial_conditions = np.array(expected[0]).reshape(rows * size).flatten()
         adjacencies = AdjacencyMatrix.cellular_automaton2d(rows=rows, cols=size, r=1, neighbourhood=neighbourhood)
         activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=steps,
                                             activity_rule=lambda n, c, t: ActivityRule.totalistic_ca(n, k=2, rule=rule))
-        return np.array(activities).reshape((steps, rows, size)).tolist()
+        return np.array(activities).reshape((steps, rows, size))

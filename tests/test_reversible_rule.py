@@ -11,8 +11,8 @@ class TestReversibleRule(RuleTest):
 
     @staticmethod
     def _evolve_reversible_ca(expected, rule_number):
-        rows, size = len(expected), len(expected[0])
-        initial_conditions = expected[0]
+        rows, size = expected.shape
+        initial_conditions = np.array(expected[0]).flatten()
         adjacencies = AdjacencyMatrix.cellular_automaton(n=size, r=1)
         r = ReversibleRule(initial_conditions, lambda n, c, t: ActivityRule.nks_ca_rule(n, c, rule_number))
         activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=rows,

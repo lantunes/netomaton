@@ -27,7 +27,7 @@ class TestAnalysis(RuleTest):
 
     def test_average_cell_entropy(self):
         activities = self._convert_to_matrix("rule30_random_init.ca")
-        avg_cell_entropy = ntm.average_cell_entropy(activities)
+        avg_cell_entropy = ntm.average_cell_entropy(activities.tolist())
         np.testing.assert_almost_equal(avg_cell_entropy, 0.9946, decimal=4)
 
     def test_joint_shannon_entropy(self):
@@ -45,7 +45,7 @@ class TestAnalysis(RuleTest):
         np.testing.assert_almost_equal(mutual_information, 0.0060, decimal=4)
 
     def test_average_mutual_information(self):
-        cellular_automaton = self._convert_to_matrix("rule30_random_init.ca")
+        cellular_automaton = self._convert_to_matrix("rule30_random_init.ca").tolist()
         avg_mutual_information = ntm.average_mutual_information(cellular_automaton)
         np.testing.assert_almost_equal(avg_mutual_information, 0.0047, decimal=4)
         avg_mutual_information = ntm.average_mutual_information(cellular_automaton, temporal_distance=2)
