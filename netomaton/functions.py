@@ -164,17 +164,17 @@ def init_simple2d(rows, cols, val=1, dtype=np.int):
     return np.array(x).reshape(rows * cols).tolist()
 
 
-def plot_grid(activities, shape=None, slice=-1, title=''):
+def plot_grid(activities, shape=None, slice=-1, title='', colormap='Greys', vmin=None, vmax=None):
     if shape is not None:
         activities = np.array(activities).reshape((len(activities), shape[0], shape[1])).tolist()[slice]
-    cmap = plt.get_cmap('Greys')
+    cmap = plt.get_cmap(colormap)
     plt.title(title)
-    plt.imshow(activities, interpolation='none', cmap=cmap)
+    plt.imshow(activities, interpolation='none', cmap=cmap, vmin=vmin, vmax=vmax)
     plt.show()
 
 
-def plot_grid_multiple(ca_list, shape=None, slice=-1, titles=None):
-    cmap = plt.get_cmap('Greys')
+def plot_grid_multiple(ca_list, shape=None, slice=-1, titles=None, colormap='Greys', vmin=None, vmax=None):
+    cmap = plt.get_cmap(colormap)
     for i in range(0, len(ca_list)):
         plt.figure(i)
         if titles is not None:
@@ -182,17 +182,17 @@ def plot_grid_multiple(ca_list, shape=None, slice=-1, titles=None):
         activities = list(ca_list[i])
         if shape is not None:
             activities = np.array(activities).reshape((len(activities), shape[0], shape[1])).tolist()[slice]
-        plt.imshow(activities, interpolation='none', cmap=cmap)
+        plt.imshow(activities, interpolation='none', cmap=cmap, vmin=vmin, vmax=vmax)
     plt.show()
 
 
-def animate(activities, title='', shape=None, save=False, interval=50):
+def animate(activities, title='', shape=None, save=False, interval=50, colormap='Greys', vmin=None, vmax=None):
     if shape is not None:
         activities = np.reshape(activities, (len(activities), shape[0], shape[1]))
-    cmap = plt.get_cmap('Greys')
+    cmap = plt.get_cmap(colormap)
     fig = plt.figure()
     plt.title(title)
-    im = plt.imshow(activities[0], animated=True, cmap=cmap)
+    im = plt.imshow(activities[0], animated=True, cmap=cmap, vmin=vmin, vmax=vmax)
     i = {'index': 0}
     def updatefig(*args):
         i['index'] += 1
