@@ -67,13 +67,17 @@ def _evolve_activities(initial_conditions, adjacency_matrix, timesteps, activity
     num_cells = len(adjacency_matrix[0])
     connectivities_transposed = np.array(adjacency_matrix).T
 
+    nonzeros = np.nonzero(connectivities_transposed)
+    index_map = {i: [] for i in range(num_cells)}
+    [index_map[idx].append(nonzeros[1][i]) for i, idx in enumerate(nonzeros[0])]
+
     for t in range(1, timesteps):
         last_activities = activities_over_time[t - 1]
 
         for c in range(num_cells):
             # use the transpose of the adjacency matrix to get the cells that are inputs to a given cell defined by a row
             row = connectivities_transposed[c]
-            nonzero_indices = np.nonzero(row)[0]
+            nonzero_indices = index_map[c]
             activities = last_activities[nonzero_indices]
             weights = row[nonzero_indices]
             activities_over_time[t][c] = activity_rule(Neighbourhood(activities, nonzero_indices, weights, last_activities[c]), c, t)
@@ -96,10 +100,14 @@ def _evolve_both(initial_conditions, adjacency_matrix, timesteps, activity_rule,
 
         last_connectivities_transposed = np.array(last_connectivities).T
 
+        nonzeros = np.nonzero(last_connectivities_transposed)
+        index_map = {i: [] for i in range(num_cells)}
+        [index_map[idx].append(nonzeros[1][i]) for i, idx in enumerate(nonzeros[0])]
+
         for c in range(num_cells):
             # use the transpose of the adjacency matrix to get the cells that are inputs to a given cell defined by a row
             row = last_connectivities_transposed[c]
-            nonzero_indices = np.nonzero(row)[0]
+            nonzero_indices = index_map[c]
             activities = last_activities[nonzero_indices]
             weights = row[nonzero_indices]
             activities_over_time[t][c] = activity_rule(Neighbourhood(activities, nonzero_indices, weights, last_activities[c]), c, t)
