@@ -76,6 +76,8 @@ the Netomaton framework. Follow the link to learn more:
 
 * [Conway's Game of Life](https://github.com/lantunes/netomaton/blob/master/demos/game_of_life/README.md)
 
+* [Gray-Scott Reaction-Diffusion Model](https://github.com/lantunes/netomaton/blob/master/demos/reaction_diffusion/README.md)
+
 * [Hopfield Network](https://github.com/lantunes/netomaton/blob/master/demos/hopfield_net/README.md)
 
 ### About this project

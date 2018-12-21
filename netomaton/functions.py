@@ -208,7 +208,7 @@ def animate(activities, title='', shape=None, save=False, interval=50, colormap=
             i['index'] = 0
         im.set_array(activities[i['index']])
         return im,
-    ani = animation.FuncAnimation(fig, updatefig, interval=interval, blit=True)
+    ani = animation.FuncAnimation(fig, updatefig, interval=interval, blit=True, save_count=len(activities))
     if save:
         ani.save('evolved.gif', dpi=80, writer="imagemagick")
     plt.show()
