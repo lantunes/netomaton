@@ -36,7 +36,7 @@ class Neighbourhood(object):
         return self._current_activity
 
 
-def evolve(initial_conditions, adjacency_matrix, timesteps, activity_rule, connectivity_rule=ConnectivityRule.noop):
+def evolve(initial_conditions, adjacency_matrix, timesteps, activity_rule, connectivity_rule=None):
     """
     Evolves a network defined by the given adjacency matrix with the given initial conditions, for the specified
     number of timesteps, using the given activity and connectivity rules. Note that if A(t) is the adjacency matrix at
@@ -53,6 +53,35 @@ def evolve(initial_conditions, adjacency_matrix, timesteps, activity_rule, conne
     """
     if len(initial_conditions) != len(adjacency_matrix[0]):
         raise Exception("the length of the initial conditions list does not match the given adjacency matrix")
+
+    if connectivity_rule is not None:
+        return _evolve_both(initial_conditions, adjacency_matrix, timesteps, activity_rule, connectivity_rule)
+    else:
+        return _evolve_activities(initial_conditions, adjacency_matrix, timesteps, activity_rule)
+
+
+def _evolve_activities(initial_conditions, adjacency_matrix, timesteps, activity_rule):
+    activities_over_time = np.zeros((timesteps, len(initial_conditions)), dtype=np.dtype(type(initial_conditions[0])))
+    activities_over_time[0] = initial_conditions
+
+    num_cells = len(adjacency_matrix[0])
+    connectivities_transposed = np.array(adjacency_matrix).T
+
+    for t in range(1, timesteps):
+        last_activities = activities_over_time[t - 1]
+
+        for c in range(num_cells):
+            # use the transpose of the adjacency matrix to get the cells that are inputs to a given cell defined by a row
+            row = connectivities_transposed[c]
+            nonzero_indices = np.nonzero(row)[0]
+            activities = last_activities[nonzero_indices]
+            weights = row[nonzero_indices]
+            activities_over_time[t][c] = activity_rule(Neighbourhood(activities, nonzero_indices, weights, last_activities[c]), c, t)
+
+    return activities_over_time, [adjacency_matrix]*timesteps
+
+
+def _evolve_both(initial_conditions, adjacency_matrix, timesteps, activity_rule, connectivity_rule=ConnectivityRule.noop):
     activities_over_time = np.zeros((timesteps, len(initial_conditions)), dtype=np.dtype(type(initial_conditions[0])))
     activities_over_time[0] = initial_conditions
 
@@ -67,15 +96,13 @@ def evolve(initial_conditions, adjacency_matrix, timesteps, activity_rule, conne
 
         last_connectivities_transposed = np.array(last_connectivities).T
 
-        for cell_index in range(num_cells):
+        for c in range(num_cells):
             # use the transpose of the adjacency matrix to get the cells that are inputs to a given cell defined by a row
-            row = last_connectivities_transposed[cell_index]
+            row = last_connectivities_transposed[c]
             nonzero_indices = np.nonzero(row)[0]
-            ngh_activities = last_activities[nonzero_indices]
-            ngh_cell_indices = nonzero_indices
-            ngh_weights = row[nonzero_indices]
-            activity = activity_rule(Neighbourhood(ngh_activities, ngh_cell_indices, ngh_weights, last_activities[cell_index]), cell_index, t)
-            activities_over_time[t][cell_index] = activity
+            activities = last_activities[nonzero_indices]
+            weights = row[nonzero_indices]
+            activities_over_time[t][c] = activity_rule(Neighbourhood(activities, nonzero_indices, weights, last_activities[c]), c, t)
 
         connectivities = connectivity_rule(last_connectivities, last_activities, t)
         connectivities_over_time[t] = connectivities
