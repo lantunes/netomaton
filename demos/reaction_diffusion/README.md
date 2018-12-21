@@ -4,6 +4,7 @@ This example attempts to demonstrate the Gray-Scott Reaction-Diffusion
 model. The reactions are:
 
 **U** + 2**V** -> 3**V**
+
 **V** -> **P**
 
 where **U**, **V**, and **P** represent the reactants. The time
