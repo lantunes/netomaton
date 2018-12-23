@@ -174,7 +174,7 @@ def init_simple2d(rows, cols, val=1, dtype=np.int):
 
 def plot_grid(activities, shape=None, slice=-1, title='', colormap='Greys', vmin=None, vmax=None):
     if shape is not None:
-        activities = np.array(activities).reshape((len(activities), shape[0], shape[1])).tolist()[slice]
+        activities = np.array(activities).reshape((len(activities), shape[0], shape[1]))[slice]
     cmap = plt.get_cmap(colormap)
     plt.title(title)
     plt.imshow(activities, interpolation='none', cmap=cmap, vmin=vmin, vmax=vmax)
@@ -189,7 +189,7 @@ def plot_grid_multiple(ca_list, shape=None, slice=-1, titles=None, colormap='Gre
             plt.title(titles[i])
         activities = list(ca_list[i])
         if shape is not None:
-            activities = np.array(activities).reshape((len(activities), shape[0], shape[1])).tolist()[slice]
+            activities = np.array(activities).reshape((len(activities), shape[0], shape[1]))[slice]
         plt.imshow(activities, interpolation='none', cmap=cmap, vmin=vmin, vmax=vmax)
     plt.show()
 
