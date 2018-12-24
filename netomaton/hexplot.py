@@ -52,6 +52,7 @@ def plot_hex_grid(activities, shape=None, slice=-1, title='', colormap='Greys', 
                              facecolor=m.to_rgba(t[2]), edgecolor=edgecolor)
         ax.add_patch(hex)
     ax.scatter([t[0] for t in triples], [t[1] for t in triples], marker='')
+    plt.gca().invert_yaxis()
     plt.title(title)
     plt.show()
 
@@ -60,7 +61,7 @@ def animate_hex(activities, title='', shape=None, save=False, interval=50, color
     if shape is not None:
         activities = np.reshape(activities, (len(activities), shape[0], shape[1]))
     triples = _get_triples(activities[0])
-    has_odd_rows = (len(activities) % 2) != 0
+    has_odd_rows = (len(activities[0]) % 2) != 0
     fig, ax = plt.subplots(1)
     ax.set_aspect('equal')
     m = _get_scaled_colormap(triples, colormap, vmin, vmax)
@@ -73,24 +74,23 @@ def animate_hex(activities, title='', shape=None, save=False, interval=50, color
 
     p = PatchCollection(patches, match_original=True, cmap=m.get_cmap())
     ax.add_collection(p)
-    ax.scatter([t[0] for t in triples], [t[1] for t in triples], marker='')
 
     i = {'index': 0}
-
     def update(*args):
         i['index'] += 1
         if i['index'] == len(activities):
             i['index'] = 0
-        triples = _get_triples(activities[i['index']])
-        ps = []
-        for t in triples:
-            ps.append(t[2])
-        p.set_array(np.array(ps))
+        new_triples = _get_triples(activities[i['index']])
+        p.set_array(np.array([tr[2] for tr in new_triples]))
         return p,
+
+    ax.scatter([t[0] for t in triples], [t[1] for t in triples], marker='')
+    plt.gca().invert_yaxis()
+    plt.title(title)
 
     ani = animation.FuncAnimation(fig, update, interval=interval, blit=True, save_count=len(activities))
     if save:
         ani.save('evolved.gif', dpi=80, writer="imagemagick")
-    plt.title(title)
+
     plt.show()
 

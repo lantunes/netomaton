@@ -78,6 +78,8 @@ the Netomaton framework. Follow the link to learn more:
 
 * [Gray-Scott Reaction-Diffusion Model](https://github.com/lantunes/netomaton/blob/master/demos/reaction_diffusion/README.md)
 
+* [Hexagonal Cell Lattices](https://github.com/lantunes/netomaton/blob/master/demos/hexagonal_ca/README.md)
+
 * [Hopfield Network](https://github.com/lantunes/netomaton/blob/master/demos/hopfield_net/README.md)
 
 ### About this project
