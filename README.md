@@ -31,7 +31,7 @@ The network's topology is specified by the adjacency matrix, **A**, which
 is of size _N_<sub>tot</sub> *X* _N_<sub>tot</sub>, where _N_<sub>tot</sub>
 represents the total number of nodes (i.e. cells) in the network. Each
 non-zero entry in **A** represents the existence of a link. The value of
-the entry represents a weight. The matrix **A** contains information about
+the entry represents a link weight. The matrix **A** thus contains information about
 the existence of links, and their direction.
 
 The network is evolved for *T* timeteps. The activity of the network is
@@ -45,7 +45,7 @@ that:
 **A**<sub>*t+1*</sub> = *g*(**A**<sub>*t*</sub>, **S**<sub>*t*</sub>)
 
 
-A network may have nodes added or removed at any given timestep, however,
+A network may have nodes added or removed at any given timestep; however,
 this framework will consider that a network has a total fixed number of
 nodes at all times, and that nodes may become connected or fully
 disconnected from the network instead.
