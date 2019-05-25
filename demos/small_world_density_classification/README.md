@@ -25,4 +25,6 @@ activities, connectivities = evolve(initial_conditions, adjacencies, n_steps=149
 plot_grid(activities)
 ```
 
+<img src="../../resources/small_world.png" width="50%"/>
+
 The full source code for this example can be found [here](small_world_density_classification_demo.py).
