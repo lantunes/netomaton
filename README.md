@@ -82,6 +82,8 @@ the Netomaton framework. Follow the link to learn more:
 
 * [Hopfield Network](demos/hopfield_net/README.md)
 
+* [Perturbations](demos/perturbation_demo/README.md)
+
 ### About this project
 
 Netomaton arose from a personal need to reconcile various models of collective

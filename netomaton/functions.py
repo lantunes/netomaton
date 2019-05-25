@@ -54,10 +54,10 @@ def evolve(initial_conditions, adjacency_matrix, timesteps, activity_rule, conne
     :param timesteps: the number of steps in the evolution of the network
     :param activity_rule: the rule that will determine the activity of a cell in the network
     :param connectivity_rule: the rule that will determine the connectivity of the network
-    :param perturbation: a function that defines a perturbation applied as the system evolves; the function accepts one
-                         parameter, t, which represents the timestep, and must return the conditions representing the
-                         perturbation, in the form of an activity vector, for that timestep, or None if there is no
-                         perturbation at that timestep
+    :param perturbation: a function that defines a perturbation applied as the system evolves; the function accepts
+                         three parameters: c, which represents the cell index, t, which represents the timestep, and a,
+                         which represents the computed activity for the cell given by c. The function must return the
+                         new activity for cell c at timestep t.
     :return: a tuple of the activities over time and the connectivities over time
     """
     if len(initial_conditions) != len(adjacency_matrix[0]):
@@ -90,6 +90,8 @@ def _evolve_activities(initial_conditions, adjacency_matrix, timesteps, activity
             activities = last_activities[nonzero_indices]
             weights = row[nonzero_indices]
             activities_over_time[t][c] = activity_rule(Neighbourhood(activities, nonzero_indices, weights, last_activities[c]), c, t)
+            if perturbation is not None:
+                activities_over_time[t][c] = perturbation(c, activities_over_time[t][c], t)
 
     return activities_over_time, [adjacency_matrix]*timesteps
 
@@ -120,6 +122,8 @@ def _evolve_both(initial_conditions, adjacency_matrix, timesteps, activity_rule,
             activities = last_activities[nonzero_indices]
             weights = row[nonzero_indices]
             activities_over_time[t][c] = activity_rule(Neighbourhood(activities, nonzero_indices, weights, last_activities[c]), c, t)
+            if perturbation is not None:
+                activities_over_time[t][c] = perturbation(c, activities_over_time[t][c], t)
 
         connectivities = connectivity_rule(last_connectivities, last_activities, t)
         connectivities_over_time[t] = connectivities
