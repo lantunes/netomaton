@@ -11,7 +11,6 @@ Netomaton supports perturbations. A perturbation is
 simply a function that accepts the cell index, its computed activity,
 and the timestep, and returns the new activity for that cell.
 
-
 Consider the cellular automaton Rule 30 below, which is perturbed at
 every timestep such that cell with index 100 is changed randomly to
 either a 0 or a 1:
@@ -35,4 +34,28 @@ ntm.plot_grid(activities)
 ```
 <img src="../../resources/perturbation.png" width="50%"/>
 
-The full source code for this example can be found [here](perturbation_eca_demo.py).
+Another way to perturb a Network Automaton is to simply wrap the activity
+rule function with yet another function. Such an approach offers more
+control over when the activity is determined, and what is done with it.
+Below is an example of a perturbed cellular automaton rule 90R:
+```python
+adjacencies = AdjacencyMatrix.cellular_automaton(n=200)
+initial_conditions = np.random.randint(0, 2, 200)
+
+def perturbed_rule(n, c, t):
+    a = ActivityRule.nks_ca_rule(n, c, 90)
+    if t % 10 == 0:
+        return 1
+    return a
+
+r = ReversibleRule(initial_conditions, perturbed_rule)
+
+activities, _ = evolve(initial_conditions, adjacencies, timesteps=100,
+                                    activity_rule=r.activity_rule)
+
+plot_grid(activities)
+```
+<img src="../../resources/perturbation_reversible.png" width="50%"/>
+
+The full source code for these examples can be found
+[here](perturbation_eca_demo.py) and [here](perturbation_reversible_demo.py).
