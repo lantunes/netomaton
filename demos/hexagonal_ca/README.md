@@ -3,7 +3,7 @@
 Netomaton supports automata with hexagonal cell lattices. A hexagonal
 cell with a neighbourhood of radius 1 is depicted below:
 
-<img src="https://raw.githubusercontent.com/lantunes/netomaton/master/resources/hexagon.png" width="40%"/>
+<img src="../../resources/hexagon.png" width="40%"/>
 
 The example below demonstrates the "snowflake" cellular automaton,
 described on [page 371](https://www.wolframscience.com/nks/p371--the-growth-of-crystals/)
