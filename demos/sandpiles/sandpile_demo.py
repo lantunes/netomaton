@@ -17,4 +17,4 @@ if __name__ == '__main__':
     activities, _ = ntm.evolve(initial_conditions, sandpile.adjacencies, timesteps=110,
                                activity_rule=sandpile.activity_rule, perturbation=perturb)
 
-    ntm.animate(activities, shape=(60, 60), interval=150, save=True)
+    ntm.animate(activities, shape=(60, 60), interval=150)
