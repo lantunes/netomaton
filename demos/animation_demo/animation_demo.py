@@ -16,9 +16,9 @@ if __name__ == '__main__':
     # the evolution of a 1D cellular automaton can be animated
     ntm.animate(activities, shape=(200,))
 
-    adjacencies = ntm.AdjacencyMatrix.cellular_automaton(n=100)
-    initial_conditions = [0] * 50 + [1] + [0] * 49
+    adjacencies = ntm.AdjacencyMatrix.cellular_automaton(n=225)
+    initial_conditions = [0] * 112 + [1] + [0] * 112
     activities, connectivities = ntm.evolve(initial_conditions, adjacencies, timesteps=100,
                                             activity_rule=lambda n, c, t: ntm.ActivityRule.nks_ca_rule(n, c, 30))
     # a 1D cellular automaton can be rendered an animated as if it were a 2D cellular automaton
-    ntm.animate(activities, shape=(10, 10))
+    ntm.animate(activities, shape=(15, 15), interval=100)
