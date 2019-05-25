@@ -13,11 +13,12 @@ class Neighbourhood(object):
     neighbourhood, etc. The neighbourhood of a cell also contains the cell's current activity (i.e. the activity as of
     the last timestep).
     """
-    def __init__(self, activities, neighbour_indices, weights, current_activity):
+    def __init__(self, activities, neighbour_indices, weights, current_activity, perturbation=None):
         self._activities = activities
         self._neighbour_indices = neighbour_indices
         self._weights = weights
         self._current_activity = current_activity
+        self._perturbation = perturbation
 
     @property
     def activities(self):
@@ -35,8 +36,12 @@ class Neighbourhood(object):
     def current_activity(self):
         return self._current_activity
 
+    @property
+    def perturbation(self):
+        return self._perturbation
 
-def evolve(initial_conditions, adjacency_matrix, timesteps, activity_rule, connectivity_rule=None):
+
+def evolve(initial_conditions, adjacency_matrix, timesteps, activity_rule, connectivity_rule=None, perturbation=None):
     """
     Evolves a network defined by the given adjacency matrix with the given initial conditions, for the specified
     number of timesteps, using the given activity and connectivity rules. Note that if A(t) is the adjacency matrix at
@@ -49,18 +54,22 @@ def evolve(initial_conditions, adjacency_matrix, timesteps, activity_rule, conne
     :param timesteps: the number of steps in the evolution of the network
     :param activity_rule: the rule that will determine the activity of a cell in the network
     :param connectivity_rule: the rule that will determine the connectivity of the network
+    :param perturbation: a function that defines a perturbation applied as the system evolves; the function accepts one
+                         parameter, t, which represents the timestep, and must return the conditions representing the
+                         perturbation, in the form of an activity vector, for that timestep, or None if there is no
+                         perturbation at that timestep
     :return: a tuple of the activities over time and the connectivities over time
     """
     if len(initial_conditions) != len(adjacency_matrix[0]):
         raise Exception("the length of the initial conditions list does not match the given adjacency matrix")
 
     if connectivity_rule is not None:
-        return _evolve_both(initial_conditions, adjacency_matrix, timesteps, activity_rule, connectivity_rule)
+        return _evolve_both(initial_conditions, adjacency_matrix, timesteps, activity_rule, connectivity_rule, perturbation)
     else:
-        return _evolve_activities(initial_conditions, adjacency_matrix, timesteps, activity_rule)
+        return _evolve_activities(initial_conditions, adjacency_matrix, timesteps, activity_rule, perturbation)
 
 
-def _evolve_activities(initial_conditions, adjacency_matrix, timesteps, activity_rule):
+def _evolve_activities(initial_conditions, adjacency_matrix, timesteps, activity_rule, perturbation=None):
     activities_over_time = np.zeros((timesteps, len(initial_conditions)), dtype=np.dtype(type(initial_conditions[0])))
     activities_over_time[0] = initial_conditions
 
@@ -85,7 +94,7 @@ def _evolve_activities(initial_conditions, adjacency_matrix, timesteps, activity
     return activities_over_time, [adjacency_matrix]*timesteps
 
 
-def _evolve_both(initial_conditions, adjacency_matrix, timesteps, activity_rule, connectivity_rule=ConnectivityRule.noop):
+def _evolve_both(initial_conditions, adjacency_matrix, timesteps, activity_rule, connectivity_rule=ConnectivityRule.noop, perturbation=None):
     activities_over_time = np.zeros((timesteps, len(initial_conditions)), dtype=np.dtype(type(initial_conditions[0])))
     activities_over_time[0] = initial_conditions
 
@@ -196,7 +205,7 @@ def plot_grid_multiple(ca_list, shape=None, slice=-1, titles=None, colormap='Gre
 
 def animate(activities, title='', shape=None, save=False, interval=50, colormap='Greys', vmin=None, vmax=None):
     if shape is not None:
-        activities = np.reshape(activities, (len(activities), shape[0], shape[1]))
+        activities = _reshape_for_animation(activities, shape)
     cmap = plt.get_cmap(colormap)
     fig = plt.figure()
     plt.title(title)
@@ -212,6 +221,23 @@ def animate(activities, title='', shape=None, save=False, interval=50, colormap=
     if save:
         ani.save('evolved.gif', dpi=80, writer="imagemagick")
     plt.show()
+
+
+def _reshape_for_animation(activities, shape):
+    if len(shape) == 1:
+        assert shape[0] == len(activities[0]), "shape must equal the length of an activity vector"
+        new_activities = []
+        for i, a in enumerate(activities):
+            new_activity = []
+            new_activity.extend(activities[0:i+1])
+            while len(new_activity) < len(activities):
+                new_activity.append([0]*len(activities[0]))
+            new_activities.append(new_activity)
+        return np.array(new_activities)
+    elif len(shape) == 2:
+        return np.reshape(activities, (len(activities), shape[0], shape[1]))
+    else:
+        raise Exception("shape must be a tuple of length 1 or 2")
 
 
 def render_network(adjacency_matrix):
