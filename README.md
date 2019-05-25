@@ -84,6 +84,8 @@ the Netomaton framework. Follow the link to learn more:
 
 * [Perturbations](demos/perturbation_demo/README.md)
 
+* [Sandpiles](demos/sandpiles/README.md)
+
 ### About this project
 
 Netomaton arose from a personal need to reconcile various models of collective

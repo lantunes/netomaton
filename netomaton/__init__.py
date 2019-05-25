@@ -8,3 +8,4 @@ from .reversible_rule import *
 from .analysis import *
 from .rule_tables import *
 from .hexplot import *
+from .sandpile import *
