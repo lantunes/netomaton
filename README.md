@@ -56,31 +56,31 @@ This repository contains examples of implementations of
 various kinds of collective computation models, all implemented using
 the Netomaton framework. Follow the link to learn more:
 
-* [Elementary Cellular Automata](https://github.com/lantunes/netomaton/blob/master/demos/elementary_ca/README.md)
+* [Elementary Cellular Automata](demos/elementary_ca/README.md)
 
-* [1D Cellular Automata with Totalistic Rules](https://github.com/lantunes/netomaton/blob/master/demos/totalistic_ca/README.md)
+* [1D Cellular Automata with Totalistic Rules](demos/totalistic_ca/README.md)
 
-* [Reversible 1D Cellular Automata](https://github.com/lantunes/netomaton/blob/master/demos/reversible_ca/README.md)
+* [Reversible 1D Cellular Automata](demos/reversible_ca/README.md)
 
-* [Density Classification with Evolved 1D Cellular Automata](https://github.com/lantunes/netomaton/blob/master/demos/ca_density_classification/README.md)
+* [Density Classification with Evolved 1D Cellular Automata](demos/ca_density_classification/README.md)
 
-* [Density Classification with a Watts-Strogatz small-world graph](https://github.com/lantunes/netomaton/blob/master/demos/small_world_density_classification/README.md)
+* [Density Classification with a Watts-Strogatz small-world graph](demos/small_world_density_classification/README.md)
 
-* [Asynchronous Automata](https://github.com/lantunes/netomaton/blob/master/demos/asynchronous_automata/README.md)
+* [Asynchronous Automata](demos/asynchronous_automata/README.md)
 
-* [Continuous Automata](https://github.com/lantunes/netomaton/blob/master/demos/continuous_automata/README.md)
+* [Continuous Automata](demos/continuous_automata/README.md)
 
-* [Langton's Lambda and Measures of Complexity](https://github.com/lantunes/netomaton/blob/master/demos/langtons_lambda/README.md)
+* [Langton's Lambda and Measures of Complexity](demos/langtons_lambda/README.md)
 
-* [2D Cellular Automata](https://github.com/lantunes/netomaton/blob/master/demos/totalistic_ca2d/README.md)
+* [2D Cellular Automata](demos/totalistic_ca2d/README.md)
 
-* [Conway's Game of Life](https://github.com/lantunes/netomaton/blob/master/demos/game_of_life/README.md)
+* [Conway's Game of Life](demos/game_of_life/README.md)
 
-* [Gray-Scott Reaction-Diffusion Model](https://github.com/lantunes/netomaton/blob/master/demos/reaction_diffusion/README.md)
+* [Gray-Scott Reaction-Diffusion Model](demos/reaction_diffusion/README.md)
 
-* [Hexagonal Cell Lattices](https://github.com/lantunes/netomaton/blob/master/demos/hexagonal_ca/README.md)
+* [Hexagonal Cell Lattices](demos/hexagonal_ca/README.md)
 
-* [Hopfield Network](https://github.com/lantunes/netomaton/blob/master/demos/hopfield_net/README.md)
+* [Hopfield Network](demos/hopfield_net/README.md)
 
 ### About this project
 

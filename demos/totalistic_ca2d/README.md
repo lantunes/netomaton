@@ -19,6 +19,6 @@ activities, _ = ntm.evolve(initial_conditions, adjacencies, timesteps=30,
 ntm.plot_grid(activities, shape=(60, 60))
 ```
 
-The full source code can be found [here](https://github.com/lantunes/netomaton/blob/master/demos/totalistic_ca2d/totalistic_2d_demo.py).
+The full source code can be found [here](totalistic_2d_demo.py).
 
-<img src="https://raw.githubusercontent.com/lantunes/netomaton/master/resources/rule126.gif" width="65%"/>
+<img src="../../resources/rule126.gif" width="65%"/>

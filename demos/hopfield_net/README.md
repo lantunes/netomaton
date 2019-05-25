@@ -71,9 +71,9 @@ activities, connectivities = evolve(initial_conditions, hopfield_net.adjacency_m
 animate(activities, shape=(6, 5))
 ```
 
-<img src="https://raw.githubusercontent.com/lantunes/netomaton/master/resources/hopfield.gif" width="65%"/>
+<img src="../../resources/hopfield.gif" width="65%"/>
 
-The full source code for this example can be found [here](https://github.com/lantunes/netomaton/blob/master/demos/hopfield_net/hopfield_net_demo.py).
+The full source code for this example can be found [here](hopfield_net_demo.py).
 
 See the following resources for some more information on Hopfield nets:
 

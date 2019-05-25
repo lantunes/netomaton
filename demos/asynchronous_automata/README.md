@@ -34,6 +34,6 @@ activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=1
 # plot every 19th row, including the first, as a cycle is completed every 19 rows
 plot_grid(activities[::19])
 ```
-<img src="https://raw.githubusercontent.com/lantunes/netomaton/master/resources/rule60async.png" width="40%"/>
+<img src="../../resources/rule60async.png" width="40%"/>
 
-The full source code for this example can be found [here](https://github.com/lantunes/netomaton/blob/master/demos/asynchronous_automata/asynchronous_automata_demo.py).
+The full source code for this example can be found [here](asynchronous_automata_demo.py).

@@ -20,9 +20,9 @@ activities, _ = ntm.evolve(initial_conditions, adjacencies, timesteps=200,
 ```
 The following plots demonstrate the effect of varying the lambda parameter:
 
-<img src="https://raw.githubusercontent.com/lantunes/netomaton/master/resources/phase_transition.png" width="100%"/>
+<img src="../../resources/phase_transition.png" width="100%"/>
 
-The source code for the example above can be found [here](https://github.com/lantunes/netomaton/blob/master/demos/langtons_lambda/rule_table_demo.py).
+The source code for the example above can be found [here](rule_table_demo.py).
 
 C. G. Langton describes the lambda parameter, and the transition from order to criticality to chaos in cellular
 automata while varying the lambda parameter, in the paper:
@@ -54,11 +54,11 @@ activities, _ = ntm.evolve(initial_conditions, adjacencies, timesteps=1000,
 avg_cell_entropy = ntm.average_cell_entropy(activities)
 ```
 
-The source code for the example above can be found [here](https://github.com/lantunes/netomaton/blob/master/demos/langtons_lambda/average_cell_entropy_demo.py).
+The source code for the example above can be found [here](average_cell_entropy_demo.py).
 
 The following plots illustrate how average cell entropy changes as a function of lambda:
 
-<img src="https://raw.githubusercontent.com/lantunes/netomaton/master/resources/avg_cell_entropy.png" width="100%"/>
+<img src="../../resources/avg_cell_entropy.png" width="100%"/>
 
 ##### Average Mutual Information
 
@@ -82,10 +82,10 @@ activities, _ = ntm.evolve(initial_conditions, adjacencies, timesteps=1000,
 avg_mutual_information = ntm.average_mutual_information(activities)
 ```
 
-The source code for the example above can be found [here](https://github.com/lantunes/netomaton/blob/master/demos/langtons_lambda/average_mutual_information_demo.py).
+The source code for the example above can be found [here](average_mutual_information_demo.py).
 
 The following plots illustrate how average mutual information changes as a function of lambda:
 
-<img src="https://raw.githubusercontent.com/lantunes/netomaton/master/resources/avg_mutual_information.png" width="100%"/>
+<img src="../../resources/avg_mutual_information.png" width="100%"/>
 
-The groups of plots above were created using the source code found [here](https://github.com/lantunes/netomaton/blob/master/demos/langtons_lambda/rule_table_walkthrough_demo.py).
+The groups of plots above were created using the source code found [here](rule_table_walkthrough_demo.py).

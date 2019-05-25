@@ -25,4 +25,4 @@ activities, connectivities = evolve(initial_conditions, adjacencies, n_steps=149
 plot_grid(activities)
 ```
 
-The full source code for this example can be found [here](https://github.com/lantunes/netomaton/blob/master/demos/small_world_density_classification/small_world_density_classification_demo.py).
+The full source code for this example can be found [here](small_world_density_classification_demo.py).

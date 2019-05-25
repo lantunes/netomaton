@@ -20,6 +20,6 @@ activities, connectivities = evolve(initial_conditions, adjacencies, n_steps=100
 plot_grid(activities)
 ```
 
-<img src="https://raw.githubusercontent.com/lantunes/netomaton/master/resources/tot3_rule777.png" width="50%"/>
+<img src="../../resources/tot3_rule777.png" width="50%"/>
 
-The full source code for this example can be found [here](https://github.com/lantunes/netomaton/blob/master/demos/totalistic_ca/totalistic_ca_demo.py).
+The full source code for this example can be found [here](totalistic_ca_demo.py).

@@ -22,6 +22,6 @@ activities, _ = ntm.evolve(initial_conditions, adjacencies, timesteps=31,
 ntm.animate_hex(activities, shape=(60, 60), interval=150)
 ```
 
-<img src="https://raw.githubusercontent.com/lantunes/netomaton/master/resources/snowflake.gif" width="40%"/>
+<img src="../../resources/snowflake.gif" width="40%"/>
 
-The full source code for this example can be found [here](https://github.com/lantunes/netomaton/blob/master/demos/hexagonal_ca/hexagonal_ca_demo.py).
+The full source code for this example can be found [here](hexagonal_ca_demo.py).
