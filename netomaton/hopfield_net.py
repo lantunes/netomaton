@@ -10,7 +10,7 @@ class HopfieldNet:
     of the network should settle into one of the training patterns.
     """
     def __init__(self, num_cells):
-        self._activity_rule = AsynchronousRule(activity_rule=self._rule, num_cells=num_cells).activity_rule
+        self._activity_rule = AsynchronousRule(activity_rule=self._rule, num_cells=num_cells, randomize_each_cycle=True).activity_rule
         self._num_cells = num_cells
 
     def train(self, P):
@@ -50,3 +50,7 @@ class HopfieldNet:
     @property
     def adjacency_matrix(self):
         return self._adjacency_matrix
+
+    @property
+    def num_cells(self):
+        return self._num_cells

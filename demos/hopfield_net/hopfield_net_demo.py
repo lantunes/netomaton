@@ -61,11 +61,12 @@ if __name__ == '__main__':
 
     initial_conditions = half_two
 
-    activities, connectivities = ntm.evolve(initial_conditions, hopfield_net.adjacency_matrix, timesteps=155,
+    activities, connectivities = ntm.evolve(initial_conditions, hopfield_net.adjacency_matrix,
+                                            timesteps=hopfield_net.num_cells * 7,
                                             activity_rule=hopfield_net.activity_rule)
 
     # view the weights, stored in the adjacency matrix
     # plot_grid(hopfield_net.adjacency_matrix)
 
     # view the time evolution of the Hopfield net as it completes the given pattern
-    ntm.animate(activities, shape=(6, 5))
+    ntm.animate(activities[::hopfield_net.num_cells], shape=(6, 5), interval=150)
