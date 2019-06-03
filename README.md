@@ -5,6 +5,18 @@ Netomaton is a Python framework for exploring discrete dynamical network
 systems, also known as Network Automata. It is a software abstraction
 meant to aid in the implementation of models of collective computation.
 
+### Getting Started
+
+Netomaton can be installed via pip:
+
+```
+pip install netomaton
+```
+
+Requirements for using this library are Python 3.5 or 3.6, numpy 1.15.4,
+matplotlib 3.0.2, and networkx 2.2.
+
+
 ### What are Network Automata?
 
 A Network Automaton is a discrete dynamical system comprised of a collection
