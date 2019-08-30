@@ -10,7 +10,6 @@ data
 .pydevproject
 *.pdf
 .env
-src/
 .settings
 out/
 .floydexpt
@@ -20,3 +19,8 @@ out/
 
 # Python egg metadata, regenerated from source files by setuptools.
 /*.egg-info
+
+.cache/
+*.so
+build/
+.vscode/

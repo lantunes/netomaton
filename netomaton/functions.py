@@ -3,6 +3,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from .connectivity_rule import *
+import netomaton._cxx as cext
 
 
 class Neighbourhood(object):
@@ -94,6 +95,11 @@ def _evolve_activities(initial_conditions, adjacency_matrix, timesteps, activity
                 activities_over_time[t][c] = perturbation(c, activities_over_time[t][c], t)
 
     return activities_over_time, [adjacency_matrix]*timesteps
+
+
+def _evolve_activities_ext(initial_conditions, adjacency_matrix, timesteps, activity_rule, perturbation=None):
+    # TODO
+    return cext.evolve_activities(initial_conditions, adjacency_matrix, timesteps, activity_rule, perturbation)
 
 
 def _evolve_both(initial_conditions, adjacency_matrix, timesteps, activity_rule, connectivity_rule=ConnectivityRule.noop, perturbation=None):

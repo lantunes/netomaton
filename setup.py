@@ -1,4 +1,7 @@
-from setuptools import setup
+from setuptools import setup, Extension
+
+module = Extension('netomaton._cxx', sources = ['src/_cxx.c'])
+
 
 setup(name="netomaton",
       version="0.1.0",
@@ -21,4 +24,5 @@ setup(name="netomaton",
       packages=["netomaton"],
       keywords=["network automata", "cellular automata", "complexity", "complex systems", "computation", "non-linear dynamics"],
       python_requires='>3.5.2',
+      ext_modules=[module],
       install_requires=["numpy >= 1.15.4", "matplotlib >= 3.0.2", "networkx == 2.2"])
