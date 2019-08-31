@@ -1,11 +1,85 @@
 #include <Python.h>
- 
-static PyObject *get_Neighbourhood()
+
+typedef struct {
+    int size;
+    int capacity;
+    int* items;
+} IntList;
+
+static IntList newList() {
+    IntList list;
+    list.size = 0;
+    list.capacity = 10;
+
+    list.items = malloc(list.capacity * sizeof(int));
+    memset(list.items, 0, list.capacity * sizeof(int));
+
+    return list;
+}
+
+static void addInt(int v, IntList *list) {
+    if ((list->size + 1) == list->capacity) {
+        realloc(list->items, list->size * 2);
+        list->capacity = list->size * 2;
+    }
+    list->items[list->size] = v;
+    list->size++;
+}
+
+static void freeList(IntList *list) {
+    free(list->items);
+}
+
+static PyObject *getNeighbourhood()
 {
     PyObject *module = PyImport_ImportModule("netomaton");
     if (!module)
       return NULL;
-    return PyObject_GetAttrString(module, "Neighbourhood");
+    PyObject *n = PyObject_GetAttrString(module, "Neighbourhood");
+    Py_DECREF(module);
+    return n;
+}
+
+static PyObject *getActivities(IntList *indices, double *lastActivities) {
+    PyObject *activities = PyList_New(indices->size);
+    for (unsigned int i = 0; i < indices->size; i++) {
+        PyList_SetItem(activities, i, Py_BuildValue("d", lastActivities[indices->items[i]]));
+    }
+    return activities;
+}
+
+static PyObject *getCellIndices(IntList *indices) {
+    PyObject *cellIndices = PyList_New(indices->size);
+    for (unsigned int i = 0; i < indices->size; i++) {
+        PyList_SetItem(cellIndices, i, Py_BuildValue("i", indices->items[i]));
+    }
+    return cellIndices;
+}
+
+static PyObject *getWeights(IntList *indices, PyObject *adjSeq, int cellIndex) {
+    // adjSeq is the sequence with the adjancency matrix rows
+    PyObject *weights = PyList_New(indices->size);
+    for (unsigned int i = 0; i < indices->size; i++) {
+        int fromIndex = indices->items[i];
+        PyObject *item = PyList_GetItem(adjSeq, fromIndex);
+        PyObject *adjRowSeq = PySequence_Fast(item, "expected a sequence");
+        PyObject *rowItem = PyList_GetItem(adjRowSeq, cellIndex);
+        double weight = PyFloat_AsDouble(rowItem);
+        PyList_SetItem(weights, i, Py_BuildValue("d", weight));
+    }
+    return weights;
+}
+
+static PyObject *buildActivities(double** activitiesOverTime, int timesteps, int numCells) {
+    PyObject *activities = PyList_New(timesteps);
+    for (unsigned int t = 0; t < timesteps; t++) {
+        PyObject *activitiesAtT = PyList_New(numCells);
+        for (unsigned int c = 0; c < numCells; c++) {
+            PyList_SetItem(activitiesAtT, c, Py_BuildValue("d", activitiesOverTime[t][c]));
+        }
+        PyList_SetItem(activities, t, activitiesAtT);
+    }
+    return activities;
 }
  
 static PyObject* evolve_activities(PyObject* self, PyObject* args)
@@ -43,80 +117,143 @@ static PyObject* evolve_activities(PyObject* self, PyObject* args)
         return 0;
     }
 
-    PyObject *adjSeq = PySequence_Fast(adjacencyMatrix, "expected a sequence");
-    adjLen = PySequence_Size(adjacencyMatrix);
-    numCells = PySequence_Size(PyList_GetItem(adjSeq, 0));
-    printf("adj len: %i\n", adjLen);
-    printf("num cells: %i\n", numCells);
-    for (unsigned int i = 0; i < adjLen; i++) {
-        PyObject *item = PyList_GetItem(adjSeq, i);
-        PyObject *adjRowSeq = PySequence_Fast(item, "expected a sequence");
-        int cellCount = PySequence_Size(adjRowSeq);
-        for (unsigned int j = 0; j < cellCount; j++) {
-            PyObject *rowItem = PyList_GetItem(adjRowSeq, j);
-            PyObject* repr = PyObject_Repr(rowItem);
-            const char* s = PyUnicode_AsUTF8(repr);
-            printf("adj val: %i, %s\n", i, s);
-            Py_DECREF(repr);
-        }
-        Py_DECREF(adjRowSeq);
-    }
-    Py_DECREF(adjSeq);
-
-    printf("timsteps: %i\n", timesteps);
-
     PyObject *seq = PySequence_Fast(intialConditions, "expected a sequence");
     icLen = PySequence_Size(intialConditions);
     
     // initialize activitiesOverTime
-    double** activitiesOverTime;
-    activitiesOverTime = malloc(timesteps * sizeof(double*));
+    double** activitiesOverTime = malloc(timesteps * sizeof(double*));
+    memset(activitiesOverTime, 0.0, timesteps * sizeof(double*));
     for (int i = 0; i < timesteps; i++) {
         activitiesOverTime[i] = malloc(icLen * sizeof(double));
+        memset(activitiesOverTime[i], 0.0, icLen * sizeof(double));
     }
 
     for (unsigned int i = 0; i < icLen; i++) {
         PyObject *item = PyList_GetItem(seq, i);
-        activitiesOverTime[0][i] = PyFloat_AsDouble(item);
+        if (PyNumber_Check(item)) {
+            PyObject* pyFloat = PyNumber_Float(item);    
+            if (!pyFloat) {
+                PyErr_SetString(PyExc_RuntimeError, "could not convert initial condition value to a double");
+                return 0;
+            }
+            activitiesOverTime[0][i] = PyFloat_AsDouble(pyFloat);
+        } else {
+            PyErr_SetString(PyExc_RuntimeError, "initial conditions must contain only numbers");
+            return 0;
+        }
     }
     Py_DECREF(seq);
 
-    for (unsigned int i = 0; i < icLen; i++) {
-        printf("aot ic: %i, %f\n", i, activitiesOverTime[0][i]);
+    PyObject *adjSeq = PySequence_Fast(adjacencyMatrix, "expected a sequence");
+    adjLen = PySequence_Size(adjacencyMatrix);
+    numCells = PySequence_Size(PyList_GetItem(adjSeq, 0));
+    // build a map of cell index -> list of cell indices that point to it
+    //  - the array index will act as the key (i.e. the map will be just an array; 
+    //    e.g. the entry at the 0th position is the value for the first cell)
+    //  - each entry in the array is an IntList, of potentially any length
+    //  - each int in the IntList is the index of a cell that points to the cell given by the array index of the IntList
+    IntList* nonZeroIndexMap = malloc(numCells * sizeof(IntList));
+    for (unsigned int c = 0; c < numCells; c++) {
+        nonZeroIndexMap[c] = newList();
+        for (unsigned int row = 0; row < adjLen; row++) {
+            PyObject *item = PyList_GetItem(adjSeq, row);
+            PyObject *adjRowSeq = PySequence_Fast(item, "expected a sequence");
+            PyObject *rowItem = PyList_GetItem(adjRowSeq, c);
+
+            double weight = 0.0;
+            if (PyNumber_Check(rowItem)) {
+                PyObject* pyFloat = PyNumber_Float(rowItem);    
+                if (!pyFloat) {
+                    PyErr_SetString(PyExc_RuntimeError, "could not convert weight value to a double");
+                    return 0;
+                }
+                weight = PyFloat_AsDouble(pyFloat);
+            } else {
+                PyErr_SetString(PyExc_RuntimeError, "weights must consist only of numbers");
+                return 0;
+            }
+
+            if (weight != 0.0) {
+                addInt(row, &nonZeroIndexMap[c]);
+            }
+            
+            Py_DECREF(adjRowSeq);
+        }
     }
 
+    // perform the the evolution...
+    for (unsigned int t = 1; t < timesteps; t++) {
+        double* lastActivities = activitiesOverTime[t - 1];
+
+        for (unsigned int c = 0; c < numCells; c++) {
+            PyObject *activities = getActivities(&nonZeroIndexMap[c], lastActivities);
+            PyObject *cellIndices = getCellIndices(&nonZeroIndexMap[c]);
+            PyObject *weights = getWeights(&nonZeroIndexMap[c], adjSeq, c);
+            double lastActivity = lastActivities[c];
+
+            // build the Neighbourhood
+            PyObject *neighbourhoodDef = getNeighbourhood();
+            PyObject *neighbourhood = PyObject_CallFunction(neighbourhoodDef, "OOOd", activities, cellIndices, weights, lastActivity);
+            if (!neighbourhood) {
+                PyErr_SetString(PyExc_RuntimeError, "could not create Neighbourhood");
+                return 0;
+            }
+
+            // call the activity_rule...
+            PyObject *activityRuleArgs = PyTuple_New(3);
+            PyTuple_SetItem(activityRuleArgs, 0, Py_BuildValue("O", neighbourhood));
+            PyTuple_SetItem(activityRuleArgs, 1, Py_BuildValue("i", c));
+            PyTuple_SetItem(activityRuleArgs, 2, Py_BuildValue("i", t));
+            PyObject *rv = PyObject_CallObject(activityRule, activityRuleArgs);
+            // rv's type can be obtained with: PyTypeObject* type = rv->ob_type; const char* p = type->tp_name;
+            
+            if (!rv) {
+                PyErr_SetString(PyExc_RuntimeError, "error calling activity_rule");
+                return 0;
+            }
+
+            if (PyNumber_Check(rv)) {
+                PyObject* pyFloat = PyNumber_Float(rv);    
+                if (!pyFloat) {
+                    PyErr_SetString(PyExc_RuntimeError, "could not convert activity_rule return type to a double");
+                    return 0;
+                }
+                activitiesOverTime[t][c] = PyFloat_AsDouble(pyFloat);
+            } else {
+                PyErr_SetString(PyExc_RuntimeError, "activity_rule did not return a number");
+                return 0;
+            }
+
+            // TODO call perturbation rule if exists
+
+            Py_DECREF(neighbourhoodDef);
+            Py_DECREF(activities);
+            Py_DECREF(cellIndices);
+            Py_DECREF(weights);
+            Py_DECREF(activityRuleArgs);
+            Py_CLEAR(rv);
+        }
+    }
+
+    Py_DECREF(adjSeq);
+
+    PyObject *finalActivities = buildActivities(activitiesOverTime, timesteps, numCells);
+
+    // free nonZeroIndexMap
+    for (unsigned int c = 0; c < numCells; c++) {
+        freeList(&nonZeroIndexMap[c]);
+    }
+    free(nonZeroIndexMap);
+    
     // free activitiesOverTime
     for (int i = 0; i < timesteps; i++) {
         free(activitiesOverTime[i]);
     }
     free(activitiesOverTime);
     
-    // build the Neighbourhood activities
-    PyObject *activities = PyList_New(3);
-    PyList_SetItem(activities, 0, Py_BuildValue("i", 10));
-    PyList_SetItem(activities, 1, Py_BuildValue("i", 20));
-    PyList_SetItem(activities, 2, Py_BuildValue("i", 30));
-
-    // build the Neighbourhood
-    PyObject *neighbourhoodDef = get_Neighbourhood();
-    PyObject *neighbourhood = PyObject_CallFunction(neighbourhoodDef, "Oiii", activities, 0, 0, 0);
-    if (!neighbourhood)
-        return 0;
-
-    // call the activity_rule...
-    PyObject *rv = PyObject_CallFunction(activityRule, "O", neighbourhood);
-
-    if (PyLong_Check(rv)) {
-        long retVal = PyLong_AsLong(rv);
-        printf("ret: %i\n", retVal);
-    }
-
-    // if calling it returned 0, must return 0 to propagate the exception
-    if (!rv) return 0;
-    // otherwise, discard the object returned and return None
-    Py_CLEAR(rv);
-        
-    Py_RETURN_NONE;    
+    PyObject *ret = PyTuple_New(1);
+    PyTuple_SetItem(ret, 0, finalActivities);
+    return ret;    
 }
  
 static PyMethodDef myMethods[] = {
