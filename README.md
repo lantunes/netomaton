@@ -15,7 +15,7 @@ Netomaton can be installed via pip:
 pip install netomaton
 ```
 
-Requirements for using this library are Python 3.5 or 3.6, numpy 1.15.4,
+Requirements for using this library are Python 3.6, numpy 1.15.4,
 matplotlib 3.0.2, and networkx 2.2.
 
 
@@ -118,3 +118,10 @@ example, regarding neural networks roughly as a series of matrix
 multiplications allows one to take advantage of software and hardware
 that can do those operations quickly. The focus of Netomaton, on the
 other hand, is not on practicality, but on flexibility.
+
+### Development
+
+Create a Conda environment from the provided environment YAML file:
+```
+$ conda env create -f netomaton_dev.yaml
+```

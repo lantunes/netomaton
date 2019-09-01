@@ -3,6 +3,8 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from .connectivity_rule import *
+import multiprocessing
+from multiprocessing import Pool
 
 
 class Neighbourhood(object):
@@ -41,7 +43,8 @@ class Neighbourhood(object):
         return self._perturbation
 
 
-def evolve(initial_conditions, adjacency_matrix, timesteps, activity_rule, connectivity_rule=None, perturbation=None):
+def evolve(initial_conditions, adjacency_matrix, timesteps, activity_rule, connectivity_rule=None, perturbation=None,
+           parallel=False, processes=None):
     """
     Evolves a network defined by the given adjacency matrix with the given initial conditions, for the specified
     number of timesteps, using the given activity and connectivity rules. Note that if A(t) is the adjacency matrix at
@@ -58,6 +61,13 @@ def evolve(initial_conditions, adjacency_matrix, timesteps, activity_rule, conne
                          three parameters: c, which represents the cell index, t, which represents the timestep, and a,
                          which represents the computed activity for the cell given by c. The function must return the
                          new activity for cell c at timestep t.
+    :param parallel: whether the evolution of the cells should be performed in parallel;
+                     Note: the activity_rule function must be safe to use concurrently, as it will
+                     be invoked concurrently from different processes when this flag is set to True (the same is true
+                     for the perturbation function); some built-in rules, such as ReversibleRule, are not supported
+                     when 'parallel' is True
+    :param processes: the number of processes to start for parallel execution, if 'parallel' is set to True;
+                      the number of CPUs will be used if 'processes' is not provided and 'parallel' is True
     :return: a tuple of the activities over time and the connectivities over time
     """
     if len(initial_conditions) != len(adjacency_matrix[0]):
@@ -66,7 +76,11 @@ def evolve(initial_conditions, adjacency_matrix, timesteps, activity_rule, conne
     if connectivity_rule is not None:
         return _evolve_both(initial_conditions, adjacency_matrix, timesteps, activity_rule, connectivity_rule, perturbation)
     else:
-        return _evolve_activities(initial_conditions, adjacency_matrix, timesteps, activity_rule, perturbation)
+        if parallel:
+            return _evolve_activities_parallel(initial_conditions, adjacency_matrix, timesteps, activity_rule,
+                                               perturbation, processes)
+        else:
+            return _evolve_activities(initial_conditions, adjacency_matrix, timesteps, activity_rule, perturbation)
 
 
 def _evolve_activities(initial_conditions, adjacency_matrix, timesteps, activity_rule, perturbation=None):
@@ -92,6 +106,61 @@ def _evolve_activities(initial_conditions, adjacency_matrix, timesteps, activity
             activities_over_time[t][c] = activity_rule(Neighbourhood(activities, nonzero_indices, weights, last_activities[c]), c, t)
             if perturbation is not None:
                 activities_over_time[t][c] = perturbation(c, activities_over_time[t][c], t)
+
+    return activities_over_time, [adjacency_matrix]*timesteps
+
+
+def _process_cells(cell_indices, t, last_activities):
+    global connectivities_transposed
+    global index_map
+    global fn_activity
+    global fn_perturb
+    results = {}
+    for c in cell_indices:
+        row = connectivities_transposed[c]
+        nonzero_indices = index_map[c]
+        activities = last_activities[nonzero_indices]
+        weights = row[nonzero_indices]
+        cell_activity = fn_activity(Neighbourhood(activities, nonzero_indices, weights, last_activities[c]), c, t)
+        if fn_perturb is not None:
+            cell_activity = fn_perturb(c, cell_activity, t)
+        results[c] = cell_activity
+    return results
+
+
+def _evolve_activities_parallel(initial_conditions, adjacency_matrix, timesteps, activity_rule, perturbation=None, processes=None):
+    global activities_over_time
+    activities_over_time = np.zeros((timesteps, len(initial_conditions)), dtype=np.dtype(type(initial_conditions[0])))
+    activities_over_time[0] = initial_conditions
+
+    num_cells = len(adjacency_matrix[0])
+    global connectivities_transposed
+    connectivities_transposed = np.array(adjacency_matrix).T
+
+    nonzeros = np.nonzero(connectivities_transposed)
+    global index_map
+    index_map = {i: [] for i in range(num_cells)}
+    [index_map[idx].append(nonzeros[1][i]) for i, idx in enumerate(nonzeros[0])]
+
+    global fn_activity
+    fn_activity = activity_rule
+    global fn_perturb
+    fn_perturb = perturbation
+
+    if processes is None:
+        processes = multiprocessing.cpu_count()
+    cell_index_chunks = np.array_split(np.array(range(num_cells)), processes)
+    pool = Pool(processes=processes)
+
+    for t in range(1, timesteps):
+        last_activities = activities_over_time[t - 1]
+
+        args = [(chunk, t, last_activities) for chunk in cell_index_chunks]
+        results = pool.starmap(_process_cells, args)
+
+        for r in results:
+            for c in r.keys():
+                activities_over_time[t][c] = r[c]
 
     return activities_over_time, [adjacency_matrix]*timesteps
 
