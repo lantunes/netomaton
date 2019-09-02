@@ -5,6 +5,7 @@ import matplotlib.animation as animation
 from .connectivity_rule import *
 import multiprocessing
 from multiprocessing import Pool
+import scipy.sparse as sparse
 
 
 class Neighbourhood(object):
@@ -89,21 +90,21 @@ def _evolve_activities(initial_conditions, adjacency_matrix, timesteps, activity
     activities_over_time[0] = initial_conditions
 
     num_cells = len(adjacency_matrix[0])
-    connectivities_transposed = np.array(adjacency_matrix).T
-
-    nonzeros = np.nonzero(connectivities_transposed)
-    index_map = {i: [] for i in range(num_cells)}
-    [index_map[idx].append(nonzeros[1][i]) for i, idx in enumerate(nonzeros[0])]
+    connectivities_sparse = sparse.csc_matrix(adjacency_matrix)
+    nonzero_index_map = {}
+    weight_map = {}
+    for c in range(num_cells):
+        sparse_col =  connectivities_sparse.getcol(c)
+        nonzero_index_map[c] = sparse_col.nonzero()[0].tolist()
+        weight_map[c] = sparse_col.data.tolist()
 
     for t in range(1, timesteps):
         last_activities = activities_over_time[t - 1]
 
         for c in range(num_cells):
-            # use the transpose of the adjacency matrix to get the cells that are inputs to a given cell defined by a row
-            row = connectivities_transposed[c]
-            nonzero_indices = index_map[c]
-            activities = last_activities[nonzero_indices]
-            weights = row[nonzero_indices]
+            nonzero_indices = nonzero_index_map[c]
+            activities = [last_activities[i] for i in nonzero_indices]
+            weights = weight_map[c]
             activities_over_time[t][c] = activity_rule(Neighbourhood(activities, nonzero_indices, weights, last_activities[c]), c, t)
             if perturbation is not None:
                 activities_over_time[t][c] = perturbation(c, activities_over_time[t][c], t)
@@ -112,16 +113,15 @@ def _evolve_activities(initial_conditions, adjacency_matrix, timesteps, activity
 
 
 def _process_cells(cell_indices, t, last_activities):
-    global connectivities_transposed
-    global index_map
+    global nonzero_index_map
+    global weight_map
     global fn_activity
     global fn_perturb
     results = {}
     for c in cell_indices:
-        row = connectivities_transposed[c]
-        nonzero_indices = index_map[c]
-        activities = last_activities[nonzero_indices]
-        weights = row[nonzero_indices]
+        nonzero_indices = nonzero_index_map[c]
+        activities = [last_activities[i] for i in nonzero_indices]
+        weights = weight_map[c]
         cell_activity = fn_activity(Neighbourhood(activities, nonzero_indices, weights, last_activities[c]), c, t)
         if fn_perturb is not None:
             cell_activity = fn_perturb(c, cell_activity, t)
@@ -135,13 +135,15 @@ def _evolve_activities_parallel(initial_conditions, adjacency_matrix, timesteps,
     activities_over_time[0] = initial_conditions
 
     num_cells = len(adjacency_matrix[0])
-    global connectivities_transposed
-    connectivities_transposed = np.array(adjacency_matrix).T
-
-    nonzeros = np.nonzero(connectivities_transposed)
-    global index_map
-    index_map = {i: [] for i in range(num_cells)}
-    [index_map[idx].append(nonzeros[1][i]) for i, idx in enumerate(nonzeros[0])]
+    connectivities_sparse = sparse.csc_matrix(adjacency_matrix)
+    global nonzero_index_map
+    nonzero_index_map = {}
+    global weight_map
+    weight_map = {}
+    for c in range(num_cells):
+        sparse_col = connectivities_sparse.getcol(c)
+        nonzero_index_map[c] = sparse_col.nonzero()[0].tolist()
+        weight_map[c] = sparse_col.data.tolist()
 
     global fn_activity
     fn_activity = activity_rule
