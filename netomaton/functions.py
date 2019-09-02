@@ -64,8 +64,9 @@ def evolve(initial_conditions, adjacency_matrix, timesteps, activity_rule, conne
     :param parallel: whether the evolution of the cells should be performed in parallel;
                      Note: the activity_rule function must be safe to use concurrently, as it will
                      be invoked concurrently from different processes when this flag is set to True (the same is true
-                     for the perturbation function); some built-in rules, such as ReversibleRule, are not supported
-                     when 'parallel' is True
+                     for the perturbation function); this generally means that the activity rule (and perturbation)
+                     function cannot keep any state; some built-in rules, such as ReversibleRule and AsynchronousRule,
+                     won't work correctly when 'parallel' is True
     :param processes: the number of processes to start for parallel execution, if 'parallel' is set to True;
                       the number of CPUs will be used if 'processes' is not provided and 'parallel' is True
     :return: a tuple of the activities over time and the connectivities over time
