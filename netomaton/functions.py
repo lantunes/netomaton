@@ -86,7 +86,9 @@ def evolve(initial_conditions, adjacency_matrix, timesteps, activity_rule, conne
 
 
 def _evolve_activities(initial_conditions, adjacency_matrix, timesteps, activity_rule, perturbation=None):
-    activities_over_time = np.zeros((timesteps, len(initial_conditions)), dtype=np.dtype(type(initial_conditions[0])))
+    dtype = type(initial_conditions[0])
+    activities_over_time = [[dtype(0) for _ in range(len(initial_conditions))] for _ in range(timesteps)]
+
     activities_over_time[0] = initial_conditions
 
     num_cells = len(adjacency_matrix[0])
@@ -130,7 +132,7 @@ def _process_cells(cell_indices, t, last_activities):
 
 
 def _evolve_activities_parallel(initial_conditions, adjacency_matrix, timesteps, activity_rule, perturbation=None, processes=None):
-    global activities_over_time
+    # creating the activities_over_time is faster using numpy when multiprocessing is used
     activities_over_time = np.zeros((timesteps, len(initial_conditions)), dtype=np.dtype(type(initial_conditions[0])))
     activities_over_time[0] = initial_conditions
 
@@ -159,11 +161,14 @@ def _evolve_activities_parallel(initial_conditions, adjacency_matrix, timesteps,
         last_activities = activities_over_time[t - 1]
 
         args = [(chunk, t, last_activities) for chunk in cell_index_chunks]
-        results = pool.starmap(_process_cells, args)
+        map_result = pool.starmap_async(_process_cells, args)
 
-        for r in results:
-            for c in r.keys():
-                activities_over_time[t][c] = r[c]
+        for results in map_result.get():
+            for c in results.keys():
+                activities_over_time[t][c] = results[c]
+
+    pool.close()
+    pool.join()
 
     return activities_over_time, [adjacency_matrix]*timesteps
 
