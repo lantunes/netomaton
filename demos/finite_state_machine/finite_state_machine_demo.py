@@ -28,8 +28,6 @@ if __name__ == "__main__":
             return states['locked']
         else:
             # COIN event
-            if c == states['locked']:
-                return states['unlocked']
             return states['unlocked']
 
     activities, _ = ntm.evolve(initial_conditions, adjacencies,
