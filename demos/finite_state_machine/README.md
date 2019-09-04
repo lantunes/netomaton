@@ -45,6 +45,6 @@ activities, _ = ntm.evolve(initial_conditions, adjacencies,
 ntm.plot_grid(activities)
 ```
 
-<img src="../../resources/fsm.png" width="50%"/>
+<img src="../../resources/fsm.png" width="35%"/>
 
 The full source code for this example can be found [here](finite_state_machine_demo.py).
