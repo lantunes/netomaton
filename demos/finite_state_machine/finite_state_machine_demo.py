@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     events = " cpcpp"
 
-    def activity_rule(n, c, t):
+    def fsm_rule(n, c, t):
         event = events[t]
         if event == transitions['PUSH']:
             return states['locked']
@@ -33,6 +33,6 @@ if __name__ == "__main__":
             return states['unlocked']
 
     activities, _ = ntm.evolve(initial_conditions, adjacencies,
-                               timesteps=len(events), activity_rule=activity_rule)
+                               timesteps=len(events), activity_rule=fsm_rule)
 
     ntm.plot_grid(activities)
