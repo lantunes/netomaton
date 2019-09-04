@@ -2,7 +2,8 @@
 
 This example illustrates the construction of a Finite State Machine.
 Although simplistic, it demonstrates the generality of the Network
-Automaton model.
+Automaton model. A Finite State Machine can be thought of as a Network
+Automaton with a single cell.
 
 The "Turnstile" FSM in this case contains two states: Locked (0) and Unlocked (1).
 It can undergo two kinds of transitions: Push ("p") and Coin ("c").
