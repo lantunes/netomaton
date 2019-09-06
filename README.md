@@ -70,7 +70,7 @@ activities, connectivities = ntm.evolve(initial_conditions, adjacencies, timeste
 ntm.plot_grid(activities)
 ```
 
-<img src="../../resources/rule30.png" width="40%"/>
+<img src="resources/rule30.png" width="40%"/>
 
 This repository contains examples of implementations of
 various kinds of collective computation models, all implemented using
