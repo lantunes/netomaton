@@ -133,3 +133,10 @@ Create a Conda environment from the provided environment YAML file:
 ```
 $ conda env create -f netomaton_dev.yaml
 ```
+
+**Testing**
+
+There are a number of unit tests for this project. To run the tests:
+```
+$ pytest tests
+```
