@@ -6,7 +6,7 @@ import numpy as np
 if __name__ == '__main__':
 
     # NKS page 443 - Rule 122R
-    adjacencies = ntm.AdjacencyMatrix.cellular_automaton(n=100)
+    adjacencies = ntm.network.cellular_automaton(n=100)
 
     # carefully chosen initial conditions
     previous_state = [1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1,

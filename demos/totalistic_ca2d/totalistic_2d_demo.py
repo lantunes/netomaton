@@ -3,7 +3,7 @@ import netomaton as ntm
 
 if __name__ == '__main__':
 
-    adjacencies = ntm.AdjacencyMatrix.cellular_automaton2d(rows=60, cols=60, r=1, neighbourhood='Moore')
+    adjacencies = ntm.network.cellular_automaton2d(rows=60, cols=60, r=1, neighbourhood='Moore')
 
     initial_conditions = ntm.init_simple2d(60, 60)
 

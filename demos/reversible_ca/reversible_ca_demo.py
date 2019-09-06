@@ -1,15 +1,15 @@
-from netomaton import *
-
+import netomaton as ntm
+import numpy as np
 
 if __name__ == '__main__':
 
-    adjacencies = AdjacencyMatrix.cellular_automaton(n=200)
+    adjacencies = ntm.network.cellular_automaton(n=200)
 
     initial_conditions = np.random.randint(0, 2, 200)
 
-    r = ReversibleRule(initial_conditions, lambda n, c, t: ActivityRule.nks_ca_rule(n, c, 90))
+    r = ntm.ReversibleRule(initial_conditions, lambda n, c, t: ntm.ActivityRule.nks_ca_rule(n, c, 90))
 
-    activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=100,
-                                        activity_rule=r.activity_rule)
+    activities, connectivities = ntm.evolve(initial_conditions, adjacencies, timesteps=100,
+                                            activity_rule=r.activity_rule)
 
-    plot_grid(activities)
+    ntm.plot_grid(activities)

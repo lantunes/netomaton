@@ -4,7 +4,7 @@ import numpy as np
 
 if __name__ == '__main__':
 
-    adjacencies = ntm.AdjacencyMatrix.cellular_automaton(n=200)
+    adjacencies = ntm.network.cellular_automaton(n=200)
     initial_conditions = [0] * 100 + [1] + [0] * 99
 
     def perturb(c, a, t):

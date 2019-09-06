@@ -1,13 +1,13 @@
-from netomaton import *
+import netomaton as ntm
 
 
 if __name__ == '__main__':
 
-    adjacencies = AdjacencyMatrix.cellular_automaton(n=200)
+    adjacencies = ntm.network.cellular_automaton(n=200)
 
     initial_conditions = [0] * 100 + [1] + [0] * 99
 
-    activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=100,
-                                        activity_rule=lambda n, c, t: ActivityRule.nks_ca_rule(n, c, 30))
+    activities, connectivities = ntm.evolve(initial_conditions, adjacencies, timesteps=100,
+                                            activity_rule=lambda n, c, t: ntm.ActivityRule.nks_ca_rule(n, c, 30))
 
-    plot_grid(activities)
+    ntm.plot_grid(activities)

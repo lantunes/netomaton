@@ -1,6 +1,7 @@
-import unittest
 import os
-from netomaton import *
+import unittest
+
+import netomaton.network as AdjacencyMatrix
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 

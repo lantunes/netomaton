@@ -9,7 +9,7 @@ snippet demonstrates creating a 2D totalistic cellular automaton:
 ```python
 import netomaton as ntm
 
-adjacencies = ntm.AdjacencyMatrix.cellular_automaton2d(rows=60, cols=60, r=1, neighbourhood='Moore')
+adjacencies = ntm.network.cellular_automaton2d(rows=60, cols=60, r=1, neighbourhood='Moore')
 
 initial_conditions = ntm.init_simple2d(60, 60)
 

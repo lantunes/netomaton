@@ -10,7 +10,7 @@ import netomaton as ntm
 rule_table, actual_lambda, quiescent_state = ntm.random_rule_table(lambda_val=0.45, k=4, r=2,
                                                                    strong_quiescence=True, isotropic=True)
 
-adjacencies = ntm.AdjacencyMatrix.cellular_automaton(n=128, r=2)
+adjacencies = ntm.network.cellular_automaton(n=128, r=2)
 
 initial_conditions = ntm.init_random(128, k=4)
 
@@ -43,7 +43,7 @@ automaton. The following snippet demonstrates the calculation of the average cel
 ```python
 import netomaton as ntm
 
-adjacencies = ntm.AdjacencyMatrix.cellular_automaton(n=200)
+adjacencies = ntm.network.cellular_automaton(n=200)
 
 initial_conditions = ntm.init_random(200)
 
@@ -71,7 +71,7 @@ information:
 ```python
 import netomaton as ntm
 
-adjacencies = ntm.AdjacencyMatrix.cellular_automaton(n=200)
+adjacencies = ntm.network.cellular_automaton(n=200)
 
 initial_conditions = ntm.init_random(200)
 

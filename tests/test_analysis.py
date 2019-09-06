@@ -1,5 +1,5 @@
-from .rule_test import *
 import netomaton as ntm
+from .rule_test import *
 
 
 class TestAnalysis(RuleTest):

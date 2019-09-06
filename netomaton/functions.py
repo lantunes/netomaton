@@ -106,9 +106,7 @@ def _evolve_activities(initial_conditions, adjacency_matrix, activity_rule, time
     if input is not None:
         timesteps = len(input) + 1
 
-    dtype = type(initial_conditions[0])
-    activities_over_time = [[dtype(0) for _ in range(len(initial_conditions))] for _ in range(timesteps)]
-
+    activities_over_time = np.zeros((timesteps, len(initial_conditions)), dtype=np.dtype(type(initial_conditions[0])))
     activities_over_time[0] = initial_conditions
 
     num_cells = len(adjacency_matrix[0])
@@ -159,7 +157,6 @@ def _evolve_activities_parallel(initial_conditions, adjacency_matrix, activity_r
     if input is not None:
         timesteps = len(input) + 1
 
-    # creating the activities_over_time is faster using numpy when multiprocessing is used
     activities_over_time = np.zeros((timesteps, len(initial_conditions)), dtype=np.dtype(type(initial_conditions[0])))
     activities_over_time[0] = initial_conditions
 

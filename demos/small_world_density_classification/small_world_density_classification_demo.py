@@ -1,4 +1,4 @@
-from netomaton import *
+import netomaton as ntm
 import numpy as np
 
 
@@ -11,13 +11,13 @@ if __name__ == '__main__':
     running on a ring lattice." The code below attempts to reproduce the experiment they are referring to.
     """
 
-    adjacencies = AdjacencyMatrix.watts_strogatz_graph(n=149, k=8, p=0.5)
+    adjacencies = ntm.network.watts_strogatz_graph(n=149, k=8, p=0.5)
 
     initial_conditions = np.random.randint(0, 2, 149)
 
     print("density of 1s: %s" % (np.count_nonzero(initial_conditions) / 149))
 
-    activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=149,
-                                        activity_rule=lambda n, c, t: ActivityRule.majority_rule(n))
+    activities, connectivities = ntm.evolve(initial_conditions, adjacencies, timesteps=149,
+                                            activity_rule=lambda n, c, t: ntm.ActivityRule.majority_rule(n))
 
-    plot_grid(activities)
+    ntm.plot_grid(activities)

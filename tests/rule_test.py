@@ -1,6 +1,7 @@
-import unittest
-import numpy as np
 import os
+import unittest
+
+import numpy as np
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 

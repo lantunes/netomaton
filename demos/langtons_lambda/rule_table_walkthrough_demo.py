@@ -8,7 +8,7 @@ if __name__ == '__main__':
     ca_list = []
     titles = []
     for i in range(0, 3):
-        adjacencies = ntm.AdjacencyMatrix.cellular_automaton(n=128, r=2)
+        adjacencies = ntm.network.cellular_automaton(n=128, r=2)
 
         initial_conditions = ntm.init_random(128, k=4)
 

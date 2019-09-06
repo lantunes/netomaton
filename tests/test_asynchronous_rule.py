@@ -1,5 +1,6 @@
+import netomaton.network as AdjacencyMatrix
+from netomaton import AsynchronousRule, ActivityRule, evolve
 from .rule_test import *
-from netomaton import *
 
 
 class TestAsynchronousRule(RuleTest):

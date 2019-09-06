@@ -15,7 +15,7 @@ Consider the cellular automaton Rule 30 below, which is perturbed at
 every timestep such that cell with index 100 is changed randomly to
 either a 0 or a 1:
 ```python
-adjacencies = ntm.AdjacencyMatrix.cellular_automaton(n=200)
+adjacencies = ntm.network.cellular_automaton(n=200)
 initial_conditions = [0] * 100 + [1] + [0] * 99
 
 def perturb(c, a, t):
@@ -39,21 +39,21 @@ rule function with yet another function. Such an approach offers more
 control over when the activity is determined, and what is done with it.
 Below is an example of a perturbed cellular automaton rule 90R:
 ```python
-adjacencies = AdjacencyMatrix.cellular_automaton(n=200)
+adjacencies = ntm.network.cellular_automaton(n=200)
 initial_conditions = np.random.randint(0, 2, 200)
 
 def perturbed_rule(n, c, t):
-    a = ActivityRule.nks_ca_rule(n, c, 90)
+    a = ntm.ActivityRule.nks_ca_rule(n, c, 90)
     if t % 10 == 0:
         return 1
     return a
 
-r = ReversibleRule(initial_conditions, perturbed_rule)
+r = ntm.ReversibleRule(initial_conditions, perturbed_rule)
 
-activities, _ = evolve(initial_conditions, adjacencies, timesteps=100,
-                                    activity_rule=r.activity_rule)
+activities, _ = ntm.evolve(initial_conditions, adjacencies, timesteps=100,
+                           activity_rule=r.activity_rule)
 
-plot_grid(activities)
+ntm.plot_grid(activities)
 ```
 <img src="../../resources/perturbation_reversible.png" width="50%"/>
 

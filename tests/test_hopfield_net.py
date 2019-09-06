@@ -1,6 +1,8 @@
 import unittest
 
-from netomaton import *
+import numpy as np
+
+from netomaton import HopfieldNet
 
 
 class TestHopfieldNet(unittest.TestCase):

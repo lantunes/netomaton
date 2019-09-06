@@ -1,9 +1,10 @@
-from netomaton import *
+import netomaton as ntm
+import numpy as np
 
 
 if __name__ == '__main__':
     # set r to 3, for a neighbourhood size of 7
-    adjacencies = AdjacencyMatrix.cellular_automaton(149, r=3)
+    adjacencies = ntm.network.cellular_automaton(149, r=3)
 
     initial_conditions = np.random.randint(0, 2, 149)
 
@@ -12,7 +13,7 @@ if __name__ == '__main__':
 
     print("density of 1s: %s" % (np.count_nonzero(initial_conditions) / 149))
 
-    activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=149,
-                                        activity_rule=lambda n, c, t: ActivityRule.binary_ca_rule(n, c, rule_number))
+    activities, connectivities = ntm.evolve(initial_conditions, adjacencies, timesteps=149,
+                                            activity_rule=lambda n, c, t: ntm.ActivityRule.binary_ca_rule(n, c, rule_number))
 
-    plot_grid(activities)
+    ntm.plot_grid(activities)

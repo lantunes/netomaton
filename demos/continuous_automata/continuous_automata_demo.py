@@ -1,10 +1,10 @@
 import math
-from netomaton import *
+import netomaton as ntm
 
 
 if __name__ == '__main__':
 
-    adjacencies = AdjacencyMatrix.cellular_automaton(n=200)
+    adjacencies = ntm.network.cellular_automaton(n=200)
 
     initial_conditions = [0.0]*100 + [1.0] + [0.0]*99
 
@@ -15,7 +15,7 @@ if __name__ == '__main__':
         frac, whole = math.modf(result)
         return frac
 
-    activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=150,
-                                        activity_rule=activity_rule)
+    activities, connectivities = ntm.evolve(initial_conditions, adjacencies, timesteps=150,
+                                            activity_rule=activity_rule)
 
-    plot_grid(activities)
+    ntm.plot_grid(activities)

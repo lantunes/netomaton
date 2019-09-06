@@ -1,7 +1,8 @@
 import unittest
 
-import netomaton as ntm
 import numpy as np
+
+import netomaton as ntm
 
 
 class TestFunctions(unittest.TestCase):

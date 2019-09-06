@@ -4,7 +4,7 @@ import numpy as np
 
 if __name__ == '__main__':
 
-    adjacencies = ntm.AdjacencyMatrix.cellular_automaton2d(rows=100, cols=100, r=1, neighbourhood='von Neumann')
+    adjacencies = ntm.network.cellular_automaton2d(rows=100, cols=100, r=1, neighbourhood='von Neumann')
 
     # create perturbation 'dots' in the center of uniform conditions
     initial_conditions = np.array([(1, 0) for i in range(100 * 100)], dtype='d, d').reshape(100, 100)

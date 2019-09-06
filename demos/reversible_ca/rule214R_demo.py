@@ -4,7 +4,7 @@ if __name__ == '__main__':
 
     # NKS page 437 - Rule 214R
 
-    adjacencies = ntm.AdjacencyMatrix.cellular_automaton(n=63)
+    adjacencies = ntm.network.cellular_automaton(n=63)
 
     # run the CA forward for 32 steps to get the initial condition for the next evolution
     initial_conditions = [0]*31 + [1] + [0]*31

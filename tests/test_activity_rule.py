@@ -1,5 +1,6 @@
+import netomaton.network as AdjacencyMatrix
+from netomaton import ActivityRule, Neighbourhood, evolve
 from .rule_test import *
-from netomaton import *
 
 
 class TestActivityRule(RuleTest):
