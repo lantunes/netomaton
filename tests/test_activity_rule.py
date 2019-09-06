@@ -1,5 +1,6 @@
 import netomaton.network as AdjacencyMatrix
-from netomaton import ActivityRule, Neighbourhood, evolve
+import netomaton.rules as ActivityRule
+from netomaton import Neighbourhood, evolve
 from .rule_test import *
 
 

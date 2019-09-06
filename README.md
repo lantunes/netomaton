@@ -65,7 +65,7 @@ adjacencies = ntm.network.cellular_automaton(n=200)
 initial_conditions = [0] * 100 + [1] + [0] * 99
 
 activities, _ = ntm.evolve(initial_conditions, adjacencies, timesteps=100,
-                           activity_rule=lambda n, c, t: ntm.ActivityRule.nks_ca_rule(n, c, 30))
+                           activity_rule=lambda n, c, t: ntm.rules.nks_ca_rule(n, c, 30))
 
 ntm.plot_grid(activities)
 ```
@@ -137,7 +137,7 @@ we imagine? These are the questions that this library aspires to help answer.
 
 Netomaton tries to make accessible any model of collective computation.
 In so doing, it adopts certain generalizations and abstractions that,
-while providing a common language for discussing disparate kinds of
+while providing a common language for discussing seemingly disparate kinds of
 models, incur a cost in terms of increased runtime complexity. The cost
 of being very general is a less than ideal runtime performance, as any
 given implementation is not optimized for a specific setting. For

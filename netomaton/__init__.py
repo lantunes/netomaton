@@ -1,5 +1,4 @@
 from .functions import *
-from .activity_rule import *
 from .connectivity_rule import *
 from .asynchronous_rule import *
 from .hopfield_net import *
@@ -9,3 +8,4 @@ from .rule_tables import *
 from .hexplot import *
 from .sandpile import *
 from . import network
+from . import rules

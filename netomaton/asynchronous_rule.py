@@ -1,5 +1,5 @@
 import numpy as np
-from .activity_rule import *
+from .rules import *
 
 
 class AsynchronousRule:

@@ -27,7 +27,7 @@ def perturb(c, a, t):
     return a
 
 activities, _ = ntm.evolve(initial_conditions, adjacencies, timesteps=100,
-                           activity_rule=lambda n, c, t: ntm.ActivityRule.nks_ca_rule(n, c, 30),
+                           activity_rule=lambda n, c, t: ntm.rules.nks_ca_rule(n, c, 30),
                            perturbation=perturb)
 
 ntm.plot_grid(activities)
@@ -43,7 +43,7 @@ adjacencies = ntm.network.cellular_automaton(n=200)
 initial_conditions = np.random.randint(0, 2, 200)
 
 def perturbed_rule(n, c, t):
-    a = ntm.ActivityRule.nks_ca_rule(n, c, 90)
+    a = ntm.rules.nks_ca_rule(n, c, 90)
     if t % 10 == 0:
         return 1
     return a

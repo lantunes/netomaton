@@ -9,7 +9,7 @@ if __name__ == '__main__':
     #   http://www.wolframscience.com/nks/notes-9-10--sequential-cellular-automata/
     initial_conditions =[0]*10 + [1] + [0]*10
 
-    r = ntm.AsynchronousRule(activity_rule=lambda n, c, t: ntm.ActivityRule.nks_ca_rule(n, c, 60),
+    r = ntm.AsynchronousRule(activity_rule=lambda n, c, t: ntm.rules.nks_ca_rule(n, c, 60),
                              update_order=range(1, 20))
 
     activities, connectivities = ntm.evolve(initial_conditions, adjacencies, timesteps=19*20,

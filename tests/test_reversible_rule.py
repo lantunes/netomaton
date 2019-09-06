@@ -1,5 +1,6 @@
 import netomaton.network as AdjacencyMatrix
-from netomaton import ReversibleRule, ActivityRule, evolve
+import netomaton.rules as ActivityRule
+from netomaton import ReversibleRule, evolve
 from .rule_test import *
 
 
