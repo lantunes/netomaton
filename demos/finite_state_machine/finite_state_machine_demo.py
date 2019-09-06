@@ -18,19 +18,19 @@ if __name__ == "__main__":
     adjacencies = [[1]]
 
     # the FSM starts off in the Locked state
-    initial_conditions = [0]
+    initial_conditions = [states['locked']]
 
-    events = " cpcpp"
+    events = "cpcpp"
 
-    def fsm_rule(n, c, t):
-        event = events[t]
+    def fsm_rule(n, c, event):
         if event == transitions['PUSH']:
             return states['locked']
         else:
             # COIN event
             return states['unlocked']
 
-    activities, _ = ntm.evolve(initial_conditions, adjacencies,
-                               timesteps=len(events), activity_rule=fsm_rule)
+    activities, _ = ntm.evolve(initial_conditions, adjacencies, input=events, activity_rule=fsm_rule)
+
+    print("final state: %s" % activities[-1][0])
 
     ntm.plot_grid(activities)

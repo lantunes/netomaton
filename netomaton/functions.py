@@ -44,8 +44,8 @@ class Neighbourhood(object):
         return self._perturbation
 
 
-def evolve(initial_conditions, adjacency_matrix, timesteps, activity_rule, connectivity_rule=None, perturbation=None,
-           parallel=False, processes=None):
+def evolve(initial_conditions, adjacency_matrix, activity_rule, timesteps=None, input=None, connectivity_rule=None,
+           perturbation=None, parallel=False, processes=None):
     """
     Evolves a network defined by the given adjacency matrix with the given initial conditions, for the specified
     number of timesteps, using the given activity and connectivity rules. Note that if A(t) is the adjacency matrix at
@@ -54,9 +54,23 @@ def evolve(initial_conditions, adjacency_matrix, timesteps, activity_rule, conne
     A(t+1) = F(A(t), S(t))
     S(t+1) = G(A(t), S(t))
     :param initial_conditions: the initial activities of the network
-    :param adjacency_matrix: the adjacency matrix defining the network
-    :param timesteps: the number of steps in the evolution of the network
+    :param adjacency_matrix: the adjacency matrix defining the network topology
     :param activity_rule: the rule that will determine the activity of a cell in the network
+    :param timesteps: the number of steps in the evolution of the network; Note that the initial state, specified by the
+                      initial_conditions, is considered the result of a timestep, so that the activity_rule is invoked
+                      t - 1 times; for example, if timesteps is 6, then the initial state is considered the result of
+                      the first timestep (t=0), and the activity_rule will be invoked five times; the activity_rule
+                      (and any perturbation) will receive the current timestep number each time it is invoked;
+                      specifying the timesteps implies an automaton that evolves on its own, in the absence of any
+                      external driving signal
+    :param input: a list representing the input to the network at a particular timestep; each item in the list
+                  contains the input for each cell in the network for a particular timestep; the activity_rule (and any
+                  perturbation) will receive the current input value for a given cell instead of the current timestep
+                  number itself, when the input parameter is provided; either the input or timesteps parameter must be
+                  provided, but not both; if the input parameter is provided, it will override the timesteps parameter,
+                  and the timesteps parameter will have no effect; the first item in the input list is given to the
+                  network at t=1, the second at t=2, etc. (i.e. no input is specified for the initial state);
+                  specifying the input implies an automaton whose evolution is driven by an external signal
     :param connectivity_rule: the rule that will determine the connectivity of the network
     :param perturbation: a function that defines a perturbation applied as the system evolves; the function accepts
                          three parameters: c, which represents the cell index, t, which represents the timestep, and a,
@@ -75,17 +89,23 @@ def evolve(initial_conditions, adjacency_matrix, timesteps, activity_rule, conne
     if len(initial_conditions) != len(adjacency_matrix[0]):
         raise Exception("the length of the initial conditions list does not match the given adjacency matrix")
 
+    if timesteps is None and input is None:
+        raise Exception("either the timesteps or input must be provided")
+
     if connectivity_rule is not None:
-        return _evolve_both(initial_conditions, adjacency_matrix, timesteps, activity_rule, connectivity_rule, perturbation)
+        return _evolve_both(initial_conditions, adjacency_matrix, activity_rule, timesteps, input, connectivity_rule, perturbation)
     else:
         if parallel:
-            return _evolve_activities_parallel(initial_conditions, adjacency_matrix, timesteps, activity_rule,
+            return _evolve_activities_parallel(initial_conditions, adjacency_matrix, activity_rule, timesteps, input,
                                                perturbation, processes)
         else:
-            return _evolve_activities(initial_conditions, adjacency_matrix, timesteps, activity_rule, perturbation)
+            return _evolve_activities(initial_conditions, adjacency_matrix, activity_rule, timesteps, input, perturbation)
 
 
-def _evolve_activities(initial_conditions, adjacency_matrix, timesteps, activity_rule, perturbation=None):
+def _evolve_activities(initial_conditions, adjacency_matrix, activity_rule, timesteps, input, perturbation):
+    if input is not None:
+        timesteps = len(input) + 1
+
     dtype = type(initial_conditions[0])
     activities_over_time = [[dtype(0) for _ in range(len(initial_conditions))] for _ in range(timesteps)]
 
@@ -107,9 +127,10 @@ def _evolve_activities(initial_conditions, adjacency_matrix, timesteps, activity
             nonzero_indices = nonzero_index_map[c]
             activities = [last_activities[i] for i in nonzero_indices]
             weights = weight_map[c]
-            activities_over_time[t][c] = activity_rule(Neighbourhood(activities, nonzero_indices, weights, last_activities[c]), c, t)
+            cell_in = t if input is None else input[t-1][c]
+            activities_over_time[t][c] = activity_rule(Neighbourhood(activities, nonzero_indices, weights, last_activities[c]), c, cell_in)
             if perturbation is not None:
-                activities_over_time[t][c] = perturbation(c, activities_over_time[t][c], t)
+                activities_over_time[t][c] = perturbation(c, activities_over_time[t][c], cell_in)
 
     return activities_over_time, [adjacency_matrix]*timesteps
 
@@ -119,19 +140,25 @@ def _process_cells(cell_indices, t, last_activities):
     global weight_map
     global fn_activity
     global fn_perturb
+    global net_inputs
     results = {}
     for c in cell_indices:
         nonzero_indices = nonzero_index_map[c]
         activities = [last_activities[i] for i in nonzero_indices]
         weights = weight_map[c]
-        cell_activity = fn_activity(Neighbourhood(activities, nonzero_indices, weights, last_activities[c]), c, t)
+        cell_in = t if net_inputs is None else net_inputs[t-1][c]
+        cell_activity = fn_activity(Neighbourhood(activities, nonzero_indices, weights, last_activities[c]), c, cell_in)
         if fn_perturb is not None:
-            cell_activity = fn_perturb(c, cell_activity, t)
+            cell_activity = fn_perturb(c, cell_activity, cell_in)
         results[c] = cell_activity
     return results
 
 
-def _evolve_activities_parallel(initial_conditions, adjacency_matrix, timesteps, activity_rule, perturbation=None, processes=None):
+def _evolve_activities_parallel(initial_conditions, adjacency_matrix, activity_rule, timesteps, input,
+                                perturbation, processes):
+    if input is not None:
+        timesteps = len(input) + 1
+
     # creating the activities_over_time is faster using numpy when multiprocessing is used
     activities_over_time = np.zeros((timesteps, len(initial_conditions)), dtype=np.dtype(type(initial_conditions[0])))
     activities_over_time[0] = initial_conditions
@@ -151,6 +178,9 @@ def _evolve_activities_parallel(initial_conditions, adjacency_matrix, timesteps,
     fn_activity = activity_rule
     global fn_perturb
     fn_perturb = perturbation
+
+    global net_inputs
+    net_inputs = input
 
     if processes is None:
         processes = multiprocessing.cpu_count()
@@ -173,7 +203,11 @@ def _evolve_activities_parallel(initial_conditions, adjacency_matrix, timesteps,
     return activities_over_time, [adjacency_matrix]*timesteps
 
 
-def _evolve_both(initial_conditions, adjacency_matrix, timesteps, activity_rule, connectivity_rule=ConnectivityRule.noop, perturbation=None):
+def _evolve_both(initial_conditions, adjacency_matrix, activity_rule, timesteps, input,
+                 connectivity_rule=ConnectivityRule.noop, perturbation=None):
+    if input is not None:
+        timesteps = len(input) + 1
+
     activities_over_time = np.zeros((timesteps, len(initial_conditions)), dtype=np.dtype(type(initial_conditions[0])))
     activities_over_time[0] = initial_conditions
 
@@ -198,9 +232,10 @@ def _evolve_both(initial_conditions, adjacency_matrix, timesteps, activity_rule,
             nonzero_indices = index_map[c]
             activities = last_activities[nonzero_indices]
             weights = row[nonzero_indices]
-            activities_over_time[t][c] = activity_rule(Neighbourhood(activities, nonzero_indices, weights, last_activities[c]), c, t)
+            cell_in = t if input is None else input[t-1][c]
+            activities_over_time[t][c] = activity_rule(Neighbourhood(activities, nonzero_indices, weights, last_activities[c]), c, cell_in)
             if perturbation is not None:
-                activities_over_time[t][c] = perturbation(c, activities_over_time[t][c], t)
+                activities_over_time[t][c] = perturbation(c, activities_over_time[t][c], cell_in)
 
         connectivities = connectivity_rule(last_connectivities, last_activities, t)
         connectivities_over_time[t] = connectivities
