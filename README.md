@@ -57,7 +57,7 @@ Here's an example of the Elementary Cellular Automaton Rule 30 (as
 described by Stephen Wolfram in his book
 [_A New Kind of Science_](https://www.wolframscience.com/nks/)),
 implemented with the Netomaton library:
-```
+```python
 import netomaton as ntm
 
 adjacencies = ntm.AdjacencyMatrix.cellular_automaton(n=200)
