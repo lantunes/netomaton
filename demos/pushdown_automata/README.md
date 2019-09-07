@@ -15,7 +15,7 @@ final/accepting state). The input alphabet consists of the symbols _a_
 and _b_. The stack alphabet consists of the symbols _a_, _b_, and _Z_,
 where _Z_ represents the bottom of the stack.
 
-<img src="../../resources/fsm.png" width="35%"/>
+<img src="../../resources/pda.png" width="35%"/>
 
 In the diagram above, the first character in the transition represents
 the input, while the "X / Y" notation means: replace the symbol "X" on
