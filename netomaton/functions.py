@@ -294,12 +294,26 @@ def init_simple2d(rows, cols, val=1, dtype=np.int):
     return np.array(x).reshape(rows * cols).tolist()
 
 
-def plot_grid(activities, shape=None, slice=-1, title='', colormap='Greys', vmin=None, vmax=None):
+def plot_grid(activities, shape=None, slice=-1, title='', colormap='Greys', vmin=None, vmax=None,
+              cell_annotations=None, show_grid=False):
     if shape is not None:
         activities = np.array(activities).reshape((len(activities), shape[0], shape[1]))[slice]
     cmap = plt.get_cmap(colormap)
     plt.title(title)
     plt.imshow(activities, interpolation='none', cmap=cmap, vmin=vmin, vmax=vmax)
+
+    if cell_annotations is not None:
+        for i in range(len(cell_annotations)):
+            for j in range(len(cell_annotations[i])):
+                plt.text(j, i, cell_annotations[i][j], ha="center", va="center", color="grey",
+                         fontdict={'weight':'bold','size':6})
+
+    if show_grid:
+        plt.grid(which='major', axis='both', linestyle='-', color='grey', linewidth=0.5)
+        plt.xticks(np.arange(-.5, len(activities[0]), 1), "")
+        plt.yticks(np.arange(-.5, len(activities), 1), "")
+        plt.tick_params(axis='both', which='both', length=0)
+
     plt.show()
 
 
