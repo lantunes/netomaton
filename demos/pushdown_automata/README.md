@@ -9,13 +9,14 @@ Pushdown Automata are more powerful than Finite State Machines (though
 less powerful than Turing Machines). They differ from Finite State
 Machines by having access to a memory, in the form of a stack.
 
-In this example, the Pushdown Automaton (PDA) is defined by four states:
-_q0_ (the initial state), _q1_, _q2_, and _q3_ (the
+In this example, a Pushdown Automaton (PDA) is constructed for the
+language _L = {a<sup>n</sup>b<sup>n</sup> | n > 0}_. The PDA is defined
+by four states: _q0_ (the initial state), _q1_, _q2_, and _q3_ (the
 final/accepting state). The input alphabet consists of the symbols _a_
 and _b_. The stack alphabet consists of the symbols _a_, _b_, and _Z_,
 where _Z_ represents the bottom of the stack.
 
-<img src="../../resources/pda.png" width="35%"/>
+<img src="../../resources/pda.png" width="80%"/>
 
 In the diagram above, the first character in the transition represents
 the input, while the "X / Y" notation means: replace the symbol "X" on
