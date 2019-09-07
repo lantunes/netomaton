@@ -92,6 +92,8 @@ the Netomaton framework. Follow the link to learn more:
 
 * [Finite State Machines](demos/finite_state_machine/README.md)
 
+* [Pushdown Automata](demos/pushdown_automata/README.md)
+
 * [Langton's Lambda and Measures of Complexity](demos/langtons_lambda/README.md)
 
 * [2D Cellular Automata](demos/totalistic_ca2d/README.md)
