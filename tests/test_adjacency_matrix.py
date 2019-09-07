@@ -1,7 +1,7 @@
 import os
 import unittest
 
-import netomaton.network as AdjacencyMatrix
+import netomaton.network as adjacency
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -9,21 +9,21 @@ THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 class TestAdjacencyMatrix(unittest.TestCase):
 
     def test_n3_r0_ca(self):
-        matrix = AdjacencyMatrix.cellular_automaton(n=3, r=0)
+        matrix = adjacency.cellular_automaton(n=3, r=0)
         expected = [[1., 0., 0.],
                     [0., 1., 0.],
                     [0., 0., 1.]]
         self.assertEqual(expected, matrix)
 
     def test_n3_r1_ca(self):
-        matrix = AdjacencyMatrix.cellular_automaton(n=3)
+        matrix = adjacency.cellular_automaton(n=3)
         expected = [[1., 1., 1.],
                     [1., 1., 1.],
                     [1., 1., 1.]]
         self.assertEqual(expected, matrix)
 
     def test_n5_r1_ca(self):
-        matrix = AdjacencyMatrix.cellular_automaton(n=5)
+        matrix = adjacency.cellular_automaton(n=5)
         expected = [[1., 1., 0., 0., 1.],
                     [1., 1., 1., 0., 0.],
                     [0., 1., 1., 1., 0.],
@@ -32,7 +32,7 @@ class TestAdjacencyMatrix(unittest.TestCase):
         self.assertEqual(expected, matrix)
 
     def test_n5_r2_ca(self):
-        matrix = AdjacencyMatrix.cellular_automaton(n=5, r=2)
+        matrix = adjacency.cellular_automaton(n=5, r=2)
         expected = [[1., 1., 1., 1., 1.],
                     [1., 1., 1., 1., 1.],
                     [1., 1., 1., 1., 1.],
@@ -41,7 +41,7 @@ class TestAdjacencyMatrix(unittest.TestCase):
         self.assertEqual(expected, matrix)
 
     def test_n7_r2_ca(self):
-        matrix = AdjacencyMatrix.cellular_automaton(n=7, r=2)
+        matrix = adjacency.cellular_automaton(n=7, r=2)
         expected = [[1., 1., 1., 0., 0., 1., 1.],
                     [1., 1., 1., 1., 0., 0., 1.],
                     [1., 1., 1., 1., 1., 0., 0.],
@@ -52,7 +52,7 @@ class TestAdjacencyMatrix(unittest.TestCase):
         self.assertEqual(expected, matrix)
 
     def test_3x3_r0_vonNeumann_ca2d(self):
-        matrix = AdjacencyMatrix.cellular_automaton2d(rows=3, cols=3, r=0, neighbourhood='von Neumann')
+        matrix = adjacency.cellular_automaton2d(rows=3, cols=3, r=0, neighbourhood='von Neumann')
         expected = [[1., 0., 0., 0., 0., 0., 0., 0., 0.],
                     [0., 1., 0., 0., 0., 0., 0., 0., 0.],
                     [0., 0., 1., 0., 0., 0., 0., 0., 0.],
@@ -65,7 +65,7 @@ class TestAdjacencyMatrix(unittest.TestCase):
         self.assertEqual(expected, matrix)
 
     def test_3x3_r1_vonNeumann_ca2d(self):
-        matrix = AdjacencyMatrix.cellular_automaton2d(rows=3, cols=3, r=1, neighbourhood='von Neumann')
+        matrix = adjacency.cellular_automaton2d(rows=3, cols=3, r=1, neighbourhood='von Neumann')
         expected = [[1., 1., 1., 1., 0., 0., 1., 0., 0.],
                     [1., 1., 1., 0., 1., 0., 0., 1., 0.],
                     [1., 1., 1., 0., 0., 1., 0., 0., 1.],
@@ -78,7 +78,7 @@ class TestAdjacencyMatrix(unittest.TestCase):
         self.assertEqual(expected, matrix)
 
     def test_5x5_r2_vonNeumann_ca2d(self):
-        matrix = AdjacencyMatrix.cellular_automaton2d(rows=5, cols=5, r=2, neighbourhood='von Neumann')
+        matrix = adjacency.cellular_automaton2d(rows=5, cols=5, r=2, neighbourhood='von Neumann')
         expected = [[1., 1., 1., 1., 1., 1., 1., 0., 0., 1., 1., 0., 0., 0., 0., 1., 0., 0., 0., 0., 1., 1., 0., 0., 1.],
                     [1., 1., 1., 1., 1., 1., 1., 1., 0., 0., 0., 1., 0., 0., 0., 0., 1., 0., 0., 0., 1., 1., 1., 0., 0.],
                     [1., 1., 1., 1., 1., 0., 1., 1., 1., 0., 0., 0., 1., 0., 0., 0., 0., 1., 0., 0., 0., 1., 1., 1., 0.],
@@ -107,7 +107,7 @@ class TestAdjacencyMatrix(unittest.TestCase):
         self.assertEqual(expected, matrix)
 
     def test_3x3_r0_Moore_ca2d(self):
-        matrix = AdjacencyMatrix.cellular_automaton2d(rows=3, cols=3, r=0, neighbourhood='Moore')
+        matrix = adjacency.cellular_automaton2d(rows=3, cols=3, r=0, neighbourhood='Moore')
         expected = [[1., 0., 0., 0., 0., 0., 0., 0., 0.],
                     [0., 1., 0., 0., 0., 0., 0., 0., 0.],
                     [0., 0., 1., 0., 0., 0., 0., 0., 0.],
@@ -120,7 +120,7 @@ class TestAdjacencyMatrix(unittest.TestCase):
         self.assertEqual(expected, matrix)
 
     def test_3x3_r1_Moore_ca2d(self):
-        matrix = AdjacencyMatrix.cellular_automaton2d(rows=3, cols=3, r=1, neighbourhood='Moore')
+        matrix = adjacency.cellular_automaton2d(rows=3, cols=3, r=1, neighbourhood='Moore')
         expected = [[1., 1., 1., 1., 1., 1., 1., 1., 1.],
                     [1., 1., 1., 1., 1., 1., 1., 1., 1.],
                     [1., 1., 1., 1., 1., 1., 1., 1., 1.],
@@ -133,14 +133,14 @@ class TestAdjacencyMatrix(unittest.TestCase):
         self.assertEqual(expected, matrix)
 
     def test_7x7_r2_Moore_ca2d(self):
-        matrix = AdjacencyMatrix.cellular_automaton2d(rows=7, cols=7, r=2, neighbourhood='Moore')
+        matrix = adjacency.cellular_automaton2d(rows=7, cols=7, r=2, neighbourhood='Moore')
         with open(os.path.join(THIS_DIR, 'resources', 'adjacency_7x7_r2_Moore_ca2d.txt'), 'r') as content_file:
             content = content_file.read()
         expected = eval(content)
         self.assertEqual(expected, matrix)
 
     def test_4x3_r0_vonNeumann_ca2d(self):
-        matrix = AdjacencyMatrix.cellular_automaton2d(rows=4, cols=3, r=0, neighbourhood='von Neumann')
+        matrix = adjacency.cellular_automaton2d(rows=4, cols=3, r=0, neighbourhood='von Neumann')
         expected = [[1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
                     [0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
                     [0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
@@ -156,7 +156,7 @@ class TestAdjacencyMatrix(unittest.TestCase):
         self.assertEqual(expected, matrix)
 
     def test_4x3_r0_Moore_ca2d(self):
-        matrix = AdjacencyMatrix.cellular_automaton2d(rows=4, cols=3, r=0, neighbourhood='Moore')
+        matrix = adjacency.cellular_automaton2d(rows=4, cols=3, r=0, neighbourhood='Moore')
         expected = [[1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
                     [0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
                     [0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
@@ -172,7 +172,7 @@ class TestAdjacencyMatrix(unittest.TestCase):
         self.assertEqual(expected, matrix)
 
     def test_4x3_r1_vonNeumann_ca2d(self):
-        matrix = AdjacencyMatrix.cellular_automaton2d(rows=4, cols=3, r=1, neighbourhood='von Neumann')
+        matrix = adjacency.cellular_automaton2d(rows=4, cols=3, r=1, neighbourhood='von Neumann')
         expected = [[1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0],
                     [1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0],
                     [1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0],
@@ -188,7 +188,7 @@ class TestAdjacencyMatrix(unittest.TestCase):
         self.assertEqual(expected, matrix)
 
     def test_4x3_r1_Moore_ca2d(self):
-        matrix = AdjacencyMatrix.cellular_automaton2d(rows=4, cols=3, r=1, neighbourhood='Moore')
+        matrix = adjacency.cellular_automaton2d(rows=4, cols=3, r=1, neighbourhood='Moore')
         expected = [[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
                     [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
                     [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
@@ -204,14 +204,14 @@ class TestAdjacencyMatrix(unittest.TestCase):
         self.assertEqual(expected, matrix)
 
     def test_6x8_r2_Moore_ca2d(self):
-        matrix = AdjacencyMatrix.cellular_automaton2d(rows=6, cols=8, r=2, neighbourhood='Moore')
+        matrix = adjacency.cellular_automaton2d(rows=6, cols=8, r=2, neighbourhood='Moore')
         with open(os.path.join(THIS_DIR, 'resources', 'adjacency_6x8_r2_Moore_ca2d.txt'), 'r') as content_file:
             content = content_file.read()
         expected = eval(content)
         self.assertEqual(expected, matrix)
 
     def test_6x8_r2_vonNeumann_ca2d(self):
-        matrix = AdjacencyMatrix.cellular_automaton2d(rows=6, cols=8, r=2, neighbourhood='von Neumann')
+        matrix = adjacency.cellular_automaton2d(rows=6, cols=8, r=2, neighbourhood='von Neumann')
         with open(os.path.join(THIS_DIR, 'resources', 'adjacency_6x8_r2_vonNeumann_ca2d.txt'), 'r') as content_file:
             content = content_file.read()
         expected = eval(content)

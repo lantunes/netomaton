@@ -1,5 +1,5 @@
-import netomaton.network as AdjacencyMatrix
-import netomaton.rules as ActivityRule
+import netomaton.network as adjacency
+import netomaton.rules as rules
 from netomaton import ReversibleRule, evolve
 from .rule_test import *
 
@@ -15,8 +15,8 @@ class TestReversibleRule(RuleTest):
     def _evolve_reversible_ca(expected, rule_number):
         rows, size = expected.shape
         initial_conditions = np.array(expected[0]).flatten()
-        adjacencies = AdjacencyMatrix.cellular_automaton(n=size, r=1)
-        r = ReversibleRule(initial_conditions, lambda n, c, t: ActivityRule.nks_ca_rule(n, c, rule_number))
+        adjacencies = adjacency.cellular_automaton(n=size, r=1)
+        r = ReversibleRule(initial_conditions, lambda n, c, t: rules.nks_ca_rule(n, c, rule_number))
         activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=rows,
                                             activity_rule=r.activity_rule)
         return activities
