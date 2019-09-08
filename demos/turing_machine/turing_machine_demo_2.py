@@ -5,8 +5,8 @@ from netomaton import TuringMachine, TapeCentricTuringMachine
 if __name__ == "__main__":
 
     # A Turing machine with two possible states for the head, and two possible states for each cell in the tape.
-    # A reproduction of the Turing machine given on page 79 (figure (b)) of NKS
-    #   (https://www.wolframscience.com/nks/p79--turing-machines/)
+    # A reproduction of the Turing machine given on page 79 (figure (b)) of Wolfram's New Kind of Science.
+    # See: https://www.wolframscience.com/nks/p79--turing-machines/
 
     HEAD = {"up": 1, "down": 2}
     CELL = {"on": 1, "off": 0}
