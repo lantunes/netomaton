@@ -62,11 +62,10 @@ initial_conditions = [0] * 21
 activities, _ = ntm.evolve(initial_conditions, tm.adjacencies,
                            activity_rule=tm.activity_rule, timesteps=61)
 
-ntm.plot_grid(activities, cell_annotations=tm.head_activities(activities),
-              show_grid=True)
+ntm.plot_grid(activities, cell_annotations=tm.head_activities(activities), show_grid=True)
 ```
 
-<img src="../../resources/turing_2.png" width="50%"/>
+<img src="../../resources/turing_2.png" width="23%"/>
 
 The `TapeCentricTuringMachine` is based on approach **2**, described
 above. The complete source code for this example is [here](turing_machine_demo_2.py).
@@ -115,11 +114,10 @@ initial_conditions = [CELL[t] for t in tape]
 activities, _ = ntm.evolve(initial_conditions, tm.adjacencies,
                            activity_rule=tm.activity_rule, timesteps=58)
 
-ntm.plot_grid(activities, cell_annotations=tm.head_activities(activities),
-              show_grid=True)
+ntm.plot_grid(activities, cell_annotations=tm.head_activities(activities), show_grid=True)
 ```
 
-<img src="../../resources/turing_2c.png" width="50%"/>
+<img src="../../resources/turing_2c.png" width="83%"/>
 
 The plot on the right is the compressed output of running the machine
 for 5000 steps, and it clearly demonstrates that Rule 110 is emulated.
@@ -160,23 +158,22 @@ activities, _ = ntm.evolve(tm.initial_conditions, tm.adjacencies,
 
 tape_history, head_activities = tm.activities_for_plotting(activities)
 
-ntm.plot_grid(tape_history, cell_annotations=head_activities,
-              show_grid=True)
+ntm.plot_grid(tape_history, cell_annotations=head_activities, show_grid=True)
 ```
 
-<img src="../../resources/turing_1b.png" width="50%"/>
+<img src="../../resources/turing_1b.png" width="22%"/>
 
 Note that the `evolve` function is given the `input` parameter, which in
 this case is a function, which returns the value the head is currently
 reading, and `None` when (and if) the machine reaches the terminating
-state of 'q6'. The full source code for this example is [here](turing_machine_demo_1b).
+state of 'q6'. The full source code for this example is [here](turing_machine_demo_1b.py).
 
 Both the `TapeCentricTuringMachine` and `HeadCentricTuringMachine` will
 produce the same results. However, the `HeadCentricTuringMachine` may
 conceptually be more appropriate when thinking about how a Turing
-machine can be described as Network Automaton. The tape is, after all, a
-passive element that serves both as input and memory, while the head is
-where the system's definitive state is stored. If one were to imagine
+machine can be described as a Network Automaton. The tape is, after all,
+a passive element that serves both as input and memory, while the head
+is where the system's definitive state is stored. If one were to imagine
 adding more cells to this Network Automaton, with approach **1**, one is
 simply adding more cells to the tape, but with approach **2**, one is
 adding more heads, each with their own tape, which seems to be a much
