@@ -8,6 +8,7 @@ from .rule_tables import *
 from .hexplot import *
 from .sandpile import *
 from .turing_machine import *
+from .utils import *
 
 from . import network
 from . import rules

@@ -1,11 +1,11 @@
-import numpy as np
-import networkx as nx
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-from .connectivity_rule import *
+import collections
 import multiprocessing
 from multiprocessing import Pool
+
+import numpy as np
 import scipy.sparse as sparse
+
+from .connectivity_rule import *
 
 
 class Neighbourhood(object):
@@ -63,14 +63,16 @@ def evolve(initial_conditions, adjacency_matrix, activity_rule, timesteps=None, 
                       (and any perturbation) will receive the current timestep number each time it is invoked;
                       specifying the timesteps implies an automaton that evolves on its own, in the absence of any
                       external driving signal
-    :param input: a list representing the input to the network at a particular timestep; each item in the list
-                  contains the input for each cell in the network for a particular timestep; the activity_rule (and any
-                  perturbation) will receive the current input value for a given cell instead of the current timestep
-                  number itself, when the input parameter is provided; either the input or timesteps parameter must be
-                  provided, but not both; if the input parameter is provided, it will override the timesteps parameter,
-                  and the timesteps parameter will have no effect; the first item in the input list is given to the
-                  network at t=1, the second at t=2, etc. (i.e. no input is specified for the initial state);
-                  specifying the input implies an automaton whose evolution is driven by an external signal
+    :param input: a list representing the inputs to the network at each timestep, or a function that accepts the
+                  current timestep number, returns the input for that timestep, or None to signal the end of the
+                  evolution; if a list is provided, each item in the list contains the input for each cell in the
+                  network for a particular timestep; the activity_rule (and any perturbation) will receive the current
+                  input value for a given cell instead of the current timestep number itself, when the input parameter
+                  is provided; either the input or timesteps parameter must be provided, but not both; if the input
+                  parameter is provided, it will override the timesteps parameter, and the timesteps parameter will
+                  have no effect; the first item in the input list is given to the network at t=1, the second at t=2,
+                  etc. (i.e. no input is specified for the initial state); specifying the input implies an automaton
+                  whose evolution is driven by an external signal
     :param connectivity_rule: the rule that will determine the connectivity of the network
     :param perturbation: a function that defines a perturbation applied as the system evolves; the function accepts
                          three parameters: c, which represents the cell index, t, which represents the timestep, and a,
@@ -89,24 +91,23 @@ def evolve(initial_conditions, adjacency_matrix, activity_rule, timesteps=None, 
     if len(initial_conditions) != len(adjacency_matrix[0]):
         raise Exception("the length of the initial conditions list does not match the given adjacency matrix")
 
-    if timesteps is None and input is None:
-        raise Exception("either the timesteps or input must be provided")
+    input_fn, steps = _get_input_function(timesteps, input)
 
     if connectivity_rule is not None:
-        return _evolve_both(initial_conditions, adjacency_matrix, activity_rule, timesteps, input, connectivity_rule, perturbation)
+        return _evolve_both(initial_conditions, adjacency_matrix, activity_rule, steps, input_fn, connectivity_rule,
+                            perturbation)
     else:
         if parallel:
-            return _evolve_activities_parallel(initial_conditions, adjacency_matrix, activity_rule, timesteps, input,
+            return _evolve_activities_parallel(initial_conditions, adjacency_matrix, activity_rule, steps, input_fn,
                                                perturbation, processes)
         else:
-            return _evolve_activities(initial_conditions, adjacency_matrix, activity_rule, timesteps, input, perturbation)
+            return _evolve_activities(initial_conditions, adjacency_matrix, activity_rule, steps, input_fn,
+                                      perturbation)
 
 
-def _evolve_activities(initial_conditions, adjacency_matrix, activity_rule, timesteps, input, perturbation):
-    if input is not None:
-        timesteps = len(input) + 1
+def _evolve_activities(initial_conditions, adjacency_matrix, activity_rule, steps, input_fn, perturbation):
 
-    activities_over_time = np.zeros((timesteps, len(initial_conditions)), dtype=np.dtype(type(initial_conditions[0])))
+    activities_over_time = np.zeros((steps, len(initial_conditions)), dtype=np.dtype(type(initial_conditions[0])))
     activities_over_time[0] = initial_conditions
 
     num_cells = len(adjacency_matrix[0])
@@ -118,33 +119,88 @@ def _evolve_activities(initial_conditions, adjacency_matrix, activity_rule, time
         nonzero_index_map[c] = sparse_col.nonzero()[0].tolist()
         weight_map[c] = sparse_col.data.tolist()
 
-    for t in range(1, timesteps):
+    t = 1
+    while True:
+        inp = input_fn(t)
+        if inp is None:
+            break
         last_activities = activities_over_time[t - 1]
+
+        if t == len(activities_over_time):
+            activities_over_time = _extend_activities(activities_over_time, initial_conditions)
 
         for c in range(num_cells):
             nonzero_indices = nonzero_index_map[c]
             activities = [last_activities[i] for i in nonzero_indices]
             weights = weight_map[c]
-            cell_in = t if input is None else input[t-1][c]
+            cell_in = inp[c] if _is_indexable(inp) else inp
             activities_over_time[t][c] = activity_rule(Neighbourhood(activities, nonzero_indices, weights, last_activities[c]), c, cell_in)
             if perturbation is not None:
                 activities_over_time[t][c] = perturbation(c, activities_over_time[t][c], cell_in)
 
-    return activities_over_time, [adjacency_matrix]*timesteps
+        t += 1
+
+    return activities_over_time, [adjacency_matrix]*steps
 
 
-def _process_cells(cell_indices, t, last_activities):
+def _get_input_function(timesteps=None, input=None):
+    if timesteps is None and input is None:
+        raise Exception("either the timesteps or input must be provided")
+
+    if input is not None:
+        if callable(input):
+            return input, 1
+        else:
+            return _ListInputFunction(input), len(input)+1
+
+    return _TimestepInputFunction(timesteps), timesteps
+
+
+class _TimestepInputFunction:
+    def __init__(self, num_steps):
+        self._num_steps = num_steps
+
+    def __call__(self, t):
+        if t == self._num_steps:
+            return None
+        return t
+
+
+class _ListInputFunction:
+    def __init__(self, input_list):
+        self._input_list = input_list
+
+    def __call__(self, t):
+        if (t-1) >= len(self._input_list):
+            return None
+        return self._input_list[t-1]
+
+
+def _is_indexable(obj):
+    return isinstance(obj, collections.Sequence)
+
+
+def _extend_activities(activities_over_time, initial_conditions):
+    arr = np.zeros((1, len(initial_conditions)), dtype=np.dtype(type(initial_conditions[0])))
+    return np.append(activities_over_time, arr, axis=0)
+
+
+def _extend_connectivities(connectivities_over_time, adjacency_matrix):
+    arr = np.zeros((1, len(adjacency_matrix), len(adjacency_matrix)), dtype=np.dtype(type(adjacency_matrix[0][0])))
+    return np.append(connectivities_over_time, arr, axis=0)
+
+
+def _process_cells(cell_indices, inp, last_activities):
     global nonzero_index_map
     global weight_map
     global fn_activity
     global fn_perturb
-    global net_inputs
     results = {}
     for c in cell_indices:
         nonzero_indices = nonzero_index_map[c]
         activities = [last_activities[i] for i in nonzero_indices]
         weights = weight_map[c]
-        cell_in = t if net_inputs is None else net_inputs[t-1][c]
+        cell_in = inp[c] if _is_indexable(inp) else inp
         cell_activity = fn_activity(Neighbourhood(activities, nonzero_indices, weights, last_activities[c]), c, cell_in)
         if fn_perturb is not None:
             cell_activity = fn_perturb(c, cell_activity, cell_in)
@@ -152,12 +208,10 @@ def _process_cells(cell_indices, t, last_activities):
     return results
 
 
-def _evolve_activities_parallel(initial_conditions, adjacency_matrix, activity_rule, timesteps, input,
+def _evolve_activities_parallel(initial_conditions, adjacency_matrix, activity_rule, steps, input_fn,
                                 perturbation, processes):
-    if input is not None:
-        timesteps = len(input) + 1
 
-    activities_over_time = np.zeros((timesteps, len(initial_conditions)), dtype=np.dtype(type(initial_conditions[0])))
+    activities_over_time = np.zeros((steps, len(initial_conditions)), dtype=np.dtype(type(initial_conditions[0])))
     activities_over_time[0] = initial_conditions
 
     num_cells = len(adjacency_matrix[0])
@@ -176,46 +230,60 @@ def _evolve_activities_parallel(initial_conditions, adjacency_matrix, activity_r
     global fn_perturb
     fn_perturb = perturbation
 
-    global net_inputs
-    net_inputs = input
-
     if processes is None:
         processes = multiprocessing.cpu_count()
     cell_index_chunks = np.array_split(np.array(range(num_cells)), processes)
     pool = Pool(processes=processes)
 
-    for t in range(1, timesteps):
+    t = 1
+    while True:
+        inp = input_fn(t)
+        if inp is None:
+            break
         last_activities = activities_over_time[t - 1]
 
-        args = [(chunk, t, last_activities) for chunk in cell_index_chunks]
+        if t == len(activities_over_time):
+            activities_over_time = _extend_activities(activities_over_time, initial_conditions)
+
+        args = [(chunk, inp, last_activities) for chunk in cell_index_chunks]
         map_result = pool.starmap_async(_process_cells, args)
 
         for results in map_result.get():
             for c in results.keys():
                 activities_over_time[t][c] = results[c]
 
+        t += 1
+
     pool.close()
     pool.join()
 
-    return activities_over_time, [adjacency_matrix]*timesteps
+    return activities_over_time, [adjacency_matrix]*steps
 
 
-def _evolve_both(initial_conditions, adjacency_matrix, activity_rule, timesteps, input,
+def _evolve_both(initial_conditions, adjacency_matrix, activity_rule, steps, input_fn,
                  connectivity_rule=ConnectivityRule.noop, perturbation=None):
-    if input is not None:
-        timesteps = len(input) + 1
 
-    activities_over_time = np.zeros((timesteps, len(initial_conditions)), dtype=np.dtype(type(initial_conditions[0])))
+    activities_over_time = np.zeros((steps, len(initial_conditions)), dtype=np.dtype(type(initial_conditions[0])))
     activities_over_time[0] = initial_conditions
 
-    connectivities_over_time = np.zeros((timesteps, len(adjacency_matrix), len(adjacency_matrix)), dtype=np.dtype(type(adjacency_matrix[0][0])))
+    connectivities_over_time = np.zeros((steps, len(adjacency_matrix), len(adjacency_matrix)), dtype=np.dtype(type(adjacency_matrix[0][0])))
     connectivities_over_time[0] = adjacency_matrix
 
     num_cells = len(adjacency_matrix[0])
 
-    for t in range(1, timesteps):
+    t = 1
+    while True:
+        inp = input_fn(t)
+        if inp is None:
+            break
         last_activities = activities_over_time[t - 1]
         last_connectivities = connectivities_over_time[t - 1]
+
+        if t == len(activities_over_time):
+            activities_over_time = _extend_activities(activities_over_time, initial_conditions)
+
+        if t == len(connectivities_over_time):
+            connectivities_over_time = _extend_connectivities(connectivities_over_time, adjacency_matrix)
 
         last_connectivities_transposed = np.array(last_connectivities).T
 
@@ -229,13 +297,15 @@ def _evolve_both(initial_conditions, adjacency_matrix, activity_rule, timesteps,
             nonzero_indices = index_map[c]
             activities = last_activities[nonzero_indices]
             weights = row[nonzero_indices]
-            cell_in = t if input is None else input[t-1][c]
+            cell_in = inp[c] if _is_indexable(inp) else inp
             activities_over_time[t][c] = activity_rule(Neighbourhood(activities, nonzero_indices, weights, last_activities[c]), c, cell_in)
             if perturbation is not None:
                 activities_over_time[t][c] = perturbation(c, activities_over_time[t][c], cell_in)
 
         connectivities = connectivity_rule(last_connectivities, last_activities, t)
         connectivities_over_time[t] = connectivities
+
+        t += 1
 
     return activities_over_time, connectivities_over_time
 
@@ -292,91 +362,3 @@ def init_simple2d(rows, cols, val=1, dtype=np.int):
     x = np.zeros((rows, cols), dtype=dtype)
     x[x.shape[0]//2][x.shape[1]//2] = val
     return np.array(x).reshape(rows * cols).tolist()
-
-
-def plot_grid(activities, shape=None, slice=-1, title='', colormap='Greys', vmin=None, vmax=None,
-              cell_annotations=None, show_grid=False):
-    if shape is not None:
-        activities = np.array(activities).reshape((len(activities), shape[0], shape[1]))[slice]
-    cmap = plt.get_cmap(colormap)
-    plt.title(title)
-    plt.imshow(activities, interpolation='none', cmap=cmap, vmin=vmin, vmax=vmax)
-
-    if cell_annotations is not None:
-        for i in range(len(cell_annotations)):
-            for j in range(len(cell_annotations[i])):
-                plt.text(j, i, cell_annotations[i][j], ha="center", va="center", color="grey",
-                         fontdict={'weight':'bold','size':6})
-
-    if show_grid:
-        plt.grid(which='major', axis='both', linestyle='-', color='grey', linewidth=0.5)
-        plt.xticks(np.arange(-.5, len(activities[0]), 1), "")
-        plt.yticks(np.arange(-.5, len(activities), 1), "")
-        plt.tick_params(axis='both', which='both', length=0)
-
-    plt.show()
-
-
-def plot_grid_multiple(ca_list, shape=None, slice=-1, titles=None, colormap='Greys', vmin=None, vmax=None):
-    cmap = plt.get_cmap(colormap)
-    for i in range(0, len(ca_list)):
-        plt.figure(i)
-        if titles is not None:
-            plt.title(titles[i])
-        activities = list(ca_list[i])
-        if shape is not None:
-            activities = np.array(activities).reshape((len(activities), shape[0], shape[1]))[slice]
-        plt.imshow(activities, interpolation='none', cmap=cmap, vmin=vmin, vmax=vmax)
-    plt.show()
-
-
-def animate(activities, title='', shape=None, save=False, interval=50, colormap='Greys', vmin=None, vmax=None):
-    if shape is not None:
-        activities = _reshape_for_animation(activities, shape)
-    cmap = plt.get_cmap(colormap)
-    fig = plt.figure()
-    plt.title(title)
-    im = plt.imshow(activities[0], animated=True, cmap=cmap, vmin=vmin, vmax=vmax)
-    i = {'index': 0}
-    def updatefig(*args):
-        i['index'] += 1
-        if i['index'] == len(activities):
-            i['index'] = 0
-        im.set_array(activities[i['index']])
-        return im,
-    ani = animation.FuncAnimation(fig, updatefig, interval=interval, blit=True, save_count=len(activities))
-    if save:
-        ani.save('evolved.gif', dpi=80, writer="imagemagick")
-    plt.show()
-
-
-def _reshape_for_animation(activities, shape):
-    if len(shape) == 1:
-        assert shape[0] == len(activities[0]), "shape must equal the length of an activity vector"
-        new_activities = []
-        for i, a in enumerate(activities):
-            new_activity = []
-            new_activity.extend(activities[0:i+1])
-            while len(new_activity) < len(activities):
-                new_activity.append([0]*len(activities[0]))
-            new_activities.append(new_activity)
-        return np.array(new_activities)
-    elif len(shape) == 2:
-        return np.reshape(activities, (len(activities), shape[0], shape[1]))
-    else:
-        raise Exception("shape must be a tuple of length 1 or 2")
-
-
-def render_network(adjacency_matrix):
-    G = nx.DiGraph()
-    for n, _ in enumerate(adjacency_matrix):
-        G.add_node(n)
-    for row_index, row in enumerate(adjacency_matrix):
-        for cell_index, val in enumerate(row):
-            if val != 0.:
-                G.add_edge(row_index, cell_index)
-
-    nx.draw_shell(G, with_labels=True)
-    plt.show()
-
-

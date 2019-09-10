@@ -94,6 +94,8 @@ the Netomaton framework. Follow the link to learn more:
 
 * [Pushdown Automata](demos/pushdown_automata/README.md)
 
+* [Turing Machines](demos/turing_machine/README.md)
+
 * [Langton's Lambda and Measures of Complexity](demos/langtons_lambda/README.md)
 
 * [2D Cellular Automata](demos/totalistic_ca2d/README.md)

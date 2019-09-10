@@ -13,14 +13,16 @@ automaton that evolves on its own, in the absence of any external
 driving signal.
 
 The `input` parameter specifies the input to the network at a particular
-step in the network's evolution. It is a list, where each item in the
-list contains the input for each cell in the network for a particular
-step in its evolution. The `input` parameter thus specifies both the
-input to the network and, implicitly, the number of timesteps in its
-evolution. The input for each cell at each timestep will be provided
-to the `activity_rule` function (and any `perturbation` function), when
-the function is invoked. Specifying the input implies an automaton whose
-evolution is driven by an external signal.
+step in the network's evolution. It is either a list, where each item in
+the list contains the input for each cell in the network for a
+particular step in its evolution, or a function that accepts the current
+timestep number and returns either the input for that timestep or None,
+to signal the end of the evolution. The `input` parameter thus specifies
+both the input to the network and, implicitly, the number of timesteps
+in its evolution. The input for each cell at each timestep will be
+provided to the `activity_rule` function (and any `perturbation`
+function), when the function is invoked. Specifying the input implies an
+automaton whose evolution is driven by an external signal.
 
 Either the `input` or the `timesteps` parameter must be provided to the
 `evolve` function, but not both. If the `input` parameter is provided,
@@ -33,9 +35,11 @@ state. This is illustrated in the figure below:
 
 <img src="../../resources/input.png" width="35%"/>
 
-An example of the use of the `input` parameter can be seen in the
-[Finite State Machine demo](../finite_state_machine/README.md). An
-example of the use of the `timesteps` parameter can be seen in the
+An example of the use of the `input` parameter in the form of a list can
+be seen in the [Finite State Machine demo](../finite_state_machine/README.md).
+An example of the use of the `input` parameter in the form of a function
+can be seen in the [Turing Machine demo](../turing_machine/README.md).
+An example of the use of the `timesteps` parameter can be seen in the
 [Elementary Cellular Automata demo](../elementary_ca/README.md).
 
 <sup>*</sup> <em>Note that the initial state, specified by the
