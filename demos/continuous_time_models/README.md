@@ -15,7 +15,7 @@ velocity. The state changes according to the following equations of
 motion:
 ```
 dx/dt = v
-dv/dt = −k⁄m x − b⁄m v
+dv/dt = −k/m x − b/m v
 ```
 where `x` is position, `v` is velocity, `k` is stiffness, `b` is damping,
 `m` is mass, `t` is time.
@@ -69,15 +69,16 @@ ax2.set_ylim(-6, 6)
 plt.show()
 ```
 
-<img src="../../resources/spring.png" width="65%"/>
+<img src="../../resources/spring.png" width="55%"/>
 
 The full source code for this example can be found [here](single_spring_netomaton_demo.py).
 
 A partial differential equation can also be modelled. The following
-automaton models the Diffusion (or Heat) Equation. In this
-multi-cellular Network Automaton, each of the 120 cells represents a
-body that can contain some amount of heat. The following code snippet
-demonstrates this automaton:
+automaton models the Diffusion (or Heat) Equation:
+∂u/∂t = α ∂<sup>2</sup>u/∂x<sup>2</sup>.
+In this multi-cellular Network Automaton, each of the 120 cells
+represents a body that can contain some amount of heat. The following
+code snippet demonstrates this automaton:
 
 ```python
 import numpy as np
@@ -105,7 +106,7 @@ activities, _ = ntm.evolve(initial_conditions, adjacencies, activity_rule, times
 ntm.plot_grid(activities)
 ```
 
-<img src="../../resources/diffusion.png" width="65%"/>
+<img src="../../resources/diffusion.png" width="55%"/>
 
 Note that in the automaton above, a cell's neighbourhood influences the
 state of the cell, and the system can be thought of as a 1D Cellular
