@@ -6,7 +6,8 @@ import numpy as np
 
 class HopfieldTankTSPNet:
     """
-    Based on J. J. Hopfield and D. W. Tank, Biol. Cybern: 52, 141-152 (1985).
+    Based on J. J. Hopfield and D. W. Tank, "'Neural' Computation of Decisions in Optimization Problems",
+    Biol. Cybern: 52, 141-152 (1985).
     """
     def __init__(self, points, dt=1.00, A=500, B=500, C=200, D=500, u_0=0.02, n=15):
         """
@@ -53,7 +54,8 @@ class HopfieldTankTSPNet:
         return distances
 
     def get_permutation_matrix(self, activities):
-        return activities[-1].reshape(len(self._points), len(self._points))
+        f = lambda u: self._V(u)
+        return f(activities[-1].reshape(len(self._points), len(self._points)))
 
     def get_tour_graph(self, points, permutation_matrix):
         """
@@ -81,19 +83,6 @@ class HopfieldTankTSPNet:
             if tour_index in tour_index_to_point_index:
                 raise Exception("a point has already claimed position #%s in the tour" % str(tour_index + 1))
             tour_index_to_point_index[tour_index] = point_index
-
-        # #
-        # import scipy.stats as ss
-        # permutation_matrix = permutation_matrix.transpose()[0]
-        # print(permutation_matrix)
-        # print(ss.rankdata(permutation_matrix))
-        # ranked = []
-        # for s in ss.rankdata(permutation_matrix):
-        #     ranked.append(np.abs(s - 10.))
-        # print(ranked)
-        # for i, r in enumerate(ranked):
-        #     tour_index_to_point_index[r] = i
-        # #
 
         distances = []
 
@@ -165,19 +154,6 @@ class HopfieldTankTSPNet:
         return coordinate_map
 
     def _get_adjacencies(self, cell_label_map):
-        # adjacencies = []
-        # num_cells = len(cell_label_map)
-        # num_points = int(math.sqrt(num_cells))
-        # for c in range(num_cells):
-        #     row, col = cell_label_map[c]
-        #     conn = [0 for _ in range(num_cells)]
-        #     for c2 in range(num_cells):
-        #         row2, col2 = cell_label_map[c2]
-        #         if row2 == row or col2 == col or col2 == ((col - 1) % num_points) or col2 == ((col + 1) % num_points):
-        #             conn[c2] = 1
-        #     adjacencies.append(conn)
-        # return adjacencies
-
         # fully connected network
         return [[1 for _ in range(len(cell_label_map))] for _ in range(len(cell_label_map))]
 
@@ -186,7 +162,7 @@ class HopfieldTankTSPNet:
         return self._adjacencies
 
     def _V(self, u):
-        return (1/2) * (1 + math.tanh(u / self._u_0))
+        return (1/2) * (1 + np.tanh(u / self._u_0))
 
     def _get_opposite_neighbour_activity(self, activities, neighbour_indices, opposite_neighbour_index):
         for i, n in enumerate(neighbour_indices):
