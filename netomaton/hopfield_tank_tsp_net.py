@@ -189,14 +189,14 @@ class HopfieldTankTSPNet:
                 B_sum += self._V(neighbour_activity)
 
             # global inhibition
-            C_sum += (self._V(neighbour_activity) - self._n)
+            C_sum += self._V(neighbour_activity)
 
             if neighbour_cell_col == ((cell_col - 1) % len(self._points)):
                 opp_neighbour_index = self._coordinate_map[(neighbour_cell_row, (cell_col + 1) % len(self._points))]
                 opp_neighbour_activity = self._get_opposite_neighbour_activity(n.activities, n.neighbour_indices, opp_neighbour_index)
                 D_sum += (self._distances_map[(neighbour_cell_row, cell_row)] * (self._V(neighbour_activity) + self._V(opp_neighbour_activity)))
 
-        activity = (-current_activity) - (self._A * A_sum) - (self._B * B_sum) - (self._C * C_sum) - (self._D * D_sum)
+        activity = (-current_activity) - (self._A * A_sum) - (self._B * B_sum) - (self._C * (C_sum - self._n)) - (self._D * D_sum)
 
         return current_activity + (self._dt * activity)
 
