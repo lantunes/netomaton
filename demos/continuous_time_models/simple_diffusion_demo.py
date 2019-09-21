@@ -6,7 +6,7 @@ if __name__ == "__main__":
     """
     Simulates the 1D Diffusion Equation (also known as the heat equation):
     
-    ∂u/∂t = α ∂^2u/∂x^2
+    ∂u/∂t = α ∂²u/∂x²
     
     Each of the 120 cells represents a body that can contain some amount of heat. Reproduces the plot at the top of 
     Wolfram's NKS, page 163. 
