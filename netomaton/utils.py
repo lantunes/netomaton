@@ -60,6 +60,18 @@ def animate(activities, title='', shape=None, save=False, interval=50, colormap=
     plt.show()
 
 
+def animate_plot1D(x, y, save=False, interval=50):
+    fig1 = plt.figure()
+    line, = plt.plot(x, y[0])
+    def update_line(activity):
+        line.set_data(x, activity)
+        return line,
+    ani = animation.FuncAnimation(fig1, update_line, frames=y, blit=True, interval=interval)
+    if save:
+        ani.save('plot.gif', dpi=80, writer="imagemagick")
+    plt.show()
+
+
 def _reshape_for_animation(activities, shape):
     if len(shape) == 1:
         assert shape[0] == len(activities[0]), "shape must equal the length of an activity vector"

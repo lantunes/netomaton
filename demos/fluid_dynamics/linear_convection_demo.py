@@ -1,6 +1,5 @@
 import netomaton as ntm
 import numpy as np
-from matplotlib import pyplot, animation
 
 
 if __name__ == "__main__":
@@ -32,12 +31,4 @@ if __name__ == "__main__":
 
     ntm.plot_grid(activities)
 
-    ntm.animate(activities, shape=(1, nx))
-
-    fig1 = pyplot.figure()
-    line, = pyplot.plot(np.linspace(0, 2, nx), activities[0])
-    def update_line(activity):
-        line.set_data(np.linspace(0, 2, nx), activity)
-        return line,
-    line_ani = animation.FuncAnimation(fig1, update_line, frames=activities, blit=True, interval=50)
-    pyplot.show()
+    ntm.animate_plot1D(np.linspace(0, 2, nx), activities)
