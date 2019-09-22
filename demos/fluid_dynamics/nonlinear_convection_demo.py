@@ -23,7 +23,7 @@ if __name__ == "__main__":
         un_i = n.current_activity
         # the space derivative is handled using the Backward Difference, i.e. the value of the neighbour to the left
         left_index = (c - 1) % nx
-        un_i_m1 = n.activities[n.neighbour_indices.index(left_index)]
+        un_i_m1 = n.activity_of(left_index)
         return un_i - un_i * dt / dx * (un_i - un_i_m1)
 
 

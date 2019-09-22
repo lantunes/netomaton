@@ -28,9 +28,9 @@ if __name__ == "__main__":
     def activity_rule(n, c, t):
         un_i = n.current_activity
         left_index = (c - 1) % nx
-        un_i_m1 = n.activities[n.neighbour_indices.index(left_index)]
+        un_i_m1 = n.activity_of(left_index)
         right_index = (c + 1) % nx
-        un_i_p1 = n.activities[n.neighbour_indices.index(right_index)]
+        un_i_p1 = n.activity_of(right_index)
         un_m1_i = t_m1[c]  # the activity not at the previous timestep, but the timestep before that
         new_un_i = ((dt**2 * (un_i_p1 - 2*un_i + un_i_m1)) / dx**2) + (2*un_i - un_m1_i)
         t_m1[c] = un_i

@@ -11,7 +11,7 @@ from .connectivity_rule import *
 class Neighbourhood(object):
     """
     A neighbourhood consists of the states, identities (as cell indices), and adjancency matrix weights of the cells
-    that influence a given cell. Each of the properties (i.e. activities, cell_indices, weights) are represented as
+    that influence a given cell. Each of the properties (i.e. activities, neighbour_indices, weights) are represented as
     lists. Each of the lists are of the same size, and the first item in each list corresponds to the first cell in the
     neighbourhood, etc. The neighbourhood of a cell also contains the cell's current activity (i.e. the activity as of
     the last timestep).
@@ -23,20 +23,52 @@ class Neighbourhood(object):
         self._current_activity = current_activity
         self._perturbation = perturbation
 
+    def activity_of(self, cell_index):
+        """
+        Returns the activity of the cell with the given cell index.
+        :param cell_index: the index of the cell whose activity is being requested
+        :return: the activity of the cell with the given index
+        """
+        return self.activities[self.neighbour_indices.index(cell_index)]
+
+    def weight_from(self, cell_index):
+        """
+        Returns the connection weight of the cell with the given cell index to the current cell.
+        :param cell_index: the index of the cell whose connection strength to the current cell is being requested
+        :return: the connection strength of the cell with the given index to the current cell
+        """
+        return self.weights[self.neighbour_indices.index(cell_index)]
+
     @property
     def activities(self):
+        """
+        A list containing the neighbourhood's activities.
+        :return: a list containing the neighbourhood's activities
+        """
         return self._activities
 
     @property
     def neighbour_indices(self):
+        """
+        A list containing the neighbourhood's cell indices.
+        :return: a list containing the neighbourhood's cell indices
+        """
         return self._neighbour_indices
 
     @property
     def weights(self):
+        """
+        A list containing the weights of the connections to the cell.
+        :return: a list containing the weights of the connections to the cell
+        """
         return self._weights
 
     @property
     def current_activity(self):
+        """
+        The current activity of the cell.
+        :return: the current activity of the cell
+        """
         return self._current_activity
 
     @property

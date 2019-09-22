@@ -43,9 +43,9 @@ if __name__ == "__main__":
     def activity_rule(n, c, t):
         un_i = n.current_activity
         left_index = (c - 1) % nx
-        un_i_m1 = n.activities[n.neighbour_indices.index(left_index)]
+        un_i_m1 = n.activity_of(left_index)
         right_index = (c + 1) % nx
-        un_i_p1 = n.activities[n.neighbour_indices.index(right_index)]
+        un_i_p1 = n.activity_of(right_index)
         return un_i - un_i * dt/dx * (un_i - un_i_m1) + nu * dt/dx**2 * (un_i_p1 - 2*un_i + un_i_m1)
 
 
