@@ -22,21 +22,17 @@ if __name__ == "__main__":
 
     adjacencies = ntm.network.cellular_automaton(nx)
 
-    # TODO perhaps we should provide the option to provide more than just the current activities
-    #  n.activities_at(timestep)[cell_index]
-    t_m1 = initial_conditions  # the activities at t-1
     def activity_rule(n, c, t):
         un_i = n.current_activity
         left_index = (c - 1) % nx
         un_i_m1 = n.activity_of(left_index)
         right_index = (c + 1) % nx
         un_i_p1 = n.activity_of(right_index)
-        un_m1_i = t_m1[c]  # the activity not at the previous timestep, but the timestep before that
-        new_un_i = ((dt**2 * (un_i_p1 - 2*un_i + un_i_m1)) / dx**2) + (2*un_i - un_m1_i)
-        t_m1[c] = un_i
-        return new_un_i
+        un_m1_i = n.past_activity_of(c)  # the activity not at the previous timestep, but the timestep before that
+        return ((dt**2 * (un_i_p1 - 2*un_i + un_i_m1)) / dx**2) + (2*un_i - un_m1_i)
 
-    activities, _ = ntm.evolve(initial_conditions, adjacencies, activity_rule, timesteps=nt)
+    activities, _ = ntm.evolve(initial_conditions, adjacencies, activity_rule, timesteps=nt,
+                               past_conditions=[initial_conditions])
 
     ntm.plot_grid(activities)
 

@@ -133,3 +133,77 @@ class TestFunctions(unittest.TestCase):
         arr = ntm.init_simple2d(rows=2, cols=3)
         self.assertEqual(len(arr), 6)
         self.assertEqual(arr, [0, 0, 0, 0, 1, 0])
+
+    def test_past_activities_single_past(self):
+        adjacencies = [
+            [1, 1],
+            [1, 1]
+        ]
+
+        initial_conditions = [1, 1]
+
+        past_conditions = [
+            [0, 0]
+        ]
+
+        def activity_rule(n, c, t):
+            p = n.past_activities
+            if t == 1:
+                self.assertEqual(p, [[0, 0]])
+            if t == 2:
+                self.assertEqual(p, [[1, 1]])
+            if t == 3:
+                self.assertEqual(p, [[2, 2]])
+            return n.current_activity + 1
+
+        activities, _ = ntm.evolve(initial_conditions, adjacencies, activity_rule, timesteps=4,
+                                   past_conditions=past_conditions)
+
+        np.testing.assert_equal(activities, [
+            [1, 1],
+            [2, 2],
+            [3, 3],
+            [4, 4]
+        ])
+
+    def test_past_activities_multiple_past(self):
+        adjacencies = [
+            [1, 1],
+            [1, 1]
+        ]
+
+        initial_conditions = [1, 1]
+
+        past_conditions = [
+            [-1, -1],
+            [0, 0]
+        ]
+
+        def activity_rule(n, c, t):
+            p = n.past_activities
+            if t == 1:
+                self.assertEqual(p, [
+                    [-1, -1],
+                    [0, 0]
+                ])
+            if t == 2:
+                self.assertEqual(p, [
+                    [0, 0],
+                    [1, 1]
+                ])
+            if t == 3:
+                self.assertEqual(p, [
+                    [1, 1],
+                    [2, 2]
+                ])
+            return n.current_activity + 1
+
+        activities, _ = ntm.evolve(initial_conditions, adjacencies, activity_rule, timesteps=4,
+                                   past_conditions=past_conditions)
+
+        np.testing.assert_equal(activities, [
+            [1, 1],
+            [2, 2],
+            [3, 3],
+            [4, 4]
+        ])
