@@ -114,8 +114,6 @@ the Netomaton framework. Follow the link to learn more:
 
 * [Continuous-Time Models](demos/continuous_time_models/README.md)
 
-* [Fluid Dynamics](demos/fluid_dynamics/README.md)
-
 * [Travelling Salesman Problem with the Hopfield-Tank Neural Net](demos/hopfield_tank_tsp/README.md)
 
 Additionally, this library includes a number of utility functions for
