@@ -42,7 +42,7 @@ in **A** represents the existence of a link. The value of the entry
 represents a link weight. The matrix **A** thus contains information
 about the existence of links, and their direction.
 
-The network is evolved for *T* timeteps. The activity of the network is
+The network is evolved for *T* timesteps. The activity of the network is
 defined by the activities of all its nodes, and is represented by **S**<sub>*t*</sub>,
 where *t* is a particular timestep. During each timestep, the activity
 function *f* is invoked, followed by the connectivity function *g*, such
@@ -59,6 +59,8 @@ nodes at all times, and that nodes may become connected or fully
 disconnected from the network instead.
 
 To learn more, please refer to the scientific literature on the subject:
+
+> Wolfram, S. (2002). A New Kind of Science (pp. 475–545). Champaign, IL: Wolfram Media.
 
 > Sayama, Hiroki, and Craig Laramee. "Generative network automata: A generalized framework for modeling adaptive network dynamics using graph rewritings." Adaptive Networks. Springer, Berlin, Heidelberg, 2009. 311-332.
 
