@@ -7,6 +7,12 @@ meant to aid in the implementation of models of collective computation.
 Examples of such computational models include Cellular Automata and
 Neural Networks.
 
+The (Wikipedia entry)[https://en.wikipedia.org/wiki/Network_automaton]
+for Network Automata states:
+
+> A network automaton (plural network automata) is a mathematical system consisting of a network of nodes that evolves over time according to predetermined rules. It is similar in concept to a cellular automaton, but much less studied.
+Stephen Wolfram's book A New Kind of Science, which is primarily concerned with cellular automata, briefly discusses network automata, and suggests (without positive evidence) that the universe might at the very lowest level be a network automaton.
+
 ### Getting Started
 
 Netomaton can be installed via pip:
@@ -22,18 +28,18 @@ matplotlib 3.0.2, and networkx 2.2.
 ### What are Network Automata?
 
 A Network Automaton is a discrete dynamical system comprised of a collection
-of cells (the computational units) causally connected to eachother, as
-specified by a network-defining adjacency matrix. The cells adopt states
+of nodes (the computational units) causally connected to eachother, as
+specified by a network-defining adjacency matrix. The nodes adopt states
 at each timestep of the network's evolution, as prescribed by an activity
 function, *f*. Moreover, the network's topology can also change over time, as
 prescribed by a connectivity function, *g*.
 
 The network's topology is specified by the adjacency matrix, **A**, which
 is of size _N_<sub>tot</sub> *X* _N_<sub>tot</sub>, where _N_<sub>tot</sub>
-represents the total number of nodes (i.e. cells) in the network. Each
-non-zero entry in **A** represents the existence of a link. The value of
-the entry represents a link weight. The matrix **A** thus contains information about
-the existence of links, and their direction.
+represents the total number of nodes in the network. Each non-zero entry
+in **A** represents the existence of a link. The value of the entry
+represents a link weight. The matrix **A** thus contains information
+about the existence of links, and their direction.
 
 The network is evolved for *T* timeteps. The activity of the network is
 defined by the activities of all its nodes, and is represented by **S**<sub>*t*</sub>,
