@@ -61,8 +61,7 @@ activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, activity_rule, 
 The full source code for this example can be found [here](single_spring_netomaton_demo.py).
 
 A partial differential equation can also be modelled. The following
-automaton models the Diffusion (or Heat) Equation:
-∂u/∂t = α ∂<sup>2</sup>u/∂x<sup>2</sup>.
+automaton models the Diffusion (or Heat) Equation: ∂u/∂t = α ∂²u/∂x².
 In this Network Automaton, each of the 120 nodes represents a body that
 can contain some amount of heat. The following code snippet demonstrates
 this automaton:
@@ -125,10 +124,8 @@ adjacency_matrix = ntm.network.cellular_automaton(nx)
 
 def activity_rule(ctx):
     un_i = ctx.current_activity
-    left_index = (ctx.node_index - 1) % nx
-    un_i_m1 = ctx.activity_of(left_index)
-    right_index = (ctx.node_index + 1) % nx
-    un_i_p1 = ctx.activity_of(right_index)
+    un_i_m1 = ctx.activity_of((ctx.node_index - 1) % nx)
+    un_i_p1 = ctx.activity_of((ctx.node_index + 1) % nx)
     # the activity not at the previous timestep, but the timestep before that
     un_m1_i = ctx.past_activity_of(ctx.node_index)
     return ((dt**2 * (un_i_p1 - 2*un_i + un_i_m1)) / dx**2) + (2*un_i - un_m1_i)
@@ -137,8 +134,6 @@ activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, activity_rule, 
                            past_conditions=[initial_conditions])
 
 ntm.plot_grid(activities)
-
-ntm.animate_plot1D(np.linspace(0, 2, nx), activities)
 ```
 
 <img src="../../resources/wave_equation.png" width="55%"/>
