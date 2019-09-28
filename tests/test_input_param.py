@@ -17,8 +17,8 @@ class TestInputParam:
 
         events = "cpcpp"
 
-        def fsm_rule(n, c, event):
-            if event == transitions['PUSH']:
+        def fsm_rule(ctx):
+            if ctx.input == transitions['PUSH']:
                 return states['locked']
             else:
                 # COIN event

@@ -18,7 +18,7 @@ if __name__ == '__main__':
                           1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1,
                           1, 1, 1, 0, 1, 1, 1]
 
-    r = ntm.ReversibleRule(lambda n, c, t: ntm.rules.nks_ca_rule(n, c, 122))
+    r = ntm.ReversibleRule(lambda ctx: ntm.rules.nks_ca_rule(ctx, 122))
     activities, _ = ntm.evolve(initial_conditions, adjacencies, timesteps=1002, activity_rule=r.activity_rule,
                                past_conditions=[previous_state])
 

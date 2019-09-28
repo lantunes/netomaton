@@ -14,6 +14,6 @@ if __name__ == '__main__':
     print("density of 1s: %s" % (np.count_nonzero(initial_conditions) / 149))
 
     activities, connectivities = ntm.evolve(initial_conditions, adjacencies, timesteps=149,
-                                            activity_rule=lambda n, c, t: ntm.rules.binary_ca_rule(n, c, rule_number))
+                                            activity_rule=lambda ctx: ntm.rules.binary_ca_rule(ctx, rule_number))
 
     ntm.plot_grid(activities)

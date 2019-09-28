@@ -170,16 +170,16 @@ class HopfieldTankTSPNet:
                 return activities[i]
         raise Exception("could not find the opposite neighbour index: %d" % opposite_neighbour_index)
 
-    def activity_rule(self, n, c, t):
-        current_activity = n.current_activity
-        cell_row, cell_col = self._cell_label_map[c]
+    def activity_rule(self, ctx):
+        current_activity = ctx.current_activity
+        cell_row, cell_col = self._cell_label_map[ctx.cell_index]
 
         A_sum = 0
         B_sum = 0
         C_sum = 0
         D_sum = 0
-        for i, neighbour_activity in enumerate(n.activities):
-            neighbour_index = n.neighbour_indices[i]
+        for i, neighbour_activity in enumerate(ctx.activities):
+            neighbour_index = ctx.neighbour_indices[i]
             neighbour_cell_row, neighbour_cell_col = self._cell_label_map[neighbour_index]
 
             if neighbour_cell_row == cell_row and neighbour_cell_col != cell_col:
@@ -193,7 +193,7 @@ class HopfieldTankTSPNet:
 
             if neighbour_cell_col == ((cell_col - 1) % len(self._points)):
                 opp_neighbour_index = self._coordinate_map[(neighbour_cell_row, (cell_col + 1) % len(self._points))]
-                opp_neighbour_activity = self._get_opposite_neighbour_activity(n.activities, n.neighbour_indices, opp_neighbour_index)
+                opp_neighbour_activity = self._get_opposite_neighbour_activity(ctx.activities, ctx.neighbour_indices, opp_neighbour_index)
                 D_sum += (self._distances_map[(neighbour_cell_row, cell_row)] * (self._V(neighbour_activity) + self._V(opp_neighbour_activity)))
 
         activity = (-current_activity) - (self._A * A_sum) - (self._B * B_sum) - (self._C * (C_sum - self._n)) - (self._D * D_sum)

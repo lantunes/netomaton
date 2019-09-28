@@ -26,7 +26,7 @@ adjacencies = ntm.network.cellular_automaton(n=21)
 
 initial_conditions =[0]*10 + [1] + [0]*10
 
-r = ntm.AsynchronousRule(activity_rule=lambda n, c, t: ntm.rules.nks_ca_rule(n, c, 60),
+r = ntm.AsynchronousRule(activity_rule=lambda ctx: ntm.rules.nks_ca_rule(ctx, 60),
                          update_order=range(1, 20))
 
 activities, connectivities = ntm.evolve(initial_conditions, adjacencies, timesteps=19*20,

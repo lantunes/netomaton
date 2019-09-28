@@ -3,20 +3,20 @@ from statistics import mode, StatisticsError
 from collections import deque
 
 
-def totalistic_ca(neighbourhood, k, rule):
+def totalistic_ca(ctx, k, rule):
     """
     The totalistic rule as described in NKS. The average color is mapped to a whole number in [0, k - 1].
     The rule number is in base 10, but interpreted in base k. For a 1-dimensional cellular automaton, there are
     3k - 2 possible average colors in the 3-cell neighbourhood. There are n(k - 1) + 1 possible average colors for a
     k-color cellular automaton with an n-cell neighbourhood.
-    :param neighbourhood: the automaton neighbourhood for a cell
+    :param ctx: the EvolutionContext for a cell
     :param k: the number of colors in this cellular automaton, where only 2 <= k <= 36 is supported
     :param rule: the k-color cellular automaton rule number in base 10, interpreted in base k
     :return: the result, a number from 0 to k - 1, of applying the given rule on the given state
     """
     # e.g. np.base_repr(777, base=3) -> '1001210'; the zfill pads the string with zeroes: '1'.zfill(3) -> '001'
     #   Bases greater than 36 not handled in base_repr.
-    neighbourhood = np.array(neighbourhood.activities)
+    neighbourhood = np.array(ctx.activities)
     n = neighbourhood.size
     rule_string = np.base_repr(rule, base=k).zfill(n*(k - 1) + 1)
     if len(rule_string) > n*(k - 1) + 1:
@@ -26,18 +26,18 @@ def totalistic_ca(neighbourhood, k, rule):
     return int(rule_string[n*(k - 1) - neighbourhood_sum], k)
 
 
-def majority_rule(neighbourhood):
+def majority_rule(ctx):
     """
     Returns the value of the most frequent state in the neighbourhood. If all states are equally frequent, then a
     random state is chosen from the neighbourhood.
-    :param neighbourhood: the automaton neighbourhood for a cell
+    :param ctx: the EvolutionContext for a cell
     :return: the new activity for the cell with the given neighbourhood
     """
     try:
-        return mode(neighbourhood.activities)
+        return mode(ctx.activities)
     except StatisticsError:
         # a StatisticsError is raised if there is a tie, and there is no single most common element
-        return np.random.choice(neighbourhood.activities)
+        return np.random.choice(ctx.activities)
 
 
 def _bits_to_int(bits):
@@ -63,7 +63,7 @@ def shift_to_center(activities, cell_indices, cell_index):
     return list(shifted)
 
 
-def binary_ca_rule(neighbourhood, cell_index, rule, scheme=None):
+def binary_ca_rule(ctx, rule, scheme=None):
     """
     Converts the given rule number to a binary representation, and uses this to determine the value to return.
     The process is approximately described as:
@@ -77,14 +77,13 @@ def binary_ca_rule(neighbourhood, cell_index, rule, scheme=None):
     If None is provided for the scheme parameter, the neighbourhoods are listed in lexicographic order (the reverse of
     the NKS convention). If 'nks' is provided for the scheme parameter, the NKS convention is used for listing the
     neighbourhoods.
-    :param neighbourhood: the automaton neighbourhood for a cell; the activities are a binary array of length 2r + 1
-    :param cell_index: the cell index of the cell for which this rule is being invoked
+    :param ctx: the EvolutionContext for a cell; the activities are a binary array of length 2r + 1
     :param rule: an int indicating the cellular automaton rule number
     :param scheme: can be None (default) or 'nks'; if 'nks' is given, the rule numbering scheme used in NKS is used
     :return: the result, 0 or 1, of applying the given rule on the given state
     """
     # shift the activities so that the current cell's activity is in the center
-    activities = shift_to_center(neighbourhood.activities, neighbourhood.neighbour_indices, cell_index)
+    activities = shift_to_center(ctx.activities, ctx.neighbour_indices, ctx.cell_index)
     state_int = _bits_to_int(activities)
     n = 2**len(activities)
     rule_bin_array = _int_to_bits(rule, n)
@@ -93,19 +92,18 @@ def binary_ca_rule(neighbourhood, cell_index, rule, scheme=None):
     return rule_bin_array[state_int]
 
 
-def nks_ca_rule(neighbourhood, cell_index, rule):
+def nks_ca_rule(ctx, rule):
     """
     A convenience function, that calls binary_rule with scheme = 'nks'.
-    :param neighbourhood: the automaton neighbourhood for a cell; the activities are a binary array of length 2r + 1
-    :param cell_index: the cell index of the cell for which this rule is being invoked
+    :param ctx: the EvolutionContext for a cell; the activities are a binary array of length 2r + 1
     :param rule: an int indicating the cellular automaton rule number
     :return:
     """
-    return binary_ca_rule(neighbourhood, cell_index, rule, scheme='nks')
+    return binary_ca_rule(ctx, rule, scheme='nks')
 
 
-def game_of_life_rule(neighbourhood):
-    activities = neighbourhood.activities
+def game_of_life_rule(ctx):
+    activities = ctx.activities
     center_cell = activities[len(activities) // 2]
     total = np.sum(activities)
     if center_cell == 1:

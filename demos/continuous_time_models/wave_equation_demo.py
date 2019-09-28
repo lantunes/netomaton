@@ -22,13 +22,14 @@ if __name__ == "__main__":
 
     adjacencies = ntm.network.cellular_automaton(nx)
 
-    def activity_rule(n, c, t):
-        un_i = n.current_activity
-        left_index = (c - 1) % nx
-        un_i_m1 = n.activity_of(left_index)
-        right_index = (c + 1) % nx
-        un_i_p1 = n.activity_of(right_index)
-        un_m1_i = n.past_activity_of(c)  # the activity not at the previous timestep, but the timestep before that
+    def activity_rule(ctx):
+        un_i = ctx.current_activity
+        left_index = (ctx.cell_index - 1) % nx
+        un_i_m1 = ctx.activity_of(left_index)
+        right_index = (ctx.cell_index + 1) % nx
+        un_i_p1 = ctx.activity_of(right_index)
+        # the activity not at the previous timestep, but the timestep before that
+        un_m1_i = ctx.past_activity_of(ctx.cell_index)
         return ((dt**2 * (un_i_p1 - 2*un_i + un_i_m1)) / dx**2) + (2*un_i - un_m1_i)
 
     activities, _ = ntm.evolve(initial_conditions, adjacencies, activity_rule, timesteps=nt,

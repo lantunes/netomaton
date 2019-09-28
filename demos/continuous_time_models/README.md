@@ -43,8 +43,8 @@ adjacencies = [[1]]
 
 dt = 0.025000
 
-def activity_rule(n, c, t):
-    x_n, v_n = n.current_activity
+def activity_rule(ctx):
+    x_n, v_n = ctx.current_activity
     x_new = x_n + (dt * v_n)
     v_new = v_n + (dt * (-6 * x_new))
     return x_new, v_new
@@ -81,10 +81,10 @@ dt = .5
 dx = .5
 F = a * dt / dx ** 2
 
-def activity_rule(n, c, t):
-    current = n.current_activity
-    left = n.activities[0]
-    right = n.activities[2]
+def activity_rule(ctx):
+    current = ctx.current_activity
+    left = ctx.activities[0]
+    right = ctx.activities[2]
     return current + F * (right - 2 * current + left)
 
 

@@ -18,7 +18,7 @@ if __name__ == '__main__':
 
         # evolve the cellular automaton for 200 time steps
         activities, _ = ntm.evolve(initial_conditions, adjacencies, timesteps=200,
-                                   activity_rule=lambda n, c, t: ntm.table_rule(n, rule_table))
+                                   activity_rule=lambda ctx: ntm.table_rule(ctx, rule_table))
 
         ca_list.append(activities)
         avg_cell_entropy = ntm.average_cell_entropy(activities)

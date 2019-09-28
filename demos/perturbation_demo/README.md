@@ -8,8 +8,9 @@ Indeed, perturbations are important elements in the study of
 non-equilibrium systems.
 
 Netomaton supports perturbations. A perturbation is
-simply a function that accepts the cell index, its computed activity,
-and the timestep, and returns the new activity for that cell.
+simply a function that accepts a `PerturbationContext`, which contains
+the cell index, its computed activity, the timestep, and any input to
+the cell, and returns the new activity for that cell.
 
 Consider the cellular automaton Rule 30 below, which is perturbed at
 every timestep such that cell with index 100 is changed randomly to
@@ -18,16 +19,16 @@ either a 0 or a 1:
 adjacencies = ntm.network.cellular_automaton(n=200)
 initial_conditions = [0] * 100 + [1] + [0] * 99
 
-def perturb(c, a, t):
+def perturb(pctx):
     """
     Mutates the value of the cell with index 100 at each timestep, making it either 0 or 1 randomly.
     """
-    if c == 100:
+    if pctx.cell_index == 100:
         return np.random.randint(2)
-    return a
+    return pctx.cell_activity
 
 activities, _ = ntm.evolve(initial_conditions, adjacencies, timesteps=100,
-                           activity_rule=lambda n, c, t: ntm.rules.nks_ca_rule(n, c, 30),
+                           activity_rule=lambda ctx: ntm.rules.nks_ca_rule(ctx, 30),
                            perturbation=perturb)
 
 ntm.plot_grid(activities)
@@ -42,16 +43,16 @@ Below is an example of a perturbed cellular automaton rule 90R:
 adjacencies = ntm.network.cellular_automaton(n=200)
 initial_conditions = np.random.randint(0, 2, 200)
 
-def perturbed_rule(n, c, t):
-    a = ntm.rules.nks_ca_rule(n, c, 90)
+def perturbed_rule(ctx):
+    a = ntm.rules.nks_ca_rule(ctx, 90)
     if t % 10 == 0:
         return 1
     return a
 
-r = ntm.ReversibleRule(initial_conditions, perturbed_rule)
+r = ntm.ReversibleRule(perturbed_rule)
 
 activities, _ = ntm.evolve(initial_conditions, adjacencies, timesteps=100,
-                           activity_rule=r.activity_rule)
+                           activity_rule=r.activity_rule, past_conditions=[initial_conditions])
 
 ntm.plot_grid(activities)
 ```

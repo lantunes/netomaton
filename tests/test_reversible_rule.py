@@ -21,7 +21,7 @@ class TestReversibleRule(RuleTest):
         rows, size = expected.shape
         initial_conditions = np.array(expected[0]).flatten()
         adjacencies = adjacency.cellular_automaton(n=size, r=1)
-        r = ReversibleRule(lambda n, c, t: rules.nks_ca_rule(n, c, rule_number))
+        r = ReversibleRule(lambda ctx: rules.nks_ca_rule(ctx, rule_number))
         activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=rows,
                                             activity_rule=r.activity_rule, past_conditions=[initial_conditions])
         return activities
@@ -31,7 +31,7 @@ class TestReversibleRule(RuleTest):
         rows, size = expected.shape
         initial_conditions = np.array(expected[0]).flatten()
         adjacencies = adjacency.cellular_automaton(n=size, r=1)
-        r = ReversibleRule(lambda n, c, t: rules.nks_ca_rule(n, c, rule_number))
+        r = ReversibleRule(lambda ctx: rules.nks_ca_rule(ctx, rule_number))
         activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=rows,
                                             activity_rule=r.activity_rule, past_conditions=[initial_conditions],
                                             parallel=True, processes=2)

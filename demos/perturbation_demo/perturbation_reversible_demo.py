@@ -8,15 +8,15 @@ if __name__ == '__main__':
 
     initial_conditions = np.random.randint(0, 2, 200)
 
-    def perturbed_rule(n, c, t):
-        a = ntm.rules.nks_ca_rule(n, c, 90)
-        if t % 10 == 0:
+    def perturbed_rule(ctx):
+        a = ntm.rules.nks_ca_rule(ctx, 90)
+        if ctx.timestep % 10 == 0:
             return 1
         return a
 
-    r = ntm.ReversibleRule(initial_conditions, perturbed_rule)
+    r = ntm.ReversibleRule(perturbed_rule)
 
     activities, _ = ntm.evolve(initial_conditions, adjacencies, timesteps=100,
-                               activity_rule=r.activity_rule)
+                               activity_rule=r.activity_rule, past_conditions=[initial_conditions])
 
     ntm.plot_grid(activities)

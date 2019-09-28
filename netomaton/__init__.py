@@ -1,4 +1,4 @@
-from .functions import *
+from .evolution import *
 from .connectivity_rule import *
 from .asynchronous_rule import *
 from .hopfield_net import *

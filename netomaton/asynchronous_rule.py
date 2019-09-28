@@ -36,14 +36,14 @@ class AsynchronousRule:
         np.random.shuffle(self._update_order)
         self._update_order = self._update_order.tolist()
 
-    def activity_rule(self, n, c, t):
-        if c in self._update_order:
+    def activity_rule(self, ctx):
+        if ctx.cell_index in self._update_order:
             self._num_applied += 1
-        if not self._should_update(c):
+        if not self._should_update(ctx.cell_index):
             self._check_for_end_of_cycle()
-            return n.current_activity
+            return ctx.current_activity
         self._check_for_end_of_cycle()
-        return self._activity_rule(n, c, t)
+        return self._activity_rule(ctx)
 
     def _should_update(self, c,):
         return c == self._update_order[self._curr]

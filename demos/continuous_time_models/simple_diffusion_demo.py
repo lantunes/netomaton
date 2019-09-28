@@ -26,10 +26,10 @@ if __name__ == "__main__":
     F = a * dt / dx ** 2
 
 
-    def activity_rule(n, c, t):
-        current = n.current_activity
-        left = n.activities[0]
-        right = n.activities[2]
+    def activity_rule(ctx):
+        current = ctx.current_activity
+        left = ctx.activities[0]
+        right = ctx.activities[2]
         return current + F * (right - 2 * current + left)
 
 

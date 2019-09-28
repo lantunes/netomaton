@@ -20,7 +20,7 @@ initial_conditions = np.random.randint(0, 2, 149)
 print("density of 1s: %s" % (np.count_nonzero(initial_conditions) / 149))
 
 activities, connectivities = ntm.evolve(initial_conditions, adjacencies, timesteps=149,
-                                        activity_rule=lambda n, c, t: ntm.rules.majority_rule(n))
+                                        activity_rule=lambda ctx: ntm.rules.majority_rule(ctx))
 
 ntm.plot_grid(activities)
 ```

@@ -20,12 +20,12 @@ if __name__ == "__main__":
     initial_conditions = [1.] * 10 + [2.] * 11 + [1.] * 20
 
 
-    def activity_rule(n, c, t):
-        un_i = n.current_activity
-        left_index = (c - 1) % nx
-        un_i_m1 = n.activity_of(left_index)
-        right_index = (c + 1) % nx
-        un_i_p1 = n.activity_of(right_index)
+    def activity_rule(ctx):
+        un_i = ctx.current_activity
+        left_index = (ctx.cell_index - 1) % nx
+        un_i_m1 = ctx.activity_of(left_index)
+        right_index = (ctx.cell_index + 1) % nx
+        un_i_p1 = ctx.activity_of(right_index)
         return un_i + nu * dt / dx**2 * (un_i_p1 - 2 * un_i + un_i_m1)
 
 

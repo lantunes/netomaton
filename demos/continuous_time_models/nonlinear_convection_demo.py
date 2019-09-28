@@ -19,11 +19,11 @@ if __name__ == "__main__":
     initial_conditions = [1.]*10 + [2.]*11 + [1.]*20
 
 
-    def activity_rule(n, c, t):
-        un_i = n.current_activity
+    def activity_rule(ctx):
+        un_i = ctx.current_activity
         # the space derivative is handled using the Backward Difference, i.e. the value of the neighbour to the left
-        left_index = (c - 1) % nx
-        un_i_m1 = n.activity_of(left_index)
+        left_index = (ctx.cell_index - 1) % nx
+        un_i_m1 = ctx.activity_of(left_index)
         return un_i - un_i * dt / dx * (un_i - un_i_m1)
 
 

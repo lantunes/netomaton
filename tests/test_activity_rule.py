@@ -1,25 +1,28 @@
 import netomaton.network as adjacency
 import netomaton.rules as rules
-from netomaton import Neighbourhood, evolve
+from netomaton import EvolutionContext, evolve
 from .rule_test import *
 
 
-class Testrules(RuleTest):
+class TestRules(RuleTest):
 
     def test_majority_rule(self):
-        actual = rules.majority_rule(Neighbourhood([1, 2, 1, 3, 4], [0, 1, 2, 3, 4], [1., 1., 1., 1., 1.], 0))
+        actual = rules.majority_rule(EvolutionContext(0, 1, [1, 2, 1, 3, 4], [0, 1, 2, 3, 4], [1., 1., 1., 1., 1.], 0,
+                                                      None, None))
         expected = 1
         self.assertEqual(expected, actual)
 
-        actual = rules.majority_rule(Neighbourhood([2, 2, 2, 2, 2], [0, 1, 2, 3, 4], [1., 1., 1., 1., 1.], 0))
+        actual = rules.majority_rule(EvolutionContext(0, 1, [2, 2, 2, 2, 2], [0, 1, 2, 3, 4], [1., 1., 1., 1., 1.], 0,
+                                                      None, None))
         expected = 2
         self.assertEqual(expected, actual)
 
-        actual = rules.majority_rule(Neighbourhood([3], [0], [1.], 0))
+        actual = rules.majority_rule(EvolutionContext(0, 1, [3], [0], [1.], 0, None, None))
         expected = 3
         self.assertEqual(expected, actual)
 
-        actual = rules.majority_rule(Neighbourhood([0., 0., 5423.], [0, 1, 2], [1., 1., 1.], 0))
+        actual = rules.majority_rule(EvolutionContext(0, 1, [0., 0., 5423.], [0, 1, 2], [1., 1., 1.], 0,
+                                                      None, None))
         expected = 0.
         self.assertEqual(expected, actual)
 
@@ -163,7 +166,7 @@ class Testrules(RuleTest):
         initial_conditions = np.array(expected[0]).flatten()
         adjacencies = adjacency.cellular_automaton(n=size, r=1)
         activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=rows,
-                                            activity_rule=lambda n, c, t: rules.nks_ca_rule(n, c, rule))
+                                            activity_rule=lambda ctx: rules.nks_ca_rule(ctx, rule))
         return activities
 
     @staticmethod
@@ -172,7 +175,7 @@ class Testrules(RuleTest):
         initial_conditions = np.array(expected[0]).flatten()
         adjacencies = adjacency.cellular_automaton(n=size, r=r)
         activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=rows,
-                                            activity_rule=lambda n, c, t: rules.binary_ca_rule(n, c, rule))
+                                            activity_rule=lambda ctx: rules.binary_ca_rule(ctx, rule))
         return activities
 
     @staticmethod
@@ -181,7 +184,7 @@ class Testrules(RuleTest):
         initial_conditions = np.array(expected[0]).flatten()
         adjacencies = adjacency.cellular_automaton(n=size, r=1)
         activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=rows,
-                                            activity_rule=lambda n, c, t: rules.totalistic_ca(n, k, rule))
+                                            activity_rule=lambda ctx: rules.totalistic_ca(ctx, k, rule))
         return activities
 
     @staticmethod
@@ -190,5 +193,5 @@ class Testrules(RuleTest):
         initial_conditions = np.array(expected[0]).reshape(rows * size).flatten()
         adjacencies = adjacency.cellular_automaton2d(rows=rows, cols=size, r=1, neighbourhood=neighbourhood)
         activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=steps,
-                                            activity_rule=lambda n, c, t: rules.totalistic_ca(n, k=2, rule=rule))
+                                            activity_rule=lambda ctx: rules.totalistic_ca(ctx, k=2, rule=rule))
         return np.array(activities).reshape((steps, rows, size))

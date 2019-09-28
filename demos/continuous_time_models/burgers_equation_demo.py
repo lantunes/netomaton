@@ -40,12 +40,12 @@ if __name__ == "__main__":
                           3.68584073,  3.74867259,  3.81150444,  3.87433629,  3.93716815,  4.]
 
 
-    def activity_rule(n, c, t):
-        un_i = n.current_activity
-        left_index = (c - 1) % nx
-        un_i_m1 = n.activity_of(left_index)
-        right_index = (c + 1) % nx
-        un_i_p1 = n.activity_of(right_index)
+    def activity_rule(ctx):
+        un_i = ctx.current_activity
+        left_index = (ctx.cell_index - 1) % nx
+        un_i_m1 = ctx.activity_of(left_index)
+        right_index = (ctx.cell_index + 1) % nx
+        un_i_p1 = ctx.activity_of(right_index)
         return un_i - un_i * dt/dx * (un_i - un_i_m1) + nu * dt/dx**2 * (un_i_p1 - 2*un_i + un_i_m1)
 
 

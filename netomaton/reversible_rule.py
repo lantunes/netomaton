@@ -12,7 +12,7 @@ class ReversibleRule:
         """
         self._activity_rule = activity_rule
 
-    def activity_rule(self, n, c, t):
-        regular_result = self._activity_rule(n, c, t)
-        new_result = regular_result ^ n.past_activity_of(c)
+    def activity_rule(self, ctx):
+        regular_result = self._activity_rule(ctx)
+        new_result = regular_result ^ ctx.past_activity_of(ctx.cell_index)
         return new_result

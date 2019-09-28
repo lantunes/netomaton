@@ -29,18 +29,16 @@ class HopfieldNet:
                     else:
                         self._adjacency_matrix[i, j] += p[i]*p[j]
 
-    def _rule(self, n, c, t):
+    def _rule(self, ctx):
         """
         Peforms a linear combination of the neighbourhood activities and the corresponding weights. If the combined
         value is greater than or equal to 0, then 1 is returned, otherwise -1 is returned.
-        :param n: the neighbourhood of the cell, which, in this case, does not include the cell itself
-        :param c: the index of the cell that this function is being evaluated for
-        :param t: the timestep of the automaton evolution
+        :param ctx: the EvolutionContext; note that the neighbourhood of the cell, in this case, does not include the cell itself
         :return: the new value of the cell
         """
         V = 0
-        for i, _ in enumerate(n.activities):
-            V += n.weights[i] * n.activities[i]
+        for i, _ in enumerate(ctx.activities):
+            V += ctx.weights[i] * ctx.activities[i]
         return 1 if V >= 0 else -1
 
     @property

@@ -7,7 +7,7 @@ if __name__ == '__main__':
 
     initial_conditions = np.random.randint(0, 2, 200)
 
-    r = ntm.ReversibleRule(lambda n, c, t: ntm.rules.nks_ca_rule(n, c, 90))
+    r = ntm.ReversibleRule(lambda ctx: ntm.rules.nks_ca_rule(ctx, 90))
 
     activities, connectivities = ntm.evolve(initial_conditions, adjacencies, timesteps=100,
                                             activity_rule=r.activity_rule, past_conditions=[initial_conditions])

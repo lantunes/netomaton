@@ -30,8 +30,8 @@ if __name__ == "__main__":
 
     dt = 0.025000
 
-    def activity_rule(n, c, t):
-        x_n, v_n = n.current_activity
+    def activity_rule(ctx):
+        x_n, v_n = ctx.current_activity
         x_new = x_n + (dt * v_n)
         v_new = v_n + (dt * (-6 * x_new))
         return x_new, v_new

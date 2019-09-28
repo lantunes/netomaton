@@ -10,7 +10,7 @@ class TuringMachine:
     def adjacencies(self):
         pass
 
-    def activity_rule(self, n, c, t):
+    def activity_rule(self, ctx):
         pass
 
 
@@ -31,17 +31,17 @@ class TapeCentricTuringMachine(TuringMachine):
     def adjacencies(self):
         return cellular_automaton(self._num_cells)
 
-    def activity_rule(self, n, c, t):
-        if t != self._current_timestep:
-            self._current_timestep = t
+    def activity_rule(self, ctx):
+        if ctx.timestep != self._current_timestep:
+            self._current_timestep = ctx.timestep
         head_state, head_pos = self._head_history[self._current_timestep - 1]
-        cell_state = n.current_activity
-        if c == head_pos:
+        cell_state = ctx.current_activity
+        if ctx.cell_index == head_pos:
             try:
                 next_head_state, new_cell_state, direction = self._rule_table[head_state][cell_state]
             except KeyError as err:
                 raise Exception("no rule defined for head state %s, input %s" % (head_state, cell_state)) from err
-            self._head_history.append((next_head_state, n.neighbour_indices[direction]))
+            self._head_history.append((next_head_state, ctx.neighbour_indices[direction]))
             return new_cell_state
         return cell_state
 
@@ -80,8 +80,9 @@ class HeadCentricTuringMachine(TuringMachine):
     def initial_conditions(self):
         return self._initial_conditions
 
-    def activity_rule(self, n, c, input_from_tape):
-        head_state, head_pos = n.current_activity
+    def activity_rule(self, ctx):
+        input_from_tape = ctx.input
+        head_state, head_pos = ctx.current_activity
         try:
             next_head_state, val_to_write, direction = self._rule_table[head_state][input_from_tape]
         except KeyError as err:

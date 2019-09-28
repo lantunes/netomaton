@@ -8,21 +8,40 @@ import scipy.sparse as sparse
 from .connectivity_rule import *
 
 
-class Neighbourhood(object):
+class EvolutionContext(object):
     """
-    A neighbourhood consists of the states, identities (as cell indices), and adjancency matrix weights of the cells
+    The evolution context consists of the states, identities (as cell indices), and adjancency matrix weights of the cells
     that influence a given cell. Each of the properties (i.e. activities, neighbour_indices, weights) are represented as
     lists. Each of the lists are of the same size, and the first item in each list corresponds to the first cell in the
     neighbourhood, etc. The neighbourhood of a cell also contains the cell's current activity (i.e. the activity as of
     the last timestep).
     """
-    def __init__(self, activities, neighbour_indices, weights, current_activity, perturbation=None, past_activities=None):
+    def __init__(self, cell_index, timestep, activities, neighbour_indices, weights, current_activity,
+                 past_activities, input):
+        self._cell_index = cell_index
+        self._timestep = timestep
         self._activities = activities
         self._neighbour_indices = neighbour_indices
         self._weights = weights
         self._current_activity = current_activity
-        self._perturbation = perturbation
         self._past_activities = past_activities
+        self._input = input
+
+    @property
+    def cell_index(self):
+        """
+        Returns the current cell's index.
+        :return: the index of the current cell
+        """
+        return self._cell_index
+
+    @property
+    def timestep(self):
+        """
+        Returns the current timestep.
+        :return: the current timestep
+        """
+        return self._timestep
 
     def activity_of(self, cell_index):
         """
@@ -82,10 +101,6 @@ class Neighbourhood(object):
         return self._current_activity
 
     @property
-    def perturbation(self):
-        return self._perturbation
-
-    @property
     def past_activities(self):
         """
         A list of lists containing the past activities. The last entry in the list (with index -1) will contain
@@ -94,6 +109,41 @@ class Neighbourhood(object):
         :return: a list of lists containing the past activities
         """
         return self._past_activities
+
+    @property
+    def input(self):
+        """
+        Returns the current input to the cell, or None if no input was provided.
+        :return: the input to the cell, or None if no input was provided
+        """
+        return self._input
+
+
+class PerturbationContext(object):
+    """
+    The PerturbationContext contains the cell index, activity and input for a particular timestep.
+    """
+    def __init__(self, cell_index, cell_activity, timestep, input):
+        self._cell_index = cell_index
+        self._cell_activity = cell_activity
+        self._timestep = timestep
+        self._input = input
+
+    @property
+    def cell_index(self):
+        return self._cell_index
+
+    @property
+    def cell_activity(self):
+        return self._cell_activity
+
+    @property
+    def timestep(self):
+        return self._timestep
+
+    @property
+    def input(self):
+        return self._input
 
 
 def evolve(initial_conditions, adjacency_matrix, activity_rule, timesteps=None, input=None, connectivity_rule=None,
@@ -119,17 +169,17 @@ def evolve(initial_conditions, adjacency_matrix, activity_rule, timesteps=None, 
                   current timestep number, returns the input for that timestep, or None to signal the end of the
                   evolution; if a list is provided, each item in the list contains the input for each cell in the
                   network for a particular timestep; the activity_rule (and any perturbation) will receive the current
-                  input value for a given cell instead of the current timestep number itself, when the input parameter
-                  is provided; either the input or timesteps parameter must be provided, but not both; if the input
-                  parameter is provided, it will override the timesteps parameter, and the timesteps parameter will
-                  have no effect; the first item in the input list is given to the network at t=1, the second at t=2,
-                  etc. (i.e. no input is specified for the initial state); specifying the input implies an automaton
-                  whose evolution is driven by an external signal
+                  input value for a given cell through the EvolutionContext, when the input parameter is provided;
+                  either the input or timesteps parameter must be provided, but not both; if the input parameter is
+                  provided, it will override the timesteps parameter, and the timesteps parameter will have no effect;
+                  the first item in the input list is given to the network at t=1, the second at t=2, etc. (i.e. no
+                  input is specified for the initial state); specifying the input implies an automaton whose evolution
+                  is driven by an external signal
     :param connectivity_rule: the rule that will determine the connectivity of the network
     :param perturbation: a function that defines a perturbation applied as the system evolves; the function accepts
-                         three parameters: c, which represents the cell index, t, which represents the timestep, and a,
-                         which represents the computed activity for the cell given by c. The function must return the
-                         new activity for cell c at timestep t.
+                         one parameter: the PerturbationContext. It contains the cell index,  the timestep, the computed
+                         activity for the cell given by c, and its input (or None if there is no input). The function
+                         must return the new activity for the cell at the timestep.
     :param past_conditions: a list of lists that represent activities of the network that existed before the initial
                            timestep; if this parameter is provided, then the Neighbourhood will contain past_activities;
                            there will be as many past_activities entries as there are entries in this list
@@ -191,12 +241,12 @@ def _evolve_activities(initial_conditions, adjacency_matrix, activity_rule, step
             activities = [last_activities[i] for i in nonzero_indices]
             past_activities = [[p[i] for i in nonzero_indices] for p in past] if past else None
             weights = weight_map[c]
-            cell_in = inp[c] if _is_indexable(inp) else inp
-            neighbourhood = Neighbourhood(activities, nonzero_indices, weights, last_activities[c],
-                                          perturbation, past_activities)
-            activities_over_time[t][c] = activity_rule(neighbourhood, c, cell_in)
+            cell_in = None if inp == "__timestep__" else inp[c] if _is_indexable(inp) else inp
+            context = EvolutionContext(c, t, activities, nonzero_indices, weights, last_activities[c],
+                                       past_activities, cell_in)
+            activities_over_time[t][c] = activity_rule(context)
             if perturbation is not None:
-                activities_over_time[t][c] = perturbation(c, activities_over_time[t][c], cell_in)
+                activities_over_time[t][c] = perturbation(PerturbationContext(c, activities_over_time[t][c], t, cell_in))
 
         t += 1
 
@@ -234,7 +284,7 @@ class _TimestepInputFunction:
     def __call__(self, t):
         if t == self._num_steps:
             return None
-        return t
+        return "__timestep__"
 
 
 class _ListInputFunction:
@@ -261,7 +311,7 @@ def _extend_connectivities(connectivities_over_time, adjacency_matrix):
     return np.append(connectivities_over_time, arr, axis=0)
 
 
-def _process_cells(cell_indices, inp, last_activities, past):
+def _process_cells(cell_indices, t, inp, last_activities, past):
     global nonzero_index_map
     global weight_map
     global fn_activity
@@ -272,12 +322,12 @@ def _process_cells(cell_indices, inp, last_activities, past):
         activities = [last_activities[i] for i in nonzero_indices]
         past_activities = [[p[i] for i in nonzero_indices] for p in past] if past else None
         weights = weight_map[c]
-        cell_in = inp[c] if _is_indexable(inp) else inp
-        neighbourhood = Neighbourhood(activities, nonzero_indices, weights, last_activities[c],
-                                      fn_perturb, past_activities)
-        cell_activity = fn_activity(neighbourhood, c, cell_in)
+        cell_in = None if inp == "__timestep__" else inp[c] if _is_indexable(inp) else inp
+        context = EvolutionContext(c, t, activities, nonzero_indices, weights, last_activities[c],
+                                   past_activities, cell_in)
+        cell_activity = fn_activity(context)
         if fn_perturb is not None:
-            cell_activity = fn_perturb(c, cell_activity, cell_in)
+            cell_activity = fn_perturb(PerturbationContext(c, cell_activity, t, cell_in))
         results[c] = cell_activity
     return results
 
@@ -320,7 +370,7 @@ def _evolve_activities_parallel(initial_conditions, adjacency_matrix, activity_r
         if t == len(activities_over_time):
             activities_over_time = _extend_activities(activities_over_time, initial_conditions)
 
-        args = [(chunk, inp, last_activities, past) for chunk in cell_index_chunks]
+        args = [(chunk, t, inp, last_activities, past) for chunk in cell_index_chunks]
         map_result = pool.starmap_async(_process_cells, args)
 
         for results in map_result.get():
@@ -374,12 +424,12 @@ def _evolve_both(initial_conditions, adjacency_matrix, activity_rule, steps, inp
             activities = last_activities[nonzero_indices]
             past_activities = [[p[i] for i in nonzero_indices] for p in past] if past else None
             weights = row[nonzero_indices]
-            cell_in = inp[c] if _is_indexable(inp) else inp
-            neighbourhood = Neighbourhood(activities, nonzero_indices, weights, last_activities[c],
-                                          perturbation, past_activities)
-            activities_over_time[t][c] = activity_rule(neighbourhood, c, cell_in)
+            cell_in = None if inp == "__timestep__" else inp[c] if _is_indexable(inp) else inp
+            context = EvolutionContext(c, t, activities, nonzero_indices, weights, last_activities[c],
+                                       past_activities, cell_in)
+            activities_over_time[t][c] = activity_rule(context)
             if perturbation is not None:
-                activities_over_time[t][c] = perturbation(c, activities_over_time[t][c], cell_in)
+                activities_over_time[t][c] = perturbation(PerturbationContext(c, activities_over_time[t][c], t, cell_in))
 
         connectivities = connectivity_rule(last_connectivities, last_activities, t)
         connectivities_over_time[t] = connectivities
