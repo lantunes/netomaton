@@ -95,15 +95,74 @@ ntm.plot_grid(activities)
 
 <img src="../../resources/diffusion.png" width="55%"/>
 
+The full source code for this example can be found [here](simple_diffusion_demo.py).
+
 Note that in the automaton above, a node's neighbourhood influences the
 state of the node, and the system can be thought of as a 1D Cellular
-Automaton with continuous state values. (The automaton above also
-closely resembles the plot at the top of Wolfram's NKS, page 163.)
+Automaton with continuous state values evolving in continuous time.
+(The automaton above also closely resembles the plot at the top of
+Wolfram's NKS, page 163.)
+
+The examples above involve working with the first derivative of a
+variable with respect to time. However, it is also possible to implement
+models with higher-order derivatives of a variable with respect to time.
+The following example demonstrates an implementation of the 1D Wave
+Equation, ∂²u/∂t² = ∂²u/∂x²:
+
+```python
+import netomaton as ntm
+import numpy as np
+
+nx = 401  # the number of nodes (i.e. the number of points in the grid)
+nt = 255  # the number of timesteps
+dx = 0.1  # the distance between any pair of adjacent points
+dt = .05  # the amount of time each timestep covers
+
+space = np.linspace(20, -20, nx)
+initial_conditions = [np.exp(-x ** 2) for x in space]
+
+adjacency_matrix = ntm.network.cellular_automaton(nx)
+
+def activity_rule(ctx):
+    un_i = ctx.current_activity
+    left_index = (ctx.node_index - 1) % nx
+    un_i_m1 = ctx.activity_of(left_index)
+    right_index = (ctx.node_index + 1) % nx
+    un_i_p1 = ctx.activity_of(right_index)
+    # the activity not at the previous timestep, but the timestep before that
+    un_m1_i = ctx.past_activity_of(ctx.node_index)
+    return ((dt**2 * (un_i_p1 - 2*un_i + un_i_m1)) / dx**2) + (2*un_i - un_m1_i)
+
+activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, activity_rule, timesteps=nt,
+                           past_conditions=[initial_conditions])
+
+ntm.plot_grid(activities)
+
+ntm.animate_plot1D(np.linspace(0, 2, nx), activities)
+```
+
+<img src="../../resources/wave_equation.png" width="55%"/>
+
+The full source code for this example can be found [here](wave_equation_demo.py).
+
+Note the use of the `past_conditions` parameter of the `evolve`
+function. Setting the past conditions makes part of the history of the
+evolution available in the `NodeContext`. (The automaton above also
+closely resembles the plot in the middle of Wolfram's NKS, page 163.)
 
 The [Gray-Scott Reaction-Diffusion model](../reaction_diffusion/README.md)
-and the [Hopfield-Tank Nerual Network](../hopfield_tank_tsp/README.md)
+and the [Hopfield-Tank Neural Network](../hopfield_tank_tsp/README.md)
 are also examples of continuous-time models that have been implemented
 in this project as Network Automata.
+
+Finally, a good resource for learning more about working with partial
+differential equations computationally is [CFD Python](https://github.com/barbagroup/CFDPython/blob/master/README.md).
+Several examples from that resource are implemented with Netomaton here:
+
+* [1D Linear Convection](linear_convection_demo.py)
+* [1D Non-linear Convection](nonlinear_convection_demo.py)
+* [1D Diffusion](diffusion_demo.py)
+* [Burger's Equation](burgers_equation_demo.py)
 
 See the following for more information:
 
