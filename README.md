@@ -22,7 +22,7 @@ matplotlib 3.0.2, and networkx 2.2.
 ### What are Network Automata?
 
 The [Wikipedia entry](https://en.wikipedia.org/wiki/Network_automaton)
-for Network Automata states:
+for Network Automata has stated:
 
 > A network automaton (plural network automata) is a mathematical system consisting of a network of nodes that evolves over time according to predetermined rules. It is similar in concept to a cellular automaton, but much less studied.
 
@@ -57,6 +57,12 @@ A network may have nodes added or removed at any given timestep; however,
 this framework will consider that a network has a total fixed number of
 nodes at all times, and that nodes may become connected or fully
 disconnected from the network instead.
+
+To learn more, please refer to the scientific literature on the subject:
+
+> Sayama, Hiroki, and Craig Laramee. "Generative network automata: A generalized framework for modeling adaptive network dynamics using graph rewritings." Adaptive Networks. Springer, Berlin, Heidelberg, 2009. 311-332.
+
+> Smith, David MD, et al. "Network automata: Coupling structure and function in dynamic networks." Advances in Complex Systems 14.03 (2011): 317-339.
 
 ### Examples
 
