@@ -100,6 +100,11 @@ state of the node, and the system can be thought of as a 1D Cellular
 Automaton with continuous state values. (The automaton above also
 closely resembles the plot at the top of Wolfram's NKS, page 163.)
 
+The [Gray-Scott Reaction-Diffusion model](../reaction_diffusion/README.md)
+and the [Hopfield-Tank Nerual Network](../hopfield_tank_tsp/README.md)
+are also examples of continuous-time models that have been implemented
+in this project as Network Automata.
+
 See the following for more information:
 
 * https://www.myphysicslab.com/explain/numerical-solution-en.html
