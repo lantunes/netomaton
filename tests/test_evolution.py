@@ -8,7 +8,7 @@ import netomaton as ntm
 class TestFunctions(unittest.TestCase):
 
     def test_neighbourhood(self):
-        adjacencies = [[1., .9, 0., 0., 1.],
+        adjacency_matrix = [[1., .9, 0., 0., 1.],
                        [1., 1., 1., 0., 0.],
                        [0., 1., 1., 1., 0.],
                        [0., 0., 1., 1., 1.],
@@ -16,29 +16,30 @@ class TestFunctions(unittest.TestCase):
 
         initial_conditions = [2., 3., 4., 5., 6.]
 
-        def evaluate_neighbourhoods(n, c, t):
+        def evaluate_neighbourhoods(ctx):
+            c = ctx.node_index
             if c == 0:
-                np.testing.assert_equal([2., 3., 6.], n.activities)
-                np.testing.assert_equal([0, 1, 4], n.neighbour_indices)
-                np.testing.assert_equal([1., 1., 1.], n.weights)
+                np.testing.assert_equal([2., 3., 6.], ctx.activities)
+                np.testing.assert_equal([0, 1, 4], ctx.neighbour_indices)
+                np.testing.assert_equal([1., 1., 1.], ctx.weights)
             elif c == 1:
-                np.testing.assert_equal([2., 3., 4.], n.activities)
-                np.testing.assert_equal([0, 1, 2], n.neighbour_indices)
-                np.testing.assert_equal([.9, 1., 1.], n.weights)
+                np.testing.assert_equal([2., 3., 4.], ctx.activities)
+                np.testing.assert_equal([0, 1, 2], ctx.neighbour_indices)
+                np.testing.assert_equal([.9, 1., 1.], ctx.weights)
             elif c == 2:
-                np.testing.assert_equal([3., 4., 5.], n.activities)
-                np.testing.assert_equal([1, 2, 3], n.neighbour_indices)
-                np.testing.assert_equal([1., 1., 1.], n.weights)
+                np.testing.assert_equal([3., 4., 5.], ctx.activities)
+                np.testing.assert_equal([1, 2, 3], ctx.neighbour_indices)
+                np.testing.assert_equal([1., 1., 1.], ctx.weights)
             elif c == 3:
-                np.testing.assert_equal([4., 5., 6.], n.activities)
-                np.testing.assert_equal([2, 3, 4], n.neighbour_indices)
-                np.testing.assert_equal([1., 1., 1.], n.weights)
+                np.testing.assert_equal([4., 5., 6.], ctx.activities)
+                np.testing.assert_equal([2, 3, 4], ctx.neighbour_indices)
+                np.testing.assert_equal([1., 1., 1.], ctx.weights)
             elif c == 4:
-                np.testing.assert_equal([2., 5., 6.], n.activities)
-                np.testing.assert_equal([0, 3, 4], n.neighbour_indices)
-                np.testing.assert_equal([1., 1., .8], n.weights)
+                np.testing.assert_equal([2., 5., 6.], ctx.activities)
+                np.testing.assert_equal([0, 3, 4], ctx.neighbour_indices)
+                np.testing.assert_equal([1., 1., .8], ctx.weights)
 
-        ntm.evolve(initial_conditions, adjacencies, timesteps=2, activity_rule=evaluate_neighbourhoods)
+        ntm.evolve(initial_conditions, adjacency_matrix, timesteps=2, activity_rule=evaluate_neighbourhoods)
 
     def test_init_simple_1(self):
         arr = ntm.init_simple(1)
@@ -133,3 +134,79 @@ class TestFunctions(unittest.TestCase):
         arr = ntm.init_simple2d(rows=2, cols=3)
         self.assertEqual(len(arr), 6)
         self.assertEqual(arr, [0, 0, 0, 0, 1, 0])
+
+    def test_past_activities_single_past(self):
+        adjacency_matrix = [
+            [1, 1],
+            [1, 1]
+        ]
+
+        initial_conditions = [1, 1]
+
+        past_conditions = [
+            [0, 0]
+        ]
+
+        def activity_rule(ctx):
+            p = ctx.past_activities
+            t = ctx.timestep
+            if t == 1:
+                self.assertEqual(p, [[0, 0]])
+            if t == 2:
+                self.assertEqual(p, [[1, 1]])
+            if t == 3:
+                self.assertEqual(p, [[2, 2]])
+            return ctx.current_activity + 1
+
+        activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, activity_rule, timesteps=4,
+                                   past_conditions=past_conditions)
+
+        np.testing.assert_equal(activities, [
+            [1, 1],
+            [2, 2],
+            [3, 3],
+            [4, 4]
+        ])
+
+    def test_past_activities_multiple_past(self):
+        adjacency_matrix = [
+            [1, 1],
+            [1, 1]
+        ]
+
+        initial_conditions = [1, 1]
+
+        past_conditions = [
+            [-1, -1],
+            [0, 0]
+        ]
+
+        def activity_rule(ctx):
+            p = ctx.past_activities
+            t = ctx.timestep
+            if t == 1:
+                self.assertEqual(p, [
+                    [-1, -1],
+                    [0, 0]
+                ])
+            if t == 2:
+                self.assertEqual(p, [
+                    [0, 0],
+                    [1, 1]
+                ])
+            if t == 3:
+                self.assertEqual(p, [
+                    [1, 1],
+                    [2, 2]
+                ])
+            return ctx.current_activity + 1
+
+        activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, activity_rule, timesteps=4,
+                                   past_conditions=past_conditions)
+
+        np.testing.assert_equal(activities, [
+            [1, 1],
+            [2, 2],
+            [3, 3],
+            [4, 4]
+        ])

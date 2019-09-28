@@ -31,14 +31,14 @@ if __name__ == "__main__":
 
     tape = "bbbbbbaeaaaaaaa"
 
-    tm = TapeCentricTuringMachine(num_cells=len(tape), rule_table=rule_table,
+    tm = TapeCentricTuringMachine(n=len(tape), rule_table=rule_table,
                                   initial_head_state=HEAD['up'], initial_head_position=8)
 
     initial_conditions = [CELL[t] for t in tape]
 
-    activities, _ = ntm.evolve(initial_conditions, tm.adjacencies, activity_rule=tm.activity_rule, timesteps=58)
+    activities, _ = ntm.evolve(initial_conditions, tm.adjacency_matrix, activity_rule=tm.activity_rule, timesteps=58)
 
-    ntm.plot_grid(activities, cell_annotations=tm.head_activities(activities), show_grid=True)
+    ntm.plot_grid(activities, node_annotations=tm.head_activities(activities), show_grid=True)
 
     # The following is a longer evolution, to show that ECA Rule 110 is emulated;
     #  it will start when the plot rendered above is closed.
@@ -47,10 +47,10 @@ if __name__ == "__main__":
 
     initial_conditions = [CELL[t] for t in tape]
 
-    tm = TapeCentricTuringMachine(num_cells=len(tape), rule_table=rule_table,
+    tm = TapeCentricTuringMachine(n=len(tape), rule_table=rule_table,
                                   initial_head_state=HEAD['up'], initial_head_position=52)
 
-    activities, _ = ntm.evolve(initial_conditions, tm.adjacencies, activity_rule=tm.activity_rule, timesteps=5000)
+    activities, _ = ntm.evolve(initial_conditions, tm.adjacency_matrix, activity_rule=tm.activity_rule, timesteps=5000)
 
     head_activities = tm.head_activities(activities)
 
@@ -68,4 +68,4 @@ if __name__ == "__main__":
             compressed_head_activities.append(row)
             furthest_head_idx = head_idx
 
-    ntm.plot_grid(compressed_activities, cell_annotations=compressed_head_activities, show_grid=True)
+    ntm.plot_grid(compressed_activities, node_annotations=compressed_head_activities, show_grid=True)

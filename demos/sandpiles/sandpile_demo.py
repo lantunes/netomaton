@@ -8,13 +8,13 @@ if __name__ == '__main__':
 
     initial_conditions = np.random.randint(5, size=3600)
 
-    def perturb(c, a, t):
-        # drop a grain on some cell at the 85th timestep
-        if t == 85 and c == 1034:
-            return a + 1
-        return a
+    def perturb(pctx):
+        # drop a grain on some node at the 85th timestep
+        if pctx.timestep == 85 and pctx.node_index == 1034:
+            return pctx.node_activity + 1
+        return pctx.node_activity
 
-    activities, _ = ntm.evolve(initial_conditions, sandpile.adjacencies, timesteps=110,
+    activities, _ = ntm.evolve(initial_conditions, sandpile.adjacency_matrix, timesteps=110,
                                activity_rule=sandpile.activity_rule, perturbation=perturb)
 
     ntm.animate(activities, shape=(60, 60), interval=150)

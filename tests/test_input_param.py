@@ -11,19 +11,19 @@ class TestInputParam:
         states = {'locked': 0, 'unlocked': 1}
         transitions = {'PUSH': 'p', 'COIN': 'c'}
 
-        adjacencies = [[1]]
+        adjacency_matrix = [[1]]
 
         initial_conditions = [states['locked']]
 
         events = "cpcpp"
 
-        def fsm_rule(n, c, event):
-            if event == transitions['PUSH']:
+        def fsm_rule(ctx):
+            if ctx.input == transitions['PUSH']:
                 return states['locked']
             else:
                 # COIN event
                 return states['unlocked']
 
-        activities, _ = ntm.evolve(initial_conditions, adjacencies, input=events, activity_rule=fsm_rule)
+        activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, input=events, activity_rule=fsm_rule)
 
         np.testing.assert_equal([[0], [1], [0], [1], [0], [0]], activities)

@@ -11,7 +11,7 @@ where **U**, **V**, and **P** represent the reactants. The time
 evolution of the system is described by a pair of partial differential
 equations.
 
-This system is modelled here as a 2D continuous cellular automaton with a
+This system is modelled here as a 2D continuous Cellular Automaton with a
 von Neumann neighbourhood of radius 1. The state of a cell consists of
 the tuple (*u*, *v*), where *u* is the concentration of **U**, and *v* is the
 concentration of **V**. Both *u* and *v* assume continuous values between 0 and 1.

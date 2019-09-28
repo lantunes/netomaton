@@ -1,6 +1,6 @@
 ### Density Classification with Evolved 1D Cellular Automata
 
-When creating a 1D cellular automaton adjacency matrix, the size of the
+When creating a 1D Cellular Automaton adjacency matrix, the size of the
 cell neighbourhood can be varied by setting the parameter _*r*_. The
 value of _*r*_ represents the number of cells to the left and to the
 right of the cell under consideration. Thus, to get a neighbourhood
@@ -8,12 +8,12 @@ size of 3, _*r*_ should be 1, and to get a neighbourhood size of 7,
 _*r*_ should be 3.
 
 As an example, consider the work of M. Mitchell et al., carried out in
-the 1990s, involving the creation (discovery) of a cellular automaton
+the 1990s, involving the creation (discovery) of a Cellular Automaton
 that solves the density classification problem: if the initial random
-binary vector contains more than 50% of 1s, then a cellular automaton
+binary vector contains more than 50% of 1s, then a Cellular Automaton
 that solves this problem will give rise to a vector that contains only
 1s after a fixed number of time steps, and likewise for the case of 0s.
-A very effective cellular automaton that solves this problem most of
+A very effective Cellular Automaton that solves this problem most of
 the time was found using a Genetic Algorithm.
 
 ```python
@@ -21,7 +21,7 @@ import netomaton as ntm
 import numpy as np
 
 # set r to 3, for a neighbourhood size of 7
-adjacencies = ntm.network.cellular_automaton(149, r=3)
+adjacency_matrix = ntm.network.cellular_automaton(149, r=3)
 
 initial_conditions = np.random.randint(0, 2, 149)
 
@@ -30,8 +30,8 @@ rule_number = 6667021275756174439087127638698866559
 
 print("density of 1s: %s" % (np.count_nonzero(initial_conditions) / 149))
 
-activities, connectivities = ntm.evolve(initial_conditions, adjacencies, timesteps=149,
-                                        activity_rule=lambda n, c, t: ntm.rules.binary_ca_rule(n, c, rule_number))
+activities, adjacencies = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=149,
+                                     activity_rule=lambda ctx: ntm.rules.binary_ca_rule(ctx, rule_number))
 
 ntm.plot_grid(activities)
 ```

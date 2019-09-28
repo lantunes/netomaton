@@ -1,7 +1,7 @@
 ### Hopfield Network
 
 The Hopfield Network can be thought of as a network automaton with a
-complete graph. The nodes (or cells, or neurons) are binary units, and
+complete graph. The nodes (or neurons) are binary units, and
 the activity rule is a simple threshold rule, where the weighted inputs
 to a node are summed and compared to a threshold value. The weights are
 defined in the adjacency matrix.
@@ -38,13 +38,13 @@ one = [-1 if x == 0 else x for x in one]
 two = [-1 if x == 0 else x for x in two]
 zero = [-1 if x == 0 else x for x in zero]
 
-hopfield_net = HopfieldNet(num_cells=30)
+hopfield_net = HopfieldNet(n=30)
 
 hopfield_net.train([zero, one, two])
 ```
 
 As is seen above, we must instantiate an instance of a `HopfieldNet`,
-specifying the number of cells in the network. Then, we must call
+specifying the number of nodes in the network. Then, we must call
 `train`, providing a list of training examples.
 
 Using the Hopfield Net involves providing a potentially incomplete
@@ -64,11 +64,11 @@ half_two = [-1 if x == 0 else x for x in half_two]
 
 initial_conditions = half_two
 
-activities, connectivities = evolve(initial_conditions, hopfield_net.adjacency_matrix, timesteps=155,
-                                    activity_rule=hopfield_net.activity_rule)
+activities, adjacencies = evolve(initial_conditions, hopfield_net.adjacency_matrix, timesteps=155,
+                                 activity_rule=hopfield_net.activity_rule)
 
 # view the time evolution of the Hopfield net as it completes the given pattern
-animate(activities, shape=(6, 5))
+animate(activities[::hopfield_net.num_nodes], shape=(6, 5), interval=150)
 ```
 
 <img src="../../resources/hopfield.gif" width="65%"/>

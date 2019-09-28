@@ -36,7 +36,7 @@ class TestHopfieldNet(unittest.TestCase):
         zero = [-1 if x == 0 else x for x in zero]
         P = [zero, one, two]
 
-        hopfield_net = HopfieldNet(num_cells=30)
+        hopfield_net = HopfieldNet(n=30)
         hopfield_net.train(P)
 
         expected_weights = [[ 0, -1, -1, -1, 1, -1, 1, -1, 3, -1, -1, 1, -1, 3, -1, -1, 3, 1, 1, -1, 1, 1, -1, 1, -1, 3, 1, -1, 1, 3],

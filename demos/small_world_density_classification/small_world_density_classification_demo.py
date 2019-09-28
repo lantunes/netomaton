@@ -11,13 +11,13 @@ if __name__ == '__main__':
     running on a ring lattice." The code below attempts to reproduce the experiment they are referring to.
     """
 
-    adjacencies = ntm.network.watts_strogatz_graph(n=149, k=8, p=0.5)
+    adjacency_matrix = ntm.network.watts_strogatz_graph(n=149, k=8, p=0.5)
 
     initial_conditions = np.random.randint(0, 2, 149)
 
     print("density of 1s: %s" % (np.count_nonzero(initial_conditions) / 149))
 
-    activities, connectivities = ntm.evolve(initial_conditions, adjacencies, timesteps=149,
-                                            activity_rule=lambda n, c, t: ntm.rules.majority_rule(n))
+    activities, adjacencies = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=149,
+                                         activity_rule=lambda ctx: ntm.rules.majority_rule(ctx))
 
     ntm.plot_grid(activities)

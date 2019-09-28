@@ -3,11 +3,11 @@
 There are two different ways that a Turing Machine can be described in
 the context of the Netomaton framework:
 
-1. as a Network Automaton with a single cell that carries
+1. as a Network Automaton with a single node that carries
 the state and position of the head, and a separate tape that is read
 from and written to during processing;
 
-2. as a Network Automaton with a number of cells representing the tape
+2. as a Network Automaton with a number of nodes representing the tape
 (with the same local connectivity as an Elementary Cellular Automaton),
 whose states change as the tape is written to, and separate variables
 for the state and position of the head.
@@ -19,20 +19,20 @@ taken), the input function can return `None` to signal that the
 evolution is complete, and the machine is halting. At each step, the
 activity rule takes the input value, which is the value from the tape
 that the head is currently reading, and determines the next state for
-the cell, the new tape value at the current head position, and the
+the node, the new tape value at the current head position, and the
 position of the head for the next timestep (the head can move left,
 right, or not move at all).
 
 With approach **2**, a pre-determined number of steps must be specified.
-At each timestep, each cell is processed: if the cell's index does not
-match the index of the head, then the cell's current activity is simply
-returned; if the cell's index matches the index of the head, then the
+At each timestep, each node is processed: if the node's index does not
+match the index of the head, then the node's current activity is simply
+returned; if the node's index matches the index of the head, then the
 Turing Machine's rule table is consulted, the new head state and
-position are determined, and the new cell state is returned.
+position are determined, and the new node state is returned.
 
 In the example below, a Turing machine is given with two possible states
-for the head, and two possible states for each cell in the tape. It is a
-reproduction of the Turing machine given on page 79 (figure (b)) of
+for the head, and two possible states for each node that comprise the tape.
+It is a reproduction of the Turing machine given on page 79 (figure (b)) of
 Wolfram's [A New Kind of Science](https://www.wolframscience.com/nks/p79--turing-machines/).
 
 ```python
@@ -53,16 +53,16 @@ rule_table = {
     }
 }
 
-tm = TapeCentricTuringMachine(num_cells=21, rule_table=rule_table,
+tm = TapeCentricTuringMachine(n=21, rule_table=rule_table,
                               initial_head_state=HEAD['up'],
                               initial_head_position=3)
 
 initial_conditions = [0] * 21
 
-activities, _ = ntm.evolve(initial_conditions, tm.adjacencies,
+activities, _ = ntm.evolve(initial_conditions, tm.adjacency_matrix,
                            activity_rule=tm.activity_rule, timesteps=61)
 
-ntm.plot_grid(activities, cell_annotations=tm.head_activities(activities), show_grid=True)
+ntm.plot_grid(activities, node_annotations=tm.head_activities(activities), show_grid=True)
 ```
 
 <img src="../../resources/turing_2.png" width="23%"/>
@@ -105,16 +105,16 @@ rule_table = {
 
 tape = "bbbbbbaeaaaaaaa"
 
-tm = TapeCentricTuringMachine(num_cells=len(tape), rule_table=rule_table,
+tm = TapeCentricTuringMachine(n=len(tape), rule_table=rule_table,
                               initial_head_state=HEAD['up'],
                               initial_head_position=8)
 
 initial_conditions = [CELL[t] for t in tape]
 
-activities, _ = ntm.evolve(initial_conditions, tm.adjacencies,
+activities, _ = ntm.evolve(initial_conditions, tm.adjacency_matrix,
                            activity_rule=tm.activity_rule, timesteps=58)
 
-ntm.plot_grid(activities, cell_annotations=tm.head_activities(activities), show_grid=True)
+ntm.plot_grid(activities, node_annotations=tm.head_activities(activities), show_grid=True)
 ```
 
 <img src="../../resources/turing_2c.png" width="83%"/>
@@ -152,13 +152,13 @@ tm = HeadCentricTuringMachine(tape=[CELL[t] for t in tape], rule_table=rule_tabl
                               initial_head_state=HEAD['q0'], initial_head_position=2,
                               terminating_state=HEAD['q6'], max_timesteps=50)
 
-activities, _ = ntm.evolve(tm.initial_conditions, tm.adjacencies,
+activities, _ = ntm.evolve(tm.initial_conditions, tm.adjacency_matrix,
                            activity_rule=tm.activity_rule,
                            input=tm.input_function)
 
 tape_history, head_activities = tm.activities_for_plotting(activities)
 
-ntm.plot_grid(tape_history, cell_annotations=head_activities, show_grid=True)
+ntm.plot_grid(tape_history, node_annotations=head_activities, show_grid=True)
 ```
 
 <img src="../../resources/turing_1b.png" width="22%"/>
@@ -174,7 +174,7 @@ conceptually be more appropriate when thinking about how a Turing
 machine can be described as a Network Automaton. The tape is, after all,
 a passive element that serves both as input and memory, while the head
 is where the system's definitive state is stored. If one were to imagine
-adding more cells to this Network Automaton, with approach **1**, one is
-simply adding more cells to the tape, but with approach **2**, one is
+adding more nodes to this Network Automaton, with approach **1**, one is
+simply adding more nodes to the tape, but with approach **2**, one is
 adding more heads, each with their own tape, which seems to be a much
 more meaningful change.

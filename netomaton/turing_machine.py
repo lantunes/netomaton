@@ -7,46 +7,46 @@ class TuringMachine:
     RIGHT = 2
 
     @property
-    def adjacencies(self):
+    def adjacency_matrix(self):
         pass
 
-    def activity_rule(self, n, c, t):
+    def activity_rule(self, ctx):
         pass
 
 
 class TapeCentricTuringMachine(TuringMachine):
     """
-    A Turing Machine modelled as a Network Automaton with a number of cells representing the tape (with the same local
+    A Turing Machine modelled as a Network Automaton with a number of nodes representing the tape (with the same local
     connectivity as an Elementary Cellular Automaton), whose states are mutated as the tape is written to, and separate
     variables for the state and current location of the head.
     """
 
-    def __init__(self, num_cells, rule_table, initial_head_state, initial_head_position):
-        self._num_cells = num_cells
+    def __init__(self, n, rule_table, initial_head_state, initial_head_position):
+        self._n = n
         self._rule_table = rule_table
         self._head_history = [(initial_head_state, initial_head_position)]
         self._current_timestep = 1
 
     @property
-    def adjacencies(self):
-        return cellular_automaton(self._num_cells)
+    def adjacency_matrix(self):
+        return cellular_automaton(self._n)
 
-    def activity_rule(self, n, c, t):
-        if t != self._current_timestep:
-            self._current_timestep = t
+    def activity_rule(self, ctx):
+        if ctx.timestep != self._current_timestep:
+            self._current_timestep = ctx.timestep
         head_state, head_pos = self._head_history[self._current_timestep - 1]
-        cell_state = n.current_activity
-        if c == head_pos:
+        node_state = ctx.current_activity
+        if ctx.node_index == head_pos:
             try:
-                next_head_state, new_cell_state, direction = self._rule_table[head_state][cell_state]
+                next_head_state, new_node_state, direction = self._rule_table[head_state][node_state]
             except KeyError as err:
-                raise Exception("no rule defined for head state %s, input %s" % (head_state, cell_state)) from err
-            self._head_history.append((next_head_state, n.neighbour_indices[direction]))
-            return new_cell_state
-        return cell_state
+                raise Exception("no rule defined for head state %s, input %s" % (head_state, node_state)) from err
+            self._head_history.append((next_head_state, ctx.neighbour_indices[direction]))
+            return new_node_state
+        return node_state
 
     def head_activities(self, activities):
-        annotations = [[None for _ in range(self._num_cells)] for _ in range(len(activities))]
+        annotations = [[None for _ in range(self._n)] for _ in range(len(activities))]
         for i, h in enumerate(self._head_history):
             annotations[i][h[1]] = str(h[0])
         return annotations
@@ -54,7 +54,7 @@ class TapeCentricTuringMachine(TuringMachine):
 
 class HeadCentricTuringMachine(TuringMachine):
     """
-    A Turing Machine modelled as a Network Automaton with a single cell that carries the state of the head, and a
+    A Turing Machine modelled as a Network Automaton with a single node that carries the state of the head, and a
     separate tape that is read from and written to during processing.
     """
 
@@ -64,7 +64,7 @@ class HeadCentricTuringMachine(TuringMachine):
             raise Exception("a terminating state or the max number of timesteps must be specified")
         self._tape_history = [tape]
         self._rule_table = rule_table
-        # the state of the single cell in the Network Automaton is a tuple: (head_state, head_position)
+        # the state of the single node in the Network Automaton is a tuple: (head_state, head_position)
         self._initial_conditions = [(initial_head_state, initial_head_position)]
         self._head_pos = initial_head_position
         self._terminating_state = terminating_state
@@ -72,16 +72,17 @@ class HeadCentricTuringMachine(TuringMachine):
         self._halt = False
 
     @property
-    def adjacencies(self):
-        # a Turing Machine can be thought of as a Network Automaton with a single cell
+    def adjacency_matrix(self):
+        # a Turing Machine can be thought of as a Network Automaton with a single node
         return [[1]]
 
     @property
     def initial_conditions(self):
         return self._initial_conditions
 
-    def activity_rule(self, n, c, input_from_tape):
-        head_state, head_pos = n.current_activity
+    def activity_rule(self, ctx):
+        input_from_tape = ctx.input
+        head_state, head_pos = ctx.current_activity
         try:
             next_head_state, val_to_write, direction = self._rule_table[head_state][input_from_tape]
         except KeyError as err:

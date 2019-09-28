@@ -1,8 +1,8 @@
 ### Langton's Lambda and Measures of Complexity
 
-One way to specify cellular automata rules is with rule tables. Rule tables are enumerations of all possible
-neighbourhood states together with their cell state mappings. For any given neighbourhood state, a rule table provides
-the associated cell state value. Netomaton provides a built-in function for creating random rule tables. The following
+One way to specify Cellular Automata rules is with rule tables. Rule tables are enumerations of all possible
+neighbourhood states together with their node state mappings. For any given neighbourhood state, a rule table provides
+the associated node state value. Netomaton provides a built-in function for creating random rule tables. The following
 snippet demonstrates its usage:
 ```python
 import netomaton as ntm
@@ -10,13 +10,13 @@ import netomaton as ntm
 rule_table, actual_lambda, quiescent_state = ntm.random_rule_table(lambda_val=0.45, k=4, r=2,
                                                                    strong_quiescence=True, isotropic=True)
 
-adjacencies = ntm.network.cellular_automaton(n=128, r=2)
+adjacency_matrix = ntm.network.cellular_automaton(n=128, r=2)
 
 initial_conditions = ntm.init_random(128, k=4)
 
 # use the built-in table_rule to use the generated rule table
-activities, _ = ntm.evolve(initial_conditions, adjacencies, timesteps=200,
-                           activity_rule=lambda n, c, t: ntm.table_rule(n, rule_table))
+activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=200,
+                           activity_rule=lambda ctx: ntm.table_rule(ctx, rule_table))
 ```
 The following plots demonstrate the effect of varying the lambda parameter:
 
@@ -24,8 +24,8 @@ The following plots demonstrate the effect of varying the lambda parameter:
 
 The source code for the example above can be found [here](rule_table_demo.py).
 
-C. G. Langton describes the lambda parameter, and the transition from order to criticality to chaos in cellular
-automata while varying the lambda parameter, in the paper:
+C. G. Langton describes the lambda parameter, and the transition from order to criticality to chaos in Cellular
+Automata while varying the lambda parameter, in the paper:
 
 > Langton, C. G. (1990). Computation at the edge of chaos: phase transitions and emergent computation. Physica D: Nonlinear Phenomena, 42(1-3), 12-37.
 
@@ -34,51 +34,51 @@ automata while varying the lambda parameter, in the paper:
 Netomaton provides various built-in functions which can act as measures of complexity in the automata being
 examined.
 
-##### Average Cell Entropy
+##### Average Node Entropy
 
-Average cell entropy can reveal something about the presence of information within automata dynamics. The
-built-in function `average_cell_entropy` provides the average Shannon entropy per single cell in a given
-automaton. The following snippet demonstrates the calculation of the average cell entropy:
+Average node entropy can reveal something about the presence of information within automata dynamics. The
+built-in function `average_node_entropy` provides the average Shannon entropy per single node in a given
+automaton. The following snippet demonstrates the calculation of the average node entropy:
 
 ```python
 import netomaton as ntm
 
-adjacencies = ntm.network.cellular_automaton(n=200)
+adjacency_matrix = ntm.network.cellular_automaton(n=200)
 
 initial_conditions = ntm.init_random(200)
 
-activities, _ = ntm.evolve(initial_conditions, adjacencies, timesteps=1000,
-                           activity_rule=lambda n, c, t: ntm.rules.nks_ca_rule(n, c, 30))
+activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=1000,
+                           activity_rule=lambda ctx: ntm.rules.nks_ca_rule(ctx, 30))
 
-# calculate the average cell entropy; the value will be ~0.999 in this case
-avg_cell_entropy = ntm.average_cell_entropy(activities)
+# calculate the average node entropy; the value will be ~0.999 in this case
+avg_node_entropy = ntm.average_node_entropy(activities)
 ```
 
-The source code for the example above can be found [here](average_cell_entropy_demo.py).
+The source code for the example above can be found [here](average_node_entropy_demo.py).
 
-The following plots illustrate how average cell entropy changes as a function of lambda:
+The following plots illustrate how average node entropy changes as a function of lambda:
 
-<img src="../../resources/avg_cell_entropy.png" width="100%"/>
+<img src="../../resources/avg_node_entropy.png" width="100%"/>
 
 ##### Average Mutual Information
 
-The degree to which a cell state is correlated to its state in the next time step can be described using mutual
+The degree to which a node state is correlated to its state in the next time step can be described using mutual
 information. Ideal levels of correlation are required for effective processing of information. The built-in function
-`average_mutual_information` provides the average mutual information between a cell and itself in the next time step
+`average_mutual_information` provides the average mutual information between a node and itself in the next time step
 (the temporal distance can be adjusted). The following snippet demonstrates the calculation of the average mutual
 information:
 
 ```python
 import netomaton as ntm
 
-adjacencies = ntm.network.cellular_automaton(n=200)
+adjacency_matrix = ntm.network.cellular_automaton(n=200)
 
 initial_conditions = ntm.init_random(200)
 
-activities, _ = ntm.evolve(initial_conditions, adjacencies, timesteps=1000,
-                           activity_rule=lambda n, c, t: ntm.rules.nks_ca_rule(n, c, 30))
+activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=1000,
+                           activity_rule=lambda ctx: ntm.rules.nks_ca_rule(ctx, 30))
 
-# calculate the average mutual information between a cell and itself in the next time step
+# calculate the average mutual information between a node and itself in the next time step
 avg_mutual_information = ntm.average_mutual_information(activities)
 ```
 

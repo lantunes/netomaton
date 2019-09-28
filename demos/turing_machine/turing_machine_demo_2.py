@@ -22,11 +22,11 @@ if __name__ == "__main__":
         }
     }
 
-    tm = TapeCentricTuringMachine(num_cells=21, rule_table=rule_table,
+    tm = TapeCentricTuringMachine(n=21, rule_table=rule_table,
                                   initial_head_state=HEAD['up'], initial_head_position=3)
 
     initial_conditions = [0] * 21
 
-    activities, _ = ntm.evolve(initial_conditions, tm.adjacencies, activity_rule=tm.activity_rule, timesteps=61)
+    activities, _ = ntm.evolve(initial_conditions, tm.adjacency_matrix, activity_rule=tm.activity_rule, timesteps=61)
 
-    ntm.plot_grid(activities, cell_annotations=tm.head_activities(activities), show_grid=True)
+    ntm.plot_grid(activities, node_annotations=tm.head_activities(activities), show_grid=True)

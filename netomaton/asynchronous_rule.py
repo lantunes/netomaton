@@ -9,41 +9,41 @@ class AsynchronousRule:
     the details of sequential cellular automata, see the Chapter 9, Section 10 Notes on Sequential cellular
     automata in NKS.
     """
-    def __init__(self, activity_rule, update_order=None, num_cells=None, randomize_each_cycle=False):
+    def __init__(self, activity_rule, update_order=None, n=None, randomize_each_cycle=False):
         """
-        Constructs an asynchronous rule out of a given rule. Either the update_order or num_cells parameter must be
-        specified. If no update_order is given, then the num_cells parameter must be specified, and an update order
+        Constructs an asynchronous rule out of a given rule. Either the `update_order` or `n` parameter must be
+        specified. If no `update_order` is given, then the `n` parameter must be specified, and an update order
         list will be constructed and shuffled.
         :param activity_rule: the rule that will be made asynchronous
-        :param update_order: a list containing the indices of the cells in the automaton, specifying the update order;
-                             only the cells specified in the list will be updated
-        :param num_cells: the total number of cells in the automaton
+        :param update_order: a list containing the indices of the nodes in the Network Automaton, specifying the update
+                             order; only the nodes specified in the list will be updated
+        :param n: the total number of nodes in the Network Automaton
         :param randomize_each_cycle: whether to shuffle the update order list after each complete cycle
         """
-        if update_order is None and num_cells is None:
-            raise Exception("either update_order or num_cells must be specified")
+        if update_order is None and n is None:
+            raise Exception("either update_order or n must be specified")
         self._activity_rule = activity_rule
         if update_order is not None:
             self._update_order = update_order
         else:
-            self._shuffle_update_order(num_cells)
+            self._shuffle_update_order(n)
         self._curr = 0
         self._num_applied = 0
         self._randomize_each_cycle = randomize_each_cycle
 
-    def _shuffle_update_order(self, num_cells):
-        self._update_order = np.arange(num_cells)
+    def _shuffle_update_order(self, n):
+        self._update_order = np.arange(n)
         np.random.shuffle(self._update_order)
         self._update_order = self._update_order.tolist()
 
-    def activity_rule(self, n, c, t):
-        if c in self._update_order:
+    def activity_rule(self, ctx):
+        if ctx.node_index in self._update_order:
             self._num_applied += 1
-        if not self._should_update(c):
+        if not self._should_update(ctx.node_index):
             self._check_for_end_of_cycle()
-            return n.current_activity
+            return ctx.current_activity
         self._check_for_end_of_cycle()
-        return self._activity_rule(n, c, t)
+        return self._activity_rule(ctx)
 
     def _should_update(self, c,):
         return c == self._update_order[self._curr]

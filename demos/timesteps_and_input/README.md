@@ -7,19 +7,19 @@ parameter and the `input` parameter.
 The `timesteps` parameter specifies the number of times the activity
 rule should be applied to the network as a whole. That is, one cycle of
 activity is defined as the application of the activity rule once to each
-cell in the network. The `timesteps` parameter therefore specifies the
+node in the network. The `timesteps` parameter therefore specifies the
 number of cycles.<sup>*</sup> Specifying the timesteps implies an
 automaton that evolves on its own, in the absence of any external
 driving signal.
 
 The `input` parameter specifies the input to the network at a particular
 step in the network's evolution. It is either a list, where each item in
-the list contains the input for each cell in the network for a
+the list contains the input for each node in the network for a
 particular step in its evolution, or a function that accepts the current
 timestep number and returns either the input for that timestep or None,
 to signal the end of the evolution. The `input` parameter thus specifies
 both the input to the network and, implicitly, the number of timesteps
-in its evolution. The input for each cell at each timestep will be
+in its evolution. The input for each node at each timestep will be
 provided to the `activity_rule` function (and any `perturbation`
 function), when the function is invoked. Specifying the input implies an
 automaton whose evolution is driven by an external signal.

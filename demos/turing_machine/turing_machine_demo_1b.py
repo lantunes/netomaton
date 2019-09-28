@@ -83,9 +83,9 @@ if __name__ == "__main__":
                                   initial_head_state=HEAD['q0'], initial_head_position=2,
                                   terminating_state=HEAD['q6'], max_timesteps=50)
 
-    activities, _ = ntm.evolve(tm.initial_conditions, tm.adjacencies, activity_rule=tm.activity_rule,
+    activities, _ = ntm.evolve(tm.initial_conditions, tm.adjacency_matrix, activity_rule=tm.activity_rule,
                                input=tm.input_function)
 
     tape_history, head_activities = tm.activities_for_plotting(activities)
 
-    ntm.plot_grid(tape_history, cell_annotations=head_activities, show_grid=True)
+    ntm.plot_grid(tape_history, node_annotations=head_activities, show_grid=True)

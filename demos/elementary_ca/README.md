@@ -1,19 +1,19 @@
 ### Elementary Cellular Automata
 
 This example demonstrates the Rule 30 Elementary Cellular Automaton. Currently, only 1- and 2-dimensional _k_-color
-cellular automata with periodic boundary conditions are supported. The size of the neighbourhood can be adjusted. The
-cellular automata produced by this library match the corresponding cellular automata available
+Cellular Automata with periodic boundary conditions are supported. The size of the neighbourhood can be adjusted. The
+Cellular Automata produced by this library match the corresponding Cellular Automata available
 at [atlas.wolfram.com](http://atlas.wolfram.com).
 
 ```python
 import netomaton as ntm
 
-adjacencies = ntm.network.cellular_automaton(n=200)
+adjacency_matrix = ntm.network.cellular_automaton(n=200)
 
 initial_conditions = [0] * 100 + [1] + [0] * 99
 
-activities, connectivities = ntm.evolve(initial_conditions, adjacencies, timesteps=100,
-                                        activity_rule=lambda n, c, t: ntm.rules.nks_ca_rule(n, c, 30))
+activities, adjacencies = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=100,
+                                     activity_rule=lambda ctx: ntm.rules.nks_ca_rule(ctx, 30))
 
 ntm.plot_grid(activities)
 ```

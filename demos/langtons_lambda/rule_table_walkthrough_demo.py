@@ -8,7 +8,7 @@ if __name__ == '__main__':
     ca_list = []
     titles = []
     for i in range(0, 3):
-        adjacencies = ntm.network.cellular_automaton(n=128, r=2)
+        adjacency_matrix = ntm.network.cellular_automaton(n=128, r=2)
 
         initial_conditions = ntm.init_random(128, k=4)
 
@@ -17,13 +17,13 @@ if __name__ == '__main__':
         print(actual_lambda)
 
         # evolve the cellular automaton for 200 time steps
-        activities, _ = ntm.evolve(initial_conditions, adjacencies, timesteps=200,
-                                   activity_rule=lambda n, c, t: ntm.table_rule(n, rule_table))
+        activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=200,
+                                   activity_rule=lambda ctx: ntm.table_rule(ctx, rule_table))
 
         ca_list.append(activities)
-        avg_cell_entropy = ntm.average_cell_entropy(activities)
+        avg_node_entropy = ntm.average_node_entropy(activities)
         avg_mutual_information = ntm.average_mutual_information(activities)
         titles.append(r'$\lambda$ = %s, $\widebar{H}$ = %s, $\widebar{I}$ = %s' %
-                      (lambda_vals[i], "{:.4}".format(avg_cell_entropy), "{:.4}".format(avg_mutual_information)))
+                      (lambda_vals[i], "{:.4}".format(avg_node_entropy), "{:.4}".format(avg_mutual_information)))
 
     ntm.plot_grid_multiple(ca_list, titles=titles)

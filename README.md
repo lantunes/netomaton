@@ -21,19 +21,26 @@ matplotlib 3.0.2, and networkx 2.2.
 
 ### What are Network Automata?
 
+The [Wikipedia entry](https://en.wikipedia.org/wiki/Network_automaton)
+for Network Automata has stated:
+
+> A network automaton (plural network automata) is a mathematical system consisting of a network of nodes that evolves over time according to predetermined rules. It is similar in concept to a cellular automaton, but much less studied.
+
+> Stephen Wolfram's book _A New Kind of Science_, which is primarily concerned with cellular automata, briefly discusses network automata, and suggests (without positive evidence) that the universe might at the very lowest level be a network automaton.
+
 A Network Automaton is a discrete dynamical system comprised of a collection
-of cells (the computational units) causally connected to eachother, as
-specified by a network-defining adjacency matrix. The cells adopt states
+of nodes (the computational units) causally connected to eachother, as
+specified by a network-defining adjacency matrix. The nodes adopt states
 at each timestep of the network's evolution, as prescribed by an activity
 function, *f*. Moreover, the network's topology can also change over time, as
 prescribed by a connectivity function, *g*.
 
 The network's topology is specified by the adjacency matrix, **A**, which
 is of size _N_<sub>tot</sub> *X* _N_<sub>tot</sub>, where _N_<sub>tot</sub>
-represents the total number of nodes (i.e. cells) in the network. Each
-non-zero entry in **A** represents the existence of a link. The value of
-the entry represents a link weight. The matrix **A** thus contains information about
-the existence of links, and their direction.
+represents the total number of nodes in the network. Each non-zero entry
+in **A** represents the existence of a link. The value of the entry
+represents a link weight. The matrix **A** thus contains information
+about the existence of links, and their direction.
 
 The network is evolved for *T* timeteps. The activity of the network is
 defined by the activities of all its nodes, and is represented by **S**<sub>*t*</sub>,
@@ -51,6 +58,12 @@ this framework will consider that a network has a total fixed number of
 nodes at all times, and that nodes may become connected or fully
 disconnected from the network instead.
 
+To learn more, please refer to the scientific literature on the subject:
+
+> Sayama, Hiroki, and Craig Laramee. "Generative network automata: A generalized framework for modeling adaptive network dynamics using graph rewritings." Adaptive Networks. Springer, Berlin, Heidelberg, 2009. 311-332.
+
+> Smith, David MD, et al. "Network automata: Coupling structure and function in dynamic networks." Advances in Complex Systems 14.03 (2011): 317-339.
+
 ### Examples
 
 Here's an example of the Elementary Cellular Automaton Rule 30 (as
@@ -60,12 +73,12 @@ implemented with the Netomaton library:
 ```python
 import netomaton as ntm
 
-adjacencies = ntm.network.cellular_automaton(n=200)
+adjacency_matrix = ntm.network.cellular_automaton(n=200)
 
 initial_conditions = [0] * 100 + [1] + [0] * 99
 
-activities, _ = ntm.evolve(initial_conditions, adjacencies, timesteps=100,
-                           activity_rule=lambda n, c, t: ntm.rules.nks_ca_rule(n, c, 30))
+activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=100,
+                           activity_rule=lambda ctx: ntm.rules.nks_ca_rule(ctx, 30))
 
 ntm.plot_grid(activities)
 ```
@@ -113,6 +126,8 @@ the Netomaton framework. Follow the link to learn more:
 * [Sandpiles](demos/sandpiles/README.md)
 
 * [Continuous-Time Models](demos/continuous_time_models/README.md)
+
+* [Travelling Salesman Problem with the Hopfield-Tank Neural Net](demos/hopfield_tank_tsp/README.md)
 
 Additionally, this library includes a number of utility functions for
 working with the results produced by the automata. For example, there

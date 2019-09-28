@@ -4,7 +4,7 @@ import numpy as np
 
 if __name__ == '__main__':
 
-    adjacencies = ntm.network.cellular_automaton2d(rows=100, cols=100, r=1, neighbourhood='von Neumann')
+    adjacency_matrix = ntm.network.cellular_automaton2d(rows=100, cols=100, r=1, neighbourhood='von Neumann')
 
     # create perturbation 'dots' in the center of uniform conditions
     initial_conditions = np.array([(1, 0) for i in range(100 * 100)], dtype='d, d').reshape(100, 100)
@@ -35,12 +35,12 @@ if __name__ == '__main__':
     f = 0.01
     k = 0.05
 
-    def react_diffuse(n, c, t):
-        prev_u = n.current_activity[0]
-        prev_v = n.current_activity[1]
+    def react_diffuse(ctx):
+        prev_u = ctx.current_activity[0]
+        prev_v = ctx.current_activity[1]
 
-        neighbourhood_u = [n.activities[i][0] for i, idx in enumerate(n.neighbour_indices) if idx != c]
-        neighbourhood_v = [n.activities[i][1] for i, idx in enumerate(n.neighbour_indices) if idx != c]
+        neighbourhood_u = [ctx.activities[i][0] for i, idx in enumerate(ctx.neighbour_indices) if idx != ctx.node_index]
+        neighbourhood_v = [ctx.activities[i][1] for i, idx in enumerate(ctx.neighbour_indices) if idx != ctx.node_index]
 
         diffusion_u = sum(neighbourhood_u) - (4 * prev_u)
         diffusion_v = sum(neighbourhood_v) - (4 * prev_v)
@@ -53,7 +53,7 @@ if __name__ == '__main__':
 
         return new_u, new_v
 
-    activities, _ = ntm.evolve(initial_conditions, adjacencies, timesteps=3000,
+    activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=3000,
                                activity_rule=react_diffuse)
 
     # we want to visualize the concentrations of U only

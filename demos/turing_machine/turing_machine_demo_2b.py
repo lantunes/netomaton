@@ -79,11 +79,11 @@ if __name__ == "__main__":
 
     tape = "  aabbcc  "
 
-    tm = TapeCentricTuringMachine(num_cells=len(tape), rule_table=rule_table,
+    tm = TapeCentricTuringMachine(n=len(tape), rule_table=rule_table,
                                   initial_head_state=HEAD['q0'], initial_head_position=2)
 
     initial_conditions = [CELL[t] for t in tape]
 
-    activities, _ = ntm.evolve(initial_conditions, tm.adjacencies, activity_rule=tm.activity_rule, timesteps=61)
+    activities, _ = ntm.evolve(initial_conditions, tm.adjacency_matrix, activity_rule=tm.activity_rule, timesteps=61)
 
-    ntm.plot_grid(activities, cell_annotations=tm.head_activities(activities), show_grid=True)
+    ntm.plot_grid(activities, node_annotations=tm.head_activities(activities), show_grid=True)
