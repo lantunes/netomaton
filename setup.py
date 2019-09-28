@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name="netomaton",
-      version="0.1.0",
+      version="0.2.0",
       description="Netomaton, A Python library for working with Network Automata.",
       long_description="Netomaton is a Python framework for exploring discrete dynamical network systems, "
                        "also known as Network Automata. It is a software abstraction meant to aid in the "
