@@ -7,7 +7,7 @@ meant to aid in the implementation of models of collective computation.
 Examples of such computational models include Cellular Automata and
 Neural Networks.
 
-The (Wikipedia entry)[https://en.wikipedia.org/wiki/Network_automaton]
+The [Wikipedia entry](https://en.wikipedia.org/wiki/Network_automaton)
 for Network Automata states:
 
 > A network automaton (plural network automata) is a mathematical system consisting of a network of nodes that evolves over time according to predetermined rules. It is similar in concept to a cellular automaton, but much less studied.
