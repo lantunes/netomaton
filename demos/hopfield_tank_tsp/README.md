@@ -37,6 +37,8 @@ G, pos, length = tsp_net.get_tour_graph(points, permutation_matrix)
 tsp_net.plot_tour(G, pos)
 ```
 
+The full source code for this example can be found [here](hopfield_tank_tsp_net_demo.py).
+
 The Hopfield-Tank Neural Network is quite sensitive to initial
 conditions. There are a number of hyperparameters, and various
 combinations of values generally result in a tradeoff between
