@@ -34,7 +34,7 @@ states = {
     'q3': 3   # final/accepting state
 }
 
-# a Pushdown Automata can be thought of as a Network Automaton with a single node
+# a Pushdown Automaton can be thought of as a Network Automaton with a single node
 adjacency_matrix = [[1]]
 
 # the Pushdown Automaton starts off in the q0 state
