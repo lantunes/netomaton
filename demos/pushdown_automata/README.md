@@ -3,7 +3,7 @@
 This example illustrates the construction of a Pushdown Automaton.
 Although simplistic, it demonstrates how Pushdown Automata can be
 seen as Network Automata. A Pushdown Automaton can be thought of as a
-Network Automaton with a single cell.
+Network Automaton with a single node.
 
 Pushdown Automata are more powerful than Finite State Machines (though
 less powerful than Turing Machines). They differ from Finite State
@@ -34,8 +34,8 @@ states = {
     'q3': 3   # final/accepting state
 }
 
-# a Pushdown Automata can be thought of as a Network Automaton with a single cell
-adjacencies = [[1]]
+# a Pushdown Automata can be thought of as a Network Automaton with a single node
+adjacency_matrix = [[1]]
 
 # the Pushdown Automaton starts off in the q0 state
 initial_conditions = [states['q0']]
@@ -66,7 +66,7 @@ def pda_rule(n, c, event):
         raise Exception("input rejected")
 
 try:
-    activities, _ = ntm.evolve(initial_conditions, adjacencies, input=events, activity_rule=pda_rule)
+    activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, input=events, activity_rule=pda_rule)
     print("'%s' accepted (final state: %s)" % (events.strip(), activities[-1][0]))
 except Exception:
     print("'%s' rejected!" % events.strip())

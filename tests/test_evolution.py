@@ -8,7 +8,7 @@ import netomaton as ntm
 class TestFunctions(unittest.TestCase):
 
     def test_neighbourhood(self):
-        adjacencies = [[1., .9, 0., 0., 1.],
+        adjacency_matrix = [[1., .9, 0., 0., 1.],
                        [1., 1., 1., 0., 0.],
                        [0., 1., 1., 1., 0.],
                        [0., 0., 1., 1., 1.],
@@ -17,7 +17,7 @@ class TestFunctions(unittest.TestCase):
         initial_conditions = [2., 3., 4., 5., 6.]
 
         def evaluate_neighbourhoods(ctx):
-            c = ctx.cell_index
+            c = ctx.node_index
             if c == 0:
                 np.testing.assert_equal([2., 3., 6.], ctx.activities)
                 np.testing.assert_equal([0, 1, 4], ctx.neighbour_indices)
@@ -39,7 +39,7 @@ class TestFunctions(unittest.TestCase):
                 np.testing.assert_equal([0, 3, 4], ctx.neighbour_indices)
                 np.testing.assert_equal([1., 1., .8], ctx.weights)
 
-        ntm.evolve(initial_conditions, adjacencies, timesteps=2, activity_rule=evaluate_neighbourhoods)
+        ntm.evolve(initial_conditions, adjacency_matrix, timesteps=2, activity_rule=evaluate_neighbourhoods)
 
     def test_init_simple_1(self):
         arr = ntm.init_simple(1)
@@ -136,7 +136,7 @@ class TestFunctions(unittest.TestCase):
         self.assertEqual(arr, [0, 0, 0, 0, 1, 0])
 
     def test_past_activities_single_past(self):
-        adjacencies = [
+        adjacency_matrix = [
             [1, 1],
             [1, 1]
         ]
@@ -158,7 +158,7 @@ class TestFunctions(unittest.TestCase):
                 self.assertEqual(p, [[2, 2]])
             return ctx.current_activity + 1
 
-        activities, _ = ntm.evolve(initial_conditions, adjacencies, activity_rule, timesteps=4,
+        activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, activity_rule, timesteps=4,
                                    past_conditions=past_conditions)
 
         np.testing.assert_equal(activities, [
@@ -169,7 +169,7 @@ class TestFunctions(unittest.TestCase):
         ])
 
     def test_past_activities_multiple_past(self):
-        adjacencies = [
+        adjacency_matrix = [
             [1, 1],
             [1, 1]
         ]
@@ -201,7 +201,7 @@ class TestFunctions(unittest.TestCase):
                 ])
             return ctx.current_activity + 1
 
-        activities, _ = ntm.evolve(initial_conditions, adjacencies, activity_rule, timesteps=4,
+        activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, activity_rule, timesteps=4,
                                    past_conditions=past_conditions)
 
         np.testing.assert_equal(activities, [

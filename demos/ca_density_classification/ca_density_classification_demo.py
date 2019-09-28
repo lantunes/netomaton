@@ -4,7 +4,7 @@ import numpy as np
 
 if __name__ == '__main__':
     # set r to 3, for a neighbourhood size of 7
-    adjacencies = ntm.network.cellular_automaton(149, r=3)
+    adjacency_matrix = ntm.network.cellular_automaton(149, r=3)
 
     initial_conditions = np.random.randint(0, 2, 149)
 
@@ -13,7 +13,7 @@ if __name__ == '__main__':
 
     print("density of 1s: %s" % (np.count_nonzero(initial_conditions) / 149))
 
-    activities, connectivities = ntm.evolve(initial_conditions, adjacencies, timesteps=149,
-                                            activity_rule=lambda ctx: ntm.rules.binary_ca_rule(ctx, rule_number))
+    activities, adjacencies = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=149,
+                                         activity_rule=lambda ctx: ntm.rules.binary_ca_rule(ctx, rule_number))
 
     ntm.plot_grid(activities)

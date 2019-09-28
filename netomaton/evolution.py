@@ -8,17 +8,17 @@ import scipy.sparse as sparse
 from .connectivity_rule import *
 
 
-class EvolutionContext(object):
+class NodeContext(object):
     """
-    The evolution context consists of the states, identities (as cell indices), and adjancency matrix weights of the cells
-    that influence a given cell. Each of the properties (i.e. activities, neighbour_indices, weights) are represented as
-    lists. Each of the lists are of the same size, and the first item in each list corresponds to the first cell in the
-    neighbourhood, etc. The neighbourhood of a cell also contains the cell's current activity (i.e. the activity as of
+    The NodeContext consists of the states, identities (as node indices), and adjancency matrix weights of the nodes
+    that influence a given node. Each of the properties (i.e. activities, neighbour_indices, weights) are represented as
+    lists. Each of the lists are of the same size, and the first item in each list corresponds to the first node in the
+    neighbourhood, etc. The neighbourhood of a node also contains the node's current activity (i.e. the activity as of
     the last timestep).
     """
-    def __init__(self, cell_index, timestep, activities, neighbour_indices, weights, current_activity,
+    def __init__(self, node_index, timestep, activities, neighbour_indices, weights, current_activity,
                  past_activities, input):
-        self._cell_index = cell_index
+        self._node_index = node_index
         self._timestep = timestep
         self._activities = activities
         self._neighbour_indices = neighbour_indices
@@ -28,12 +28,12 @@ class EvolutionContext(object):
         self._input = input
 
     @property
-    def cell_index(self):
+    def node_index(self):
         """
-        Returns the current cell's index.
-        :return: the index of the current cell
+        Returns the current node's index.
+        :return: the index of the current node
         """
-        return self._cell_index
+        return self._node_index
 
     @property
     def timestep(self):
@@ -43,30 +43,30 @@ class EvolutionContext(object):
         """
         return self._timestep
 
-    def activity_of(self, cell_index):
+    def activity_of(self, node_index):
         """
-        Returns the activity of the cell with the given cell index.
-        :param cell_index: the index of the cell whose activity is being requested
-        :return: the activity of the cell with the given index
+        Returns the activity of the node with the given node index.
+        :param node_index: the index of the node whose activity is being requested
+        :return: the activity of the node with the given index
         """
-        return self.activities[self.neighbour_indices.index(cell_index)]
+        return self.activities[self.neighbour_indices.index(node_index)]
 
-    def weight_from(self, cell_index):
+    def weight_from(self, node_index):
         """
-        Returns the connection weight of the cell with the given cell index to the current cell.
-        :param cell_index: the index of the cell whose connection strength to the current cell is being requested
-        :return: the connection strength of the cell with the given index to the current cell
+        Returns the connection weight of the node with the given node index to the current node.
+        :param node_index: the index of the node whose connection strength to the current node is being requested
+        :return: the connection strength of the node with the given index to the current node
         """
-        return self.weights[self.neighbour_indices.index(cell_index)]
+        return self.weights[self.neighbour_indices.index(node_index)]
 
-    def past_activity_of(self, cell_index, past_activity_index=-1):
+    def past_activity_of(self, node_index, past_activity_index=-1):
         """
-        Returns the activity of the cell with the given cell index, in the past.
-        :param cell_index: the index of the cell whose activity is being requested
+        Returns the activity of the node with the given node index, in the past.
+        :param node_index: the index of the node whose activity is being requested
         :param past_activity_index: the index of the past activity (-1 means the timestep before the last timestep)
-        :return: the activity of the cell with the given index, in the past
+        :return: the activity of the node with the given index, in the past
         """
-        return self.past_activities[past_activity_index][self.neighbour_indices.index(cell_index)]
+        return self.past_activities[past_activity_index][self.neighbour_indices.index(node_index)]
 
     @property
     def activities(self):
@@ -79,24 +79,24 @@ class EvolutionContext(object):
     @property
     def neighbour_indices(self):
         """
-        A list containing the neighbourhood's cell indices.
-        :return: a list containing the neighbourhood's cell indices
+        A list containing the neighbourhood's node indices.
+        :return: a list containing the neighbourhood's node indices
         """
         return self._neighbour_indices
 
     @property
     def weights(self):
         """
-        A list containing the weights of the connections to the cell.
-        :return: a list containing the weights of the connections to the cell
+        A list containing the weights of the connections to the node.
+        :return: a list containing the weights of the connections to the node
         """
         return self._weights
 
     @property
     def current_activity(self):
         """
-        The current activity of the cell.
-        :return: the current activity of the cell
+        The current activity of the node.
+        :return: the current activity of the node
         """
         return self._current_activity
 
@@ -113,29 +113,29 @@ class EvolutionContext(object):
     @property
     def input(self):
         """
-        Returns the current input to the cell, or None if no input was provided.
-        :return: the input to the cell, or None if no input was provided
+        Returns the current input to the node, or None if no input was provided.
+        :return: the input to the node, or None if no input was provided
         """
         return self._input
 
 
 class PerturbationContext(object):
     """
-    The PerturbationContext contains the cell index, activity and input for a particular timestep.
+    The PerturbationContext contains the node index, activity and input for a particular timestep.
     """
-    def __init__(self, cell_index, cell_activity, timestep, input):
-        self._cell_index = cell_index
-        self._cell_activity = cell_activity
+    def __init__(self, node_index, node_activity, timestep, input):
+        self._node_index = node_index
+        self._node_activity = node_activity
         self._timestep = timestep
         self._input = input
 
     @property
-    def cell_index(self):
-        return self._cell_index
+    def node_index(self):
+        return self._node_index
 
     @property
-    def cell_activity(self):
-        return self._cell_activity
+    def node_activity(self):
+        return self._node_activity
 
     @property
     def timestep(self):
@@ -157,7 +157,7 @@ def evolve(initial_conditions, adjacency_matrix, activity_rule, timesteps=None, 
     S(t+1) = G(A(t), S(t))
     :param initial_conditions: the initial activities of the network
     :param adjacency_matrix: the adjacency matrix defining the network topology
-    :param activity_rule: the rule that will determine the activity of a cell in the network
+    :param activity_rule: the rule that will determine the activity of a node in the network
     :param timesteps: the number of steps in the evolution of the network; Note that the initial state, specified by the
                       initial_conditions, is considered the result of a timestep, so that the activity_rule is invoked
                       t - 1 times; for example, if timesteps is 6, then the initial state is considered the result of
@@ -167,9 +167,9 @@ def evolve(initial_conditions, adjacency_matrix, activity_rule, timesteps=None, 
                       external driving signal
     :param input: a list representing the inputs to the network at each timestep, or a function that accepts the
                   current timestep number, returns the input for that timestep, or None to signal the end of the
-                  evolution; if a list is provided, each item in the list contains the input for each cell in the
+                  evolution; if a list is provided, each item in the list contains the input for each node in the
                   network for a particular timestep; the activity_rule (and any perturbation) will receive the current
-                  input value for a given cell through the EvolutionContext, when the input parameter is provided;
+                  input value for a given node through the NodeContext, when the input parameter is provided;
                   either the input or timesteps parameter must be provided, but not both; if the input parameter is
                   provided, it will override the timesteps parameter, and the timesteps parameter will have no effect;
                   the first item in the input list is given to the network at t=1, the second at t=2, etc. (i.e. no
@@ -177,13 +177,13 @@ def evolve(initial_conditions, adjacency_matrix, activity_rule, timesteps=None, 
                   is driven by an external signal
     :param connectivity_rule: the rule that will determine the connectivity of the network
     :param perturbation: a function that defines a perturbation applied as the system evolves; the function accepts
-                         one parameter: the PerturbationContext. It contains the cell index,  the timestep, the computed
-                         activity for the cell given by c, and its input (or None if there is no input). The function
-                         must return the new activity for the cell at the timestep.
+                         one parameter: the PerturbationContext. It contains the node index, the timestep, the computed
+                         activity for the node, and its input (or None if there is no input). The function must return
+                         the new activity for the node at the timestep.
     :param past_conditions: a list of lists that represent activities of the network that existed before the initial
                            timestep; if this parameter is provided, then the Neighbourhood will contain past_activities;
                            there will be as many past_activities entries as there are entries in this list
-    :param parallel: whether the evolution of the cells should be performed in parallel;
+    :param parallel: whether the evolution of the nodes should be performed in parallel;
                      Note: the activity_rule function must be safe to use concurrently, as it will
                      be invoked concurrently from different processes when this flag is set to True (the same is true
                      for the perturbation function); this generally means that the activity rule (and perturbation)
@@ -191,7 +191,7 @@ def evolve(initial_conditions, adjacency_matrix, activity_rule, timesteps=None, 
                      when 'parallel' is True
     :param processes: the number of processes to start for parallel execution, if 'parallel' is set to True;
                       the number of CPUs will be used if 'processes' is not provided and 'parallel' is True
-    :return: a tuple of the activities over time and the connectivities over time
+    :return: a tuple of the activities over time and the adjacencies over time
     """
     if len(initial_conditions) != len(adjacency_matrix[0]):
         raise Exception("the length of the initial conditions list does not match the given adjacency matrix")
@@ -216,12 +216,12 @@ def _evolve_activities(initial_conditions, adjacency_matrix, activity_rule, step
     activities_over_time = np.empty((steps, len(initial_conditions)), dtype=np.dtype(type(initial_conditions[0])))
     activities_over_time[0] = initial_conditions
 
-    num_cells = len(adjacency_matrix[0])
-    connectivities_sparse = sparse.csc_matrix(adjacency_matrix)
+    num_nodes = len(adjacency_matrix[0])
+    adjacencies_sparse = sparse.csc_matrix(adjacency_matrix)
     nonzero_index_map = {}
     weight_map = {}
-    for c in range(num_cells):
-        sparse_col =  connectivities_sparse.getcol(c)
+    for c in range(num_nodes):
+        sparse_col =  adjacencies_sparse.getcol(c)
         nonzero_index_map[c] = sparse_col.nonzero()[0].tolist()
         weight_map[c] = sparse_col.data.tolist()
 
@@ -236,17 +236,16 @@ def _evolve_activities(initial_conditions, adjacency_matrix, activity_rule, step
         if t == len(activities_over_time):
             activities_over_time = _extend_activities(activities_over_time, initial_conditions)
 
-        for c in range(num_cells):
+        for c in range(num_nodes):
             nonzero_indices = nonzero_index_map[c]
             activities = [last_activities[i] for i in nonzero_indices]
             past_activities = [[p[i] for i in nonzero_indices] for p in past] if past else None
             weights = weight_map[c]
-            cell_in = None if inp == "__timestep__" else inp[c] if _is_indexable(inp) else inp
-            context = EvolutionContext(c, t, activities, nonzero_indices, weights, last_activities[c],
-                                       past_activities, cell_in)
+            node_in = None if inp == "__timestep__" else inp[c] if _is_indexable(inp) else inp
+            context = NodeContext(c, t, activities, nonzero_indices, weights, last_activities[c], past_activities, node_in)
             activities_over_time[t][c] = activity_rule(context)
             if perturbation is not None:
-                activities_over_time[t][c] = perturbation(PerturbationContext(c, activities_over_time[t][c], t, cell_in))
+                activities_over_time[t][c] = perturbation(PerturbationContext(c, activities_over_time[t][c], t, node_in))
 
         t += 1
 
@@ -306,29 +305,28 @@ def _extend_activities(activities_over_time, initial_conditions):
     return np.append(activities_over_time, arr, axis=0)
 
 
-def _extend_connectivities(connectivities_over_time, adjacency_matrix):
+def _extend_adjacencies(adjacencies_over_time, adjacency_matrix):
     arr = np.empty((1, len(adjacency_matrix), len(adjacency_matrix)), dtype=np.dtype(type(adjacency_matrix[0][0])))
-    return np.append(connectivities_over_time, arr, axis=0)
+    return np.append(adjacencies_over_time, arr, axis=0)
 
 
-def _process_cells(cell_indices, t, inp, last_activities, past):
+def _process_nodes(node_indices, t, inp, last_activities, past):
     global nonzero_index_map
     global weight_map
     global fn_activity
     global fn_perturb
     results = {}
-    for c in cell_indices:
-        nonzero_indices = nonzero_index_map[c]
+    for n in node_indices:
+        nonzero_indices = nonzero_index_map[n]
         activities = [last_activities[i] for i in nonzero_indices]
         past_activities = [[p[i] for i in nonzero_indices] for p in past] if past else None
-        weights = weight_map[c]
-        cell_in = None if inp == "__timestep__" else inp[c] if _is_indexable(inp) else inp
-        context = EvolutionContext(c, t, activities, nonzero_indices, weights, last_activities[c],
-                                   past_activities, cell_in)
-        cell_activity = fn_activity(context)
+        weights = weight_map[n]
+        node_in = None if inp == "__timestep__" else inp[n] if _is_indexable(inp) else inp
+        context = NodeContext(n, t, activities, nonzero_indices, weights, last_activities[n], past_activities, node_in)
+        node_activity = fn_activity(context)
         if fn_perturb is not None:
-            cell_activity = fn_perturb(PerturbationContext(c, cell_activity, t, cell_in))
-        results[c] = cell_activity
+            node_activity = fn_perturb(PerturbationContext(n, node_activity, t, node_in))
+        results[n] = node_activity
     return results
 
 
@@ -338,14 +336,14 @@ def _evolve_activities_parallel(initial_conditions, adjacency_matrix, activity_r
     activities_over_time = np.empty((steps, len(initial_conditions)), dtype=np.dtype(type(initial_conditions[0])))
     activities_over_time[0] = initial_conditions
 
-    num_cells = len(adjacency_matrix[0])
-    connectivities_sparse = sparse.csc_matrix(adjacency_matrix)
+    num_nodes = len(adjacency_matrix[0])
+    adjacencies_sparse = sparse.csc_matrix(adjacency_matrix)
     global nonzero_index_map
     nonzero_index_map = {}
     global weight_map
     weight_map = {}
-    for c in range(num_cells):
-        sparse_col = connectivities_sparse.getcol(c)
+    for c in range(num_nodes):
+        sparse_col = adjacencies_sparse.getcol(c)
         nonzero_index_map[c] = sparse_col.nonzero()[0].tolist()
         weight_map[c] = sparse_col.data.tolist()
 
@@ -356,7 +354,7 @@ def _evolve_activities_parallel(initial_conditions, adjacency_matrix, activity_r
 
     if processes is None:
         processes = multiprocessing.cpu_count()
-    cell_index_chunks = np.array_split(np.array(range(num_cells)), processes)
+    node_index_chunks = np.array_split(np.array(range(num_nodes)), processes)
     pool = Pool(processes=processes)
 
     t = 1
@@ -370,8 +368,8 @@ def _evolve_activities_parallel(initial_conditions, adjacency_matrix, activity_r
         if t == len(activities_over_time):
             activities_over_time = _extend_activities(activities_over_time, initial_conditions)
 
-        args = [(chunk, t, inp, last_activities, past) for chunk in cell_index_chunks]
-        map_result = pool.starmap_async(_process_cells, args)
+        args = [(chunk, t, inp, last_activities, past) for chunk in node_index_chunks]
+        map_result = pool.starmap_async(_process_nodes, args)
 
         for results in map_result.get():
             for c in results.keys():
@@ -391,10 +389,10 @@ def _evolve_both(initial_conditions, adjacency_matrix, activity_rule, steps, inp
     activities_over_time = np.empty((steps, len(initial_conditions)), dtype=np.dtype(type(initial_conditions[0])))
     activities_over_time[0] = initial_conditions
 
-    connectivities_over_time = np.empty((steps, len(adjacency_matrix), len(adjacency_matrix)), dtype=np.dtype(type(adjacency_matrix[0][0])))
-    connectivities_over_time[0] = adjacency_matrix
+    adjacencies_over_time = np.empty((steps, len(adjacency_matrix), len(adjacency_matrix)), dtype=np.dtype(type(adjacency_matrix[0][0])))
+    adjacencies_over_time[0] = adjacency_matrix
 
-    num_cells = len(adjacency_matrix[0])
+    num_nodes = len(adjacency_matrix[0])
 
     t = 1
     while True:
@@ -403,40 +401,39 @@ def _evolve_both(initial_conditions, adjacency_matrix, activity_rule, steps, inp
             break
         last_activities = activities_over_time[t - 1]
         past = _get_past_activities(past_conditions, activities_over_time, t)
-        last_connectivities = connectivities_over_time[t - 1]
+        last_adjacencies = adjacencies_over_time[t - 1]
 
         if t == len(activities_over_time):
             activities_over_time = _extend_activities(activities_over_time, initial_conditions)
 
-        if t == len(connectivities_over_time):
-            connectivities_over_time = _extend_connectivities(connectivities_over_time, adjacency_matrix)
+        if t == len(adjacencies_over_time):
+            adjacencies_over_time = _extend_adjacencies(adjacencies_over_time, adjacency_matrix)
 
-        last_connectivities_transposed = np.array(last_connectivities).T
+        last_adjacencies_transposed = np.array(last_adjacencies).T
 
-        nonzeros = np.nonzero(last_connectivities_transposed)
-        index_map = {i: [] for i in range(num_cells)}
+        nonzeros = np.nonzero(last_adjacencies_transposed)
+        index_map = {i: [] for i in range(num_nodes)}
         [index_map[idx].append(nonzeros[1][i]) for i, idx in enumerate(nonzeros[0])]
 
-        for c in range(num_cells):
-            # use the transpose of the adjacency matrix to get the cells that are inputs to a given cell defined by a row
-            row = last_connectivities_transposed[c]
-            nonzero_indices = index_map[c]
+        for n in range(num_nodes):
+            # use the transpose of the adjacency matrix to get the nodes that are inputs to a given node defined by a row
+            row = last_adjacencies_transposed[n]
+            nonzero_indices = index_map[n]
             activities = last_activities[nonzero_indices]
             past_activities = [[p[i] for i in nonzero_indices] for p in past] if past else None
             weights = row[nonzero_indices]
-            cell_in = None if inp == "__timestep__" else inp[c] if _is_indexable(inp) else inp
-            context = EvolutionContext(c, t, activities, nonzero_indices, weights, last_activities[c],
-                                       past_activities, cell_in)
-            activities_over_time[t][c] = activity_rule(context)
+            node_in = None if inp == "__timestep__" else inp[n] if _is_indexable(inp) else inp
+            context = NodeContext(n, t, activities, nonzero_indices, weights, last_activities[n], past_activities, node_in)
+            activities_over_time[t][n] = activity_rule(context)
             if perturbation is not None:
-                activities_over_time[t][c] = perturbation(PerturbationContext(c, activities_over_time[t][c], t, cell_in))
+                activities_over_time[t][n] = perturbation(PerturbationContext(n, activities_over_time[t][n], t, node_in))
 
-        connectivities = connectivity_rule(last_connectivities, last_activities, t)
-        connectivities_over_time[t] = connectivities
+        adjacencies = connectivity_rule(last_adjacencies, last_activities, t)
+        adjacencies_over_time[t] = adjacencies
 
         t += 1
 
-    return activities_over_time, connectivities_over_time
+    return activities_over_time, adjacencies_over_time
 
 
 def init_simple(size, val=1, dtype=np.int):
@@ -457,7 +454,7 @@ def init_random(size, k=2, n_randomized=None, empty_value=0, dtype=np.int):
     Returns a randomly initialized array with values consisting of numbers in {0,...,k - 1}, where k = 2 by default.
     If dtype is not an integer type, then values will be uniformly distributed over the half-open interval [0, k - 1).
     :param size: the size of the array to be created
-    :param k: the number of states in the cellular automaton (2, by default)
+    :param k: the number of states in the Network Automaton (2, by default)
     :param n_randomized: the number of randomized sites in the array; this value must be >= 0 and <= size, if specified;
                          if this value is not specified, all sites in the array will be randomized; the randomized sites
                          will be centered in the array, while all others will have an empty value

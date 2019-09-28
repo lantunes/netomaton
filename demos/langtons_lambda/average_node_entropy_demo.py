@@ -8,7 +8,7 @@ if __name__ == '__main__':
     activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=1000,
                                activity_rule=lambda ctx: ntm.rules.nks_ca_rule(ctx, 30))
 
-    # calculate the average mutual information between a node and itself in the next time step
-    avg_mutual_information = ntm.average_mutual_information(activities)
+    # calculate the average node entropy; the value will be ~0.999 in this case
+    avg_node_entropy = ntm.average_node_entropy(activities)
 
-    print(avg_mutual_information)
+    print(avg_node_entropy)

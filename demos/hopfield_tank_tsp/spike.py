@@ -83,37 +83,37 @@ def get_tour_graph(points, activities):
     return G, pos, sum(distances)
 
 
-def get_cell_label_map(points):
+def get_node_label_map(points):
     """
-    Returns a dictionary where the keys are the cell indices (there are n^2 cells, where n is the number of points),
-    and the values are a tuple (row, col), representing the row index and column index of the cell in the permutation
+    Returns a dictionary where the keys are the node indices (there are n^2 nodes, where n is the number of points),
+    and the values are a tuple (row, col), representing the row index and column index of the node in the permutation
     matrix (the matrix describing the tour, where each row represents a point, and each column represents the position
     of that point in the tour.
     :param points: a list of tuples, where each tuple represents a point's x and y coordinates
-    :return: a dictionary with cell indices as keys and tuple (row, col) for the position of the cell in the permutation
+    :return: a dictionary with node indices as keys and tuple (row, col) for the position of the node in the permutation
              matrix as values
     """
-    cell_label_map = {}
+    node_label_map = {}
     num_points = len(points)
     current_point = 0
-    current_cell = 0
+    current_node = 0
     while current_point < num_points:
         for n in range(num_points):
-            cell_label_map[current_cell] = (current_point, n)
-            current_cell += 1
+            node_label_map[current_node] = (current_point, n)
+            current_node += 1
         current_point += 1
-    return cell_label_map
+    return node_label_map
 
 
-def get_adjacencies(cell_label_map):
+def get_adjacencies(node_label_map):
     adjacencies = []
-    num_cells = len(cell_label_map)
-    num_points = int(math.sqrt(num_cells))
-    for c in range(num_cells):
-        row, col = cell_label_map[c]
-        conn = [0 for _ in range(num_cells)]
-        for c2 in range(num_cells):
-            row2, col2 = cell_label_map[c2]
+    num_nodes = len(node_label_map)
+    num_points = int(math.sqrt(num_nodes))
+    for c in range(num_nodes):
+        row, col = node_label_map[c]
+        conn = [0 for _ in range(num_nodes)]
+        for c2 in range(num_nodes):
+            row2, col2 = node_label_map[c2]
             if row2 == row or col2 == col or col2 == ((col-1) % num_points) or col2 == ((col+1) % num_points):
                 conn[c2] = 1
         adjacencies.append(conn)
@@ -155,7 +155,7 @@ G, pos, tour_length = get_tour_graph(points, activities)
 # nx.draw_networkx(G, pos)
 # plt.show()
 
-clm = get_cell_label_map(points)
+clm = get_node_label_map(points)
 # print(clm)
 # >> {0: (0, 0), 1: (0, 1), 2: (0, 2), 3: (0, 3), 4: (1, 0), 5: (1, 1), 6: (1, 2), 7: (1, 3), 8: (2, 0), 9: (2, 1), 10: (2, 2), 11: (2, 3), 12: (3, 0), 13: (3, 1), 14: (3, 2), 15: (3, 3)}
 

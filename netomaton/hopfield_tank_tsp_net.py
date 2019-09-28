@@ -30,9 +30,9 @@ class HopfieldTankTSPNet:
         self._u_0 = u_0
         self._n = n
         self._distances_map = self._get_distances_map(self.get_distances())
-        self._cell_label_map = self._get_cell_label_map(points)
-        self._coordinate_map = self._get_coordinate_map(self._cell_label_map)
-        self._adjacencies = self._get_adjacencies(self._cell_label_map)
+        self._node_label_map = self._get_node_label_map(points)
+        self._coordinate_map = self._get_coordinate_map(self._node_label_map)
+        self._adjacency_matrix = self._get_adjacency_matrix(self._node_label_map)
 
     def get_distances(self):
         """
@@ -126,40 +126,40 @@ class HopfieldTankTSPNet:
             distances_map[(b, b)] = 0.0
         return distances_map
 
-    def _get_cell_label_map(self, points):
+    def _get_node_label_map(self, points):
         """
-        Returns a dictionary where the keys are the cell indices (there are n^2 cells, where n is the number of points),
-        and the values are a tuple (row, col), representing the row index and column index of the cell in the permutation
+        Returns a dictionary where the keys are the node indices (there are n^2 nodes, where n is the number of points),
+        and the values are a tuple (row, col), representing the row index and column index of the node in the permutation
         matrix (the matrix describing the tour, where each row represents a point, and each column represents the position
         of that point in the tour.
         :param points: a list of tuples, where each tuple represents a point's x and y coordinates
-        :return: a dictionary with cell indices as keys and tuple (row, col) for the position of the cell in the permutation
+        :return: a dictionary with node indices as keys and tuple (row, col) for the position of the node in the permutation
                  matrix as values
         """
-        cell_label_map = {}
+        node_label_map = {}
         num_points = len(points)
         current_point = 0
-        current_cell = 0
+        current_node = 0
         while current_point < num_points:
             for n in range(num_points):
-                cell_label_map[current_cell] = (current_point, n)
-                current_cell += 1
+                node_label_map[current_node] = (current_point, n)
+                current_node += 1
             current_point += 1
-        return cell_label_map
+        return node_label_map
 
-    def _get_coordinate_map(self, cell_label_map):
+    def _get_coordinate_map(self, node_label_map):
         coordinate_map = {}
-        for cell_index, coords in cell_label_map.items():
-            coordinate_map[coords] = cell_index
+        for node_index, coords in node_label_map.items():
+            coordinate_map[coords] = node_index
         return coordinate_map
 
-    def _get_adjacencies(self, cell_label_map):
+    def _get_adjacency_matrix(self, node_label_map):
         # fully connected network
-        return [[1 for _ in range(len(cell_label_map))] for _ in range(len(cell_label_map))]
+        return [[1 for _ in range(len(node_label_map))] for _ in range(len(node_label_map))]
 
     @property
-    def adjacencies(self):
-        return self._adjacencies
+    def adjacency_matrix(self):
+        return self._adjacency_matrix
 
     def _V(self, u):
         return (1/2) * (1 + np.tanh(u / self._u_0))
@@ -172,7 +172,7 @@ class HopfieldTankTSPNet:
 
     def activity_rule(self, ctx):
         current_activity = ctx.current_activity
-        cell_row, cell_col = self._cell_label_map[ctx.cell_index]
+        node_row, node_col = self._node_label_map[ctx.node_index]
 
         A_sum = 0
         B_sum = 0
@@ -180,21 +180,21 @@ class HopfieldTankTSPNet:
         D_sum = 0
         for i, neighbour_activity in enumerate(ctx.activities):
             neighbour_index = ctx.neighbour_indices[i]
-            neighbour_cell_row, neighbour_cell_col = self._cell_label_map[neighbour_index]
+            neighbour_node_row, neighbour_node_col = self._node_label_map[neighbour_index]
 
-            if neighbour_cell_row == cell_row and neighbour_cell_col != cell_col:
+            if neighbour_node_row == node_row and neighbour_node_col != node_col:
                 A_sum += self._V(neighbour_activity)
 
-            if neighbour_cell_col == cell_col and neighbour_cell_row != cell_row:
+            if neighbour_node_col == node_col and neighbour_node_row != node_row:
                 B_sum += self._V(neighbour_activity)
 
             # global inhibition
             C_sum += self._V(neighbour_activity)
 
-            if neighbour_cell_col == ((cell_col - 1) % len(self._points)):
-                opp_neighbour_index = self._coordinate_map[(neighbour_cell_row, (cell_col + 1) % len(self._points))]
+            if neighbour_node_col == ((node_col - 1) % len(self._points)):
+                opp_neighbour_index = self._coordinate_map[(neighbour_node_row, (node_col + 1) % len(self._points))]
                 opp_neighbour_activity = self._get_opposite_neighbour_activity(ctx.activities, ctx.neighbour_indices, opp_neighbour_index)
-                D_sum += (self._distances_map[(neighbour_cell_row, cell_row)] * (self._V(neighbour_activity) + self._V(opp_neighbour_activity)))
+                D_sum += (self._distances_map[(neighbour_node_row, node_row)] * (self._V(neighbour_activity) + self._V(opp_neighbour_activity)))
 
         activity = (-current_activity) - (self._A * A_sum) - (self._B * B_sum) - (self._C * (C_sum - self._n)) - (self._D * D_sum)
 

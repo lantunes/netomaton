@@ -4,7 +4,7 @@ import numpy as np
 
 if __name__ == '__main__':
 
-    adjacencies = ntm.network.cellular_automaton(n=200)
+    adjacency_matrix = ntm.network.cellular_automaton(n=200)
     initial_conditions = [0] * 100 + [1] + [0] * 99
 
     noise_amount = 1.05
@@ -12,7 +12,7 @@ if __name__ == '__main__':
     def perturbation(pctx):
         # from page 976 of Stephen Wolfram's "A New Kind of Science", the perturbation amount is:
         # v + Sign[v - 1/2]Random[]δ
-        return pctx.cell_activity + np.sign(pctx.cell_activity - 1/2)*np.random.uniform()*noise_amount
+        return pctx.node_activity + np.sign(pctx.node_activity - 1/2)*np.random.uniform()*noise_amount
 
     def noisy_rule_90(ctx):
         """
@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
         return result
 
-    activities, _ = ntm.evolve(initial_conditions, adjacencies, timesteps=100,
+    activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=100,
                                activity_rule=noisy_rule_30, perturbation=perturbation)
 
     ntm.plot_grid(activities)

@@ -9,9 +9,9 @@ class HopfieldNet:
     and an evaluation step, in which a starting pattern is evolved for a specified number of timesteps. The final state
     of the network should settle into one of the training patterns.
     """
-    def __init__(self, num_cells):
-        self._activity_rule = AsynchronousRule(activity_rule=self._rule, num_cells=num_cells, randomize_each_cycle=True).activity_rule
-        self._num_cells = num_cells
+    def __init__(self, n):
+        self._activity_rule = AsynchronousRule(activity_rule=self._rule, n=n, randomize_each_cycle=True).activity_rule
+        self._num_nodes = n
 
     def train(self, P):
         """
@@ -33,8 +33,9 @@ class HopfieldNet:
         """
         Peforms a linear combination of the neighbourhood activities and the corresponding weights. If the combined
         value is greater than or equal to 0, then 1 is returned, otherwise -1 is returned.
-        :param ctx: the EvolutionContext; note that the neighbourhood of the cell, in this case, does not include the cell itself
-        :return: the new value of the cell
+        :param ctx: the NodeContext; note that the neighbourhood of the node, in this case, does not include the
+                    node itself
+        :return: the new value of the node
         """
         V = 0
         for i, _ in enumerate(ctx.activities):
@@ -50,5 +51,5 @@ class HopfieldNet:
         return self._adjacency_matrix
 
     @property
-    def num_cells(self):
-        return self._num_cells
+    def num_nodes(self):
+        return self._num_nodes

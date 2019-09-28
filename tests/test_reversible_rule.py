@@ -20,19 +20,19 @@ class TestReversibleRule(RuleTest):
     def _evolve_reversible_ca(expected, rule_number):
         rows, size = expected.shape
         initial_conditions = np.array(expected[0]).flatten()
-        adjacencies = adjacency.cellular_automaton(n=size, r=1)
+        adjacency_matrix = adjacency.cellular_automaton(n=size, r=1)
         r = ReversibleRule(lambda ctx: rules.nks_ca_rule(ctx, rule_number))
-        activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=rows,
-                                            activity_rule=r.activity_rule, past_conditions=[initial_conditions])
+        activities, adjacencies = evolve(initial_conditions, adjacency_matrix, timesteps=rows,
+                                         activity_rule=r.activity_rule, past_conditions=[initial_conditions])
         return activities
 
     @staticmethod
     def _evolve_reversible_ca_parallel(expected, rule_number):
         rows, size = expected.shape
         initial_conditions = np.array(expected[0]).flatten()
-        adjacencies = adjacency.cellular_automaton(n=size, r=1)
+        adjacency_matrix = adjacency.cellular_automaton(n=size, r=1)
         r = ReversibleRule(lambda ctx: rules.nks_ca_rule(ctx, rule_number))
-        activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=rows,
-                                            activity_rule=r.activity_rule, past_conditions=[initial_conditions],
-                                            parallel=True, processes=2)
+        activities, adjacencies = evolve(initial_conditions, adjacency_matrix, timesteps=rows,
+                                         activity_rule=r.activity_rule, past_conditions=[initial_conditions],
+                                         parallel=True, processes=2)
         return activities

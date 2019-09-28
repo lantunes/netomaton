@@ -33,7 +33,7 @@ def _get_scaled_colormap(triples, colormap, vmin, vmax):
 def _get_triples(activities):
     # using the “odd-r” horizontal layout offset coordinate system described in:
     #   https://www.redblobgames.com/grids/hexagons/#coordinates
-    # here we get a list of tuples with three values: (x, y, cell value)
+    # here we get a list of tuples with three values: (x, y, node value)
     return [(x, y, val) for y, row in enumerate(activities) for x, val in enumerate(row)]
 
 

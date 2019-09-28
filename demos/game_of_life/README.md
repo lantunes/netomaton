@@ -9,7 +9,7 @@ It can be defined with the Netomaton framework:
 ```python
 import netomaton as ntm
 
-adjacencies = ntm.network.cellular_automaton2d(rows=60, cols=60, r=1, neighbourhood='Moore')
+adjacency_matrix = ntm.network.cellular_automaton2d(rows=60, cols=60, r=1, neighbourhood='Moore')
 
 initial_conditions = ntm.init_simple2d(60, 60)
 
@@ -36,7 +36,7 @@ initial_conditions[2415] = 1
 initial_conditions[2416] = 1
 initial_conditions[2417] = 1
 
-activities, _ = ntm.evolve(initial_conditions, adjacencies, timesteps=60,
+activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=60,
                            activity_rule=lambda ctx: ntm.rules.game_of_life_rule(ctx))
 
 ntm.animate(activities, shape=(60, 60))

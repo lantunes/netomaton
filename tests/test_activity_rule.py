@@ -1,28 +1,25 @@
 import netomaton.network as adjacency
 import netomaton.rules as rules
-from netomaton import EvolutionContext, evolve
+from netomaton import NodeContext, evolve
 from .rule_test import *
 
 
 class TestRules(RuleTest):
 
     def test_majority_rule(self):
-        actual = rules.majority_rule(EvolutionContext(0, 1, [1, 2, 1, 3, 4], [0, 1, 2, 3, 4], [1., 1., 1., 1., 1.], 0,
-                                                      None, None))
+        actual = rules.majority_rule(NodeContext(0, 1, [1, 2, 1, 3, 4], [0, 1, 2, 3, 4], [1., 1., 1., 1., 1.], 0, None, None))
         expected = 1
         self.assertEqual(expected, actual)
 
-        actual = rules.majority_rule(EvolutionContext(0, 1, [2, 2, 2, 2, 2], [0, 1, 2, 3, 4], [1., 1., 1., 1., 1.], 0,
-                                                      None, None))
+        actual = rules.majority_rule(NodeContext(0, 1, [2, 2, 2, 2, 2], [0, 1, 2, 3, 4], [1., 1., 1., 1., 1.], 0, None, None))
         expected = 2
         self.assertEqual(expected, actual)
 
-        actual = rules.majority_rule(EvolutionContext(0, 1, [3], [0], [1.], 0, None, None))
+        actual = rules.majority_rule(NodeContext(0, 1, [3], [0], [1.], 0, None, None))
         expected = 3
         self.assertEqual(expected, actual)
 
-        actual = rules.majority_rule(EvolutionContext(0, 1, [0., 0., 5423.], [0, 1, 2], [1., 1., 1.], 0,
-                                                      None, None))
+        actual = rules.majority_rule(NodeContext(0, 1, [0., 0., 5423.], [0, 1, 2], [1., 1., 1.], 0, None, None))
         expected = 0.
         self.assertEqual(expected, actual)
 
@@ -98,51 +95,51 @@ class TestRules(RuleTest):
 
     def test_shift_to_center(self):
         activities = [1, 1, 0]
-        cell_indices = [0, 1, 199]
-        cell_index = 0
-        shifted = rules.shift_to_center(activities, cell_indices, cell_index)
+        node_indices = [0, 1, 199]
+        node_index = 0
+        shifted = rules.shift_to_center(activities, node_indices, node_index)
         self.assertEquals([0, 1, 1], shifted)
 
         activities = [1, 1, 0]
-        cell_indices = [0, 1, 199]
-        cell_index = 1
-        shifted = rules.shift_to_center(activities, cell_indices, cell_index)
+        node_indices = [0, 1, 199]
+        node_index = 1
+        shifted = rules.shift_to_center(activities, node_indices, node_index)
         self.assertEquals([1, 1, 0], shifted)
 
         activities = [1, 1, 0]
-        cell_indices = [0, 1, 199]
-        cell_index = 199
-        shifted = rules.shift_to_center(activities, cell_indices, cell_index)
+        node_indices = [0, 1, 199]
+        node_index = 199
+        shifted = rules.shift_to_center(activities, node_indices, node_index)
         self.assertEquals([1, 0, 1], shifted)
 
         activities = [1, 2, 3, 4, 5]
-        cell_indices = [0, 1, 2, 198, 199]
-        cell_index = 0
-        shifted = rules.shift_to_center(activities, cell_indices, cell_index)
+        node_indices = [0, 1, 2, 198, 199]
+        node_index = 0
+        shifted = rules.shift_to_center(activities, node_indices, node_index)
         self.assertEquals([4, 5, 1, 2, 3], shifted)
 
         activities = [1, 2, 3, 4, 5]
-        cell_indices = [0, 1, 2, 198, 199]
-        cell_index = 1
-        shifted = rules.shift_to_center(activities, cell_indices, cell_index)
+        node_indices = [0, 1, 2, 198, 199]
+        node_index = 1
+        shifted = rules.shift_to_center(activities, node_indices, node_index)
         self.assertEquals([5, 1, 2, 3, 4], shifted)
 
         activities = [1, 2, 3, 4, 5]
-        cell_indices = [0, 1, 2, 198, 199]
-        cell_index = 2
-        shifted = rules.shift_to_center(activities, cell_indices, cell_index)
+        node_indices = [0, 1, 2, 198, 199]
+        node_index = 2
+        shifted = rules.shift_to_center(activities, node_indices, node_index)
         self.assertEquals([1, 2, 3, 4, 5], shifted)
 
         activities = [1, 2, 3, 4, 5]
-        cell_indices = [0, 1, 2, 198, 199]
-        cell_index = 198
-        shifted = rules.shift_to_center(activities, cell_indices, cell_index)
+        node_indices = [0, 1, 2, 198, 199]
+        node_index = 198
+        shifted = rules.shift_to_center(activities, node_indices, node_index)
         self.assertEquals([2, 3, 4, 5, 1], shifted)
 
         activities = [1, 2, 3, 4, 5]
-        cell_indices = [0, 1, 2, 198, 199]
-        cell_index = 199
-        shifted = rules.shift_to_center(activities, cell_indices, cell_index)
+        node_indices = [0, 1, 2, 198, 199]
+        node_index = 199
+        shifted = rules.shift_to_center(activities, node_indices, node_index)
         self.assertEquals([3, 4, 5, 1, 2], shifted)
 
     def test_ca_density_classification(self):
@@ -164,34 +161,34 @@ class TestRules(RuleTest):
     def _evolve_nks_ca(expected, rule):
         rows, size = expected.shape
         initial_conditions = np.array(expected[0]).flatten()
-        adjacencies = adjacency.cellular_automaton(n=size, r=1)
-        activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=rows,
-                                            activity_rule=lambda ctx: rules.nks_ca_rule(ctx, rule))
+        adjacency_matrix = adjacency.cellular_automaton(n=size, r=1)
+        activities, adjacencies = evolve(initial_conditions, adjacency_matrix, timesteps=rows,
+                                         activity_rule=lambda ctx: rules.nks_ca_rule(ctx, rule))
         return activities
 
     @staticmethod
     def _evolve_binary_ca(expected, r, rule):
         rows, size = expected.shape
         initial_conditions = np.array(expected[0]).flatten()
-        adjacencies = adjacency.cellular_automaton(n=size, r=r)
-        activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=rows,
-                                            activity_rule=lambda ctx: rules.binary_ca_rule(ctx, rule))
+        adjacency_matrix = adjacency.cellular_automaton(n=size, r=r)
+        activities, adjacencies = evolve(initial_conditions, adjacency_matrix, timesteps=rows,
+                                         activity_rule=lambda ctx: rules.binary_ca_rule(ctx, rule))
         return activities
 
     @staticmethod
     def _evolve_totalistic_ca(expected, k, rule):
         rows, size = expected.shape
         initial_conditions = np.array(expected[0]).flatten()
-        adjacencies = adjacency.cellular_automaton(n=size, r=1)
-        activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=rows,
-                                            activity_rule=lambda ctx: rules.totalistic_ca(ctx, k, rule))
+        adjacency_matrix = adjacency.cellular_automaton(n=size, r=1)
+        activities, adjacencies = evolve(initial_conditions, adjacency_matrix, timesteps=rows,
+                                         activity_rule=lambda ctx: rules.totalistic_ca(ctx, k, rule))
         return activities
 
     @staticmethod
     def _evolve_totalistic_ca2d(expected, rule, neighbourhood):
         steps, rows, size = expected.shape
         initial_conditions = np.array(expected[0]).reshape(rows * size).flatten()
-        adjacencies = adjacency.cellular_automaton2d(rows=rows, cols=size, r=1, neighbourhood=neighbourhood)
-        activities, connectivities = evolve(initial_conditions, adjacencies, timesteps=steps,
-                                            activity_rule=lambda ctx: rules.totalistic_ca(ctx, k=2, rule=rule))
+        adjacency_matrix = adjacency.cellular_automaton2d(rows=rows, cols=size, r=1, neighbourhood=neighbourhood)
+        activities, adjacencies = evolve(initial_conditions, adjacency_matrix, timesteps=steps,
+                                         activity_rule=lambda ctx: rules.totalistic_ca(ctx, k=2, rule=rule))
         return np.array(activities).reshape((steps, rows, size))

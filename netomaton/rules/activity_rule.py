@@ -9,7 +9,7 @@ def totalistic_ca(ctx, k, rule):
     The rule number is in base 10, but interpreted in base k. For a 1-dimensional cellular automaton, there are
     3k - 2 possible average colors in the 3-cell neighbourhood. There are n(k - 1) + 1 possible average colors for a
     k-color cellular automaton with an n-cell neighbourhood.
-    :param ctx: the EvolutionContext for a cell
+    :param ctx: the NodeContext for a cell (i.e. node)
     :param k: the number of colors in this cellular automaton, where only 2 <= k <= 36 is supported
     :param rule: the k-color cellular automaton rule number in base 10, interpreted in base k
     :return: the result, a number from 0 to k - 1, of applying the given rule on the given state
@@ -30,8 +30,8 @@ def majority_rule(ctx):
     """
     Returns the value of the most frequent state in the neighbourhood. If all states are equally frequent, then a
     random state is chosen from the neighbourhood.
-    :param ctx: the EvolutionContext for a cell
-    :return: the new activity for the cell with the given neighbourhood
+    :param ctx: the NodeContext for a node
+    :return: the new activity for the node with the given neighbourhood
     """
     try:
         return mode(ctx.activities)
@@ -53,13 +53,13 @@ def _int_to_bits(num, num_digits):
     return np.pad(converted, (num_digits - len(converted), 0), 'constant')
 
 
-def shift_to_center(activities, cell_indices, cell_index):
+def shift_to_center(activities, node_indices, node_index):
     center = len(activities) // 2
     shifted = deque(activities)
 
     def index_of(arr, val):
         return np.where(arr == val)[0][0] if type(arr) == np.ndarray else arr.index(val)
-    shifted.rotate(center - index_of(cell_indices, cell_index))
+    shifted.rotate(center - index_of(node_indices, node_index))
     return list(shifted)
 
 
@@ -77,13 +77,13 @@ def binary_ca_rule(ctx, rule, scheme=None):
     If None is provided for the scheme parameter, the neighbourhoods are listed in lexicographic order (the reverse of
     the NKS convention). If 'nks' is provided for the scheme parameter, the NKS convention is used for listing the
     neighbourhoods.
-    :param ctx: the EvolutionContext for a cell; the activities are a binary array of length 2r + 1
+    :param ctx: the NodeContext for a cell (i.e. node); the activities are a binary array of length 2r + 1
     :param rule: an int indicating the cellular automaton rule number
     :param scheme: can be None (default) or 'nks'; if 'nks' is given, the rule numbering scheme used in NKS is used
     :return: the result, 0 or 1, of applying the given rule on the given state
     """
     # shift the activities so that the current cell's activity is in the center
-    activities = shift_to_center(ctx.activities, ctx.neighbour_indices, ctx.cell_index)
+    activities = shift_to_center(ctx.activities, ctx.neighbour_indices, ctx.node_index)
     state_int = _bits_to_int(activities)
     n = 2**len(activities)
     rule_bin_array = _int_to_bits(rule, n)
@@ -95,7 +95,7 @@ def binary_ca_rule(ctx, rule, scheme=None):
 def nks_ca_rule(ctx, rule):
     """
     A convenience function, that calls binary_rule with scheme = 'nks'.
-    :param ctx: the EvolutionContext for a cell; the activities are a binary array of length 2r + 1
+    :param ctx: the NodeContext for a cell (i.e. node); the activities are a binary array of length 2r + 1
     :param rule: an int indicating the cellular automaton rule number
     :return:
     """

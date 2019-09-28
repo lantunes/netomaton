@@ -3,7 +3,7 @@
 This example illustrates the construction of a Finite State Machine.
 Although simplistic, it demonstrates how Finite State Machines can be
 thought of as Network Automata. A Finite State Machine can be seen
-as a Network Automaton with a single cell.
+as a Network Automaton with a single node.
 
 The "Turnstile" FSM in this case contains two states: Locked (0) and Unlocked (1).
 It can undergo two kinds of transitions: Push ("p") and Coin ("c").
@@ -22,8 +22,8 @@ import netomaton as ntm
 states = {'locked': 0, 'unlocked': 1}
 transitions = {'PUSH': 'p', 'COIN': 'c'}
 
-# a FSM can be thought of as a Network Automaton with a single cell
-adjacencies = [[1]]
+# a FSM can be thought of as a Network Automaton with a single node
+adjacency_matrix = [[1]]
 
 # the FSM starts off in the Locked state
 initial_conditions = [states['locked']]
@@ -37,7 +37,7 @@ def fsm_rule(n, c, event):
         # COIN event
         return states['unlocked']
 
-activities, _ = ntm.evolve(initial_conditions, adjacencies, input=events,
+activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, input=events,
                            activity_rule=fsm_rule)
 
 ntm.plot_grid(activities)

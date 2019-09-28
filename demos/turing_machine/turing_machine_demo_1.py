@@ -25,9 +25,9 @@ if __name__ == "__main__":
     tm = HeadCentricTuringMachine(tape=[0]*21, rule_table=rule_table,
                                   initial_head_state=HEAD['up'], initial_head_position=3, max_timesteps=61)
 
-    activities, _ = ntm.evolve(tm.initial_conditions, tm.adjacencies,
+    activities, _ = ntm.evolve(tm.initial_conditions, tm.adjacency_matrix,
                                activity_rule=tm.activity_rule, input=tm.input_function)
 
     tape_history, head_activities = tm.activities_for_plotting(activities)
 
-    ntm.plot_grid(tape_history, cell_annotations=head_activities, show_grid=True)
+    ntm.plot_grid(tape_history, node_annotations=head_activities, show_grid=True)

@@ -15,22 +15,22 @@ def shannon_entropy(string):
     return H + 0  # add 0 as a workaround so we don't end up with -0.0
 
 
-def average_cell_entropy(activities):
+def average_node_entropy(activities):
     """
-    Calculates the average cell entropy in the given automaton evolution, where entropy is the Shannon entropy.
-    The state of a cell over time is represented as a string, and its entropy is calculated. The same is done for all
-    cells in this automaton, and the average entropy is returned.
+    Calculates the average node entropy in the given automaton evolution, where entropy is the Shannon entropy.
+    The state of a node over time is represented as a string, and its entropy is calculated. The same is done for all
+    nodes in this Network Automaton, and the average entropy is returned.
     :param activities: a list of lists that represents the evolution of the automaton, where an inner list represents
-                       the activities of the cells at a given timestep
-    :return: a real number representing the average cell Shannon entropy
+                       the activities of the nodes at a given timestep
+    :return: a real number representing the average node Shannon entropy
     """
     if len(activities) is 0:
         raise Exception("there are no activities")
     num_cols = len(activities[0])
     entropies = []
     for i in range(0, num_cols):
-        cell_states_over_time = ''.join([str(x) for x in [y[i] for y in activities]])
-        entropy = shannon_entropy(cell_states_over_time)
+        node_states_over_time = ''.join([str(x) for x in [y[i] for y in activities]])
+        entropy = shannon_entropy(node_states_over_time)
         entropies.append(entropy)
     return np.mean(entropies)
 
@@ -63,18 +63,18 @@ def mutual_information(stringX, stringY):
 
 def average_mutual_information(activities, temporal_distance=1):
     """
-    Calculates the average mutual information between a cell and itself at the next n time steps, given by the
+    Calculates the average mutual information between a node and itself at the next n time steps, given by the
     specified temporal distance. A temporal distance of 1 means the next time step.
-    For example, consider the following string, '00101010110', which represents the state of a cell over 11 time steps.
-    The strings which will be used for the computation of the mutual information between a cell and itself at the
+    For example, consider the following string, '00101010110', which represents the state of a node over 11 time steps.
+    The strings which will be used for the computation of the mutual information between a node and itself at the
     next time step are: '0010101011' and '0101010110', since we pair each time-step value with its next value:
     " 00101010110"
     "00101010110 "
     :param activities: a list of lists that represents the evolution of the automaton, where an inner list represents
-                       the activities of the cells at a given timestep
+                       the activities of the nodes at a given timestep
     :param temporal_distance: the size of temporal separation, where the value must be greater than 0 and
                               less than the number of time steps.
-    :return: a real number representing the average mutual information between a cell and itself at the next time step
+    :return: a real number representing the average mutual information between a node and itself at the next time step
     """
     if len(activities) is 0:
         raise Exception("there are no activities")
@@ -83,7 +83,7 @@ def average_mutual_information(activities, temporal_distance=1):
         raise Exception("the temporal distance must be greater than 0 and less than the number of time steps")
     mutual_informations = []
     for i in range(0, num_cols):
-        cell_states_over_time = ''.join([str(x) for x in [y[i] for y in activities]])
-        mi = mutual_information(cell_states_over_time[:-temporal_distance], cell_states_over_time[temporal_distance:])
+        node_states_over_time = ''.join([str(x) for x in [y[i] for y in activities]])
+        mi = mutual_information(node_states_over_time[:-temporal_distance], node_states_over_time[temporal_distance:])
         mutual_informations.append(mi)
     return np.mean(mutual_informations)

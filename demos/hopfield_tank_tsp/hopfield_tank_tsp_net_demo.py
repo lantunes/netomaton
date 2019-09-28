@@ -108,12 +108,12 @@ if __name__ == "__main__":
 
     tsp_net = ntm.HopfieldTankTSPNet(points, dt=dt, A=A, B=B, C=C, D=D, n=n)
 
-    adjacencies = tsp_net.adjacencies
+    adjacency_matrix = tsp_net.adjacency_matrix
 
-    # -0.022 was chosen so that the sum of V for all cells is 10; some noise is added to break the symmetry
-    initial_conditions = [-0.022 + np.random.uniform(-0.1*0.02, 0.1*0.02) for _ in range(len(adjacencies))]
+    # -0.022 was chosen so that the sum of V for all nodes is 10; some noise is added to break the symmetry
+    initial_conditions = [-0.022 + np.random.uniform(-0.1*0.02, 0.1*0.02) for _ in range(len(adjacency_matrix))]
 
-    activities, _ = ntm.evolve(initial_conditions, adjacencies, tsp_net.activity_rule, timesteps=timesteps, parallel=True)
+    activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, tsp_net.activity_rule, timesteps=timesteps, parallel=True)
 
     ntm.animate(activities, shape=(10, 10))
 
