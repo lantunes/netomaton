@@ -13,8 +13,7 @@ Neural Network. An example is given below:
 points = [(0, 1), (0.23, 0.5), (0.6, 0.77), (0.33, 0.88), (0.25, 0.99),
           (0.55, 0.25), (0.67, 0.78), (0.12, 0.35), (0.19, 0.89), (0.40, 0.23)]
 
-# this hyperparameter combination provides an avg. tour length of
-#  2.9605078829924527, with a 70% convergence rate
+# this hyperparameter combination provides an avg. tour length of ~2.961 with a ~70% convergence rate
 A, B, C, D, n, dt, timesteps = 300, 300, 100, 300, 12, 1e-05, 1000
 
 tsp_net = ntm.HopfieldTankTSPNet(points, dt=dt, A=A, B=B, C=C, D=D, n=n)
@@ -25,7 +24,8 @@ adjacency_matrix = tsp_net.adjacency_matrix
 # some noise is added to break the symmetry
 initial_conditions = [-0.022 + np.random.uniform(-0.1*0.02, 0.1*0.02) for _ in range(len(adjacency_matrix))]
 
-activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, tsp_net.activity_rule, timesteps=timesteps, parallel=True)
+activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, tsp_net.activity_rule,
+                           timesteps=timesteps, parallel=True)
 
 ntm.animate(activities, shape=(10, 10))
 
@@ -52,11 +52,11 @@ Tank call the _permutation matrix_. The final state of the permutation
 matrix encodes the tour discovered by the network. An example of its
 evolution is depicted below:
 
-<img src="../../resources/tsp.gif" width="65%"/>
+<img src="../../resources/tsp.gif" width="55%"/>
 
 Some of the solutions discovered by this network are shown below:
 
-<img src="../../resources/tsp_results.png" width="65%"/>
+<img src="../../resources/tsp_results.png" width="100%"/>
 
 To learn more about the Hopfield-Tank Neural Network, please see:
 
