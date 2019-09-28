@@ -10,6 +10,8 @@ Netomaton comes with a built-in implementation of the Hopfield-Tank
 Neural Network. An example is given below:
 
 ```python
+import netomaton as ntm
+
 points = [(0, 1), (0.23, 0.5), (0.6, 0.77), (0.33, 0.88), (0.25, 0.99),
           (0.55, 0.25), (0.67, 0.78), (0.12, 0.35), (0.19, 0.89), (0.40, 0.23)]
 
@@ -20,8 +22,7 @@ tsp_net = ntm.HopfieldTankTSPNet(points, dt=dt, A=A, B=B, C=C, D=D, n=n)
 
 adjacency_matrix = tsp_net.adjacency_matrix
 
-# -0.022 was chosen so that the sum of V for all nodes is 10;
-# some noise is added to break the symmetry
+# -0.022 was chosen so that the sum of V for all nodes is 10; some noise is added to break the symmetry
 initial_conditions = [-0.022 + np.random.uniform(-0.1*0.02, 0.1*0.02) for _ in range(len(adjacency_matrix))]
 
 activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, tsp_net.activity_rule,
@@ -40,7 +41,7 @@ The Hopfield-Tank Neural Network is quite sensitive to initial
 conditions. There are a number of hyperparameters, and various
 combinations of values generally result in a tradeoff between
 convergence rate and performance. That is, some settings result in a
-better convergence rate<sup>*</sup> but less-than-ideal solutions,
+better convergence rate<sup>1</sup> but less-than-ideal solutions,
 whereas other settings result in very good solutions, but lower
 convergence rates.
 
@@ -54,7 +55,8 @@ evolution is depicted below:
 
 <img src="../../resources/tsp.gif" width="55%"/>
 
-Some of the solutions discovered by this network are shown below:
+Some of the solutions discovered by this network (and their tour
+lengths) are shown below:
 
 <img src="../../resources/tsp_results.png" width="100%"/>
 
@@ -65,4 +67,4 @@ To learn more about the Hopfield-Tank Neural Network, please see:
 > Hopfield, John J., and David W. Tank. "Computing with neural circuits: A model." Science 233.4764 (1986): 625-633.
 
 
-<sup>*</sup> Convergence here means finding a valid solution.
+<sup>1</sup> Convergence here means finding a valid solution.
