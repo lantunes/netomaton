@@ -21,3 +21,5 @@ if __name__ == "__main__":
     padded = subn_system.pad(activities)
 
     ntm.plot_grid(padded, show_grid=True)
+
+    ntm.animate_network(connectivities, interval=250, save=True)

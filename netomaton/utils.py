@@ -100,3 +100,26 @@ def plot_network(adjacency_matrix):
 
     nx.draw_shell(G, with_labels=True)
     plt.show()
+
+
+def animate_network(adjacency_matrices, save=False, interval=50):
+    fig, ax = plt.subplots()
+
+    def update(adjacency_matrix):
+        ax.clear()
+
+        G = nx.MultiDiGraph()
+        for n, _ in enumerate(adjacency_matrix):
+            G.add_node(n)
+        for row_index, row in enumerate(adjacency_matrix):
+            for node_index, val in enumerate(row):
+                if val != 0.:
+                    G.add_edge(row_index, node_index)
+
+        nx.draw_shell(G, with_labels=True)
+
+    ani = animation.FuncAnimation(fig, update, frames=adjacency_matrices, interval=interval,
+                                  save_count=len(adjacency_matrices))
+    if save:
+        ani.save('evolved.gif', dpi=80, writer="imagemagick")
+    plt.show()
