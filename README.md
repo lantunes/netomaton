@@ -131,6 +131,8 @@ the Netomaton framework. Follow the link to learn more:
 
 * [Travelling Salesman Problem with the Hopfield-Tank Neural Net](demos/hopfield_tank_tsp/README.md)
 
+* [Substitution Systems](demos/substitution_systems/README.md)
+
 Additionally, this library includes a number of utility functions for
 working with the results produced by the automata. For example, there
 is the `animate` function, which is explained more [here](demos/animation_demo/README.md).

@@ -10,6 +10,7 @@ from .sandpile import *
 from .turing_machine import *
 from .utils import *
 from .hopfield_tank_tsp_net import *
+from .substitution_system import *
 
 from . import network
 from . import rules
