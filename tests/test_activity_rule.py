@@ -98,49 +98,49 @@ class TestRules(RuleTest):
         node_indices = [0, 1, 199]
         node_index = 0
         shifted = rules.shift_to_center(activities, node_indices, node_index)
-        self.assertEquals([0, 1, 1], shifted)
+        self.assertEqual([0, 1, 1], shifted)
 
         activities = [1, 1, 0]
         node_indices = [0, 1, 199]
         node_index = 1
         shifted = rules.shift_to_center(activities, node_indices, node_index)
-        self.assertEquals([1, 1, 0], shifted)
+        self.assertEqual([1, 1, 0], shifted)
 
         activities = [1, 1, 0]
         node_indices = [0, 1, 199]
         node_index = 199
         shifted = rules.shift_to_center(activities, node_indices, node_index)
-        self.assertEquals([1, 0, 1], shifted)
+        self.assertEqual([1, 0, 1], shifted)
 
         activities = [1, 2, 3, 4, 5]
         node_indices = [0, 1, 2, 198, 199]
         node_index = 0
         shifted = rules.shift_to_center(activities, node_indices, node_index)
-        self.assertEquals([4, 5, 1, 2, 3], shifted)
+        self.assertEqual([4, 5, 1, 2, 3], shifted)
 
         activities = [1, 2, 3, 4, 5]
         node_indices = [0, 1, 2, 198, 199]
         node_index = 1
         shifted = rules.shift_to_center(activities, node_indices, node_index)
-        self.assertEquals([5, 1, 2, 3, 4], shifted)
+        self.assertEqual([5, 1, 2, 3, 4], shifted)
 
         activities = [1, 2, 3, 4, 5]
         node_indices = [0, 1, 2, 198, 199]
         node_index = 2
         shifted = rules.shift_to_center(activities, node_indices, node_index)
-        self.assertEquals([1, 2, 3, 4, 5], shifted)
+        self.assertEqual([1, 2, 3, 4, 5], shifted)
 
         activities = [1, 2, 3, 4, 5]
         node_indices = [0, 1, 2, 198, 199]
         node_index = 198
         shifted = rules.shift_to_center(activities, node_indices, node_index)
-        self.assertEquals([2, 3, 4, 5, 1], shifted)
+        self.assertEqual([2, 3, 4, 5, 1], shifted)
 
         activities = [1, 2, 3, 4, 5]
         node_indices = [0, 1, 2, 198, 199]
         node_index = 199
         shifted = rules.shift_to_center(activities, node_indices, node_index)
-        self.assertEquals([3, 4, 5, 1, 2], shifted)
+        self.assertEqual([3, 4, 5, 1, 2], shifted)
 
     def test_ca_density_classification(self):
         expected = self._convert_to_matrix("ca_density_classification.ca")

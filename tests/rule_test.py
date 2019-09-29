@@ -15,7 +15,8 @@ class RuleTest(unittest.TestCase):
         content = content.replace('}}', '')
         content = content.replace('{', '')
         content = content.replace('},', ';')
-        return np.matrix(content, dtype=np.int)
+        content = [[int(i) for i in x.split(',')] for x in content.split(';')]
+        return np.array(content, dtype=np.int)
 
     def _convert_to_matrix2d(self, filename):
         with open(os.path.join(THIS_DIR, 'resources', filename), 'r') as content_file:
