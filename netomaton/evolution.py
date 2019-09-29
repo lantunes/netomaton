@@ -26,6 +26,8 @@ class NodeContext(object):
         self._current_activity = current_activity
         self._past_activities = past_activities
         self._input = input
+        self._inserted = []
+        self._removed = []
 
     @property
     def node_index(self):
@@ -118,6 +120,25 @@ class NodeContext(object):
         """
         return self._input
 
+    # TODO add docs
+
+    def has_node(self, node_index):
+        return node_index in self._neighbour_indices
+
+    @property
+    def inserted(self):
+        return self._inserted
+
+    @property
+    def removed(self):
+        return self._removed
+
+    def insert(self, node_index, activity):
+        self._inserted.append((node_index, activity))
+
+    def remove(self, node_index):
+        self._removed.append(node_index)
+
 
 class PerturbationContext(object):
     """
@@ -144,6 +165,25 @@ class PerturbationContext(object):
     @property
     def input(self):
         return self._input
+
+# TODO add docs
+class ConnectivityContext(object):
+    def __init__(self, last_adjacencies, last_activities, t):
+        self._last_adjacencies = last_adjacencies
+        self._last_activities = last_activities
+        self._timestep = t
+
+    @property
+    def last_adjacencies(self):
+        return self._last_adjacencies
+
+    @property
+    def last_activities(self):
+        return self._last_activities
+
+    @property
+    def timestep(self):
+        return self._timestep
 
 
 def evolve(initial_conditions, adjacency_matrix, activity_rule, timesteps=None, input=None, connectivity_rule=None,
@@ -236,16 +276,16 @@ def _evolve_activities(initial_conditions, adjacency_matrix, activity_rule, step
         if t == len(activities_over_time):
             activities_over_time = _extend_activities(activities_over_time, initial_conditions)
 
-        for c in range(num_nodes):
-            nonzero_indices = nonzero_index_map[c]
+        for n in range(num_nodes):
+            nonzero_indices = nonzero_index_map[n]
             activities = [last_activities[i] for i in nonzero_indices]
             past_activities = [[p[i] for i in nonzero_indices] for p in past] if past else None
-            weights = weight_map[c]
-            node_in = None if inp == "__timestep__" else inp[c] if _is_indexable(inp) else inp
-            context = NodeContext(c, t, activities, nonzero_indices, weights, last_activities[c], past_activities, node_in)
-            activities_over_time[t][c] = activity_rule(context)
+            weights = weight_map[n]
+            node_in = None if inp == "__timestep__" else inp[n] if _is_indexable(inp) else inp
+            context = NodeContext(n, t, activities, nonzero_indices, weights, last_activities[n], past_activities, node_in)
+            activities_over_time[t][n] = activity_rule(context)
             if perturbation is not None:
-                activities_over_time[t][c] = perturbation(PerturbationContext(c, activities_over_time[t][c], t, node_in))
+                activities_over_time[t][n] = perturbation(PerturbationContext(n, activities_over_time[t][n], t, node_in))
 
         t += 1
 
@@ -385,14 +425,13 @@ def _evolve_activities_parallel(initial_conditions, adjacency_matrix, activity_r
 
 def _evolve_both(initial_conditions, adjacency_matrix, activity_rule, steps, input_fn,
                  connectivity_rule=ConnectivityRule.noop, perturbation=None, past_conditions=None):
-
-    activities_over_time = np.empty((steps, len(initial_conditions)), dtype=np.dtype(type(initial_conditions[0])))
+    activities_over_time = [[0 for _ in range(len(initial_conditions))] for _ in range(steps)] # TODO dtype
+    # activities_over_time = np.empty((steps, len(initial_conditions)), dtype=np.dtype(type(initial_conditions[0])))
     activities_over_time[0] = initial_conditions
 
-    adjacencies_over_time = np.empty((steps, len(adjacency_matrix), len(adjacency_matrix)), dtype=np.dtype(type(adjacency_matrix[0][0])))
+    adjacencies_over_time = [[[0 for _ in range(len(adjacency_matrix))] for _ in range(len(adjacency_matrix))] for _ in range(steps)] # TODO dtype
+    # adjacencies_over_time = np.empty((steps, len(adjacency_matrix), len(adjacency_matrix)), dtype=np.dtype(type(adjacency_matrix[0][0])))
     adjacencies_over_time[0] = adjacency_matrix
-
-    num_nodes = len(adjacency_matrix[0])
 
     t = 1
     while True:
@@ -403,37 +442,65 @@ def _evolve_both(initial_conditions, adjacency_matrix, activity_rule, steps, inp
         past = _get_past_activities(past_conditions, activities_over_time, t)
         last_adjacencies = adjacencies_over_time[t - 1]
 
-        if t == len(activities_over_time):
-            activities_over_time = _extend_activities(activities_over_time, initial_conditions)
+        # if t == len(activities_over_time):
+        #     activities_over_time = _extend_activities(activities_over_time, initial_conditions) # TODO not using numpy now
+        #
+        # if t == len(adjacencies_over_time):
+        #     adjacencies_over_time = _extend_adjacencies(adjacencies_over_time, adjacency_matrix) # TODO not using numpy now
 
-        if t == len(adjacencies_over_time):
-            adjacencies_over_time = _extend_adjacencies(adjacencies_over_time, adjacency_matrix)
+        if len(last_activities) != len(activities_over_time[t]):
+            # resize activities_over_time[t] so that it has the same length as last_activities
+            activities_over_time[t] = [0 for _ in range(len(last_activities))]
 
         last_adjacencies_transposed = np.array(last_adjacencies).T
+
+        num_nodes = len(last_adjacencies_transposed)
 
         nonzeros = np.nonzero(last_adjacencies_transposed)
         index_map = {i: [] for i in range(num_nodes)}
         [index_map[idx].append(nonzeros[1][i]) for i, idx in enumerate(nonzeros[0])]
 
+        insertions = []
+        removals = []
         for n in range(num_nodes):
             # use the transpose of the adjacency matrix to get the nodes that are inputs to a given node defined by a row
             row = last_adjacencies_transposed[n]
             nonzero_indices = index_map[n]
-            activities = last_activities[nonzero_indices]
+            activities = [last_activities[z] for z in nonzero_indices]
             past_activities = [[p[i] for i in nonzero_indices] for p in past] if past else None
             weights = row[nonzero_indices]
             node_in = None if inp == "__timestep__" else inp[n] if _is_indexable(inp) else inp
             context = NodeContext(n, t, activities, nonzero_indices, weights, last_activities[n], past_activities, node_in)
             activities_over_time[t][n] = activity_rule(context)
+            insertions.extend(context.inserted)
+            removals.extend(context.removed)
             if perturbation is not None:
                 activities_over_time[t][n] = perturbation(PerturbationContext(n, activities_over_time[t][n], t, node_in))
 
-        adjacencies = connectivity_rule(last_adjacencies, last_activities, t)
+        offsets = []
+        for insertion in insertions:
+            insertion_idx = _apply_offsets(insertion[0], offsets)
+            insertion_val = insertion[1]
+            activities_over_time[t].insert(insertion_idx, insertion_val)
+            offsets.append((insertion_idx-1, 1))
+        for removal in removals:
+            removal_idx = _apply_offsets(removal, offsets)
+            del activities_over_time[t][removal_idx]
+            offsets.append((removal_idx, -1))
+
+        adjacencies = connectivity_rule(ConnectivityContext(last_adjacencies, last_activities, t))
         adjacencies_over_time[t] = adjacencies
 
         t += 1
 
     return activities_over_time, adjacencies_over_time
+
+
+def _apply_offsets(idx, offsets):
+    for offset in offsets:
+        if idx > offset[0]:
+            idx += offset[1]
+    return idx
 
 
 def init_simple(size, val=1, dtype=np.int):

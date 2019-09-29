@@ -89,8 +89,8 @@ def _reshape_for_animation(activities, shape):
         raise Exception("shape must be a tuple of length 1 or 2")
 
 
-def render_network(adjacency_matrix):
-    G = nx.DiGraph()
+def plot_network(adjacency_matrix):
+    G = nx.MultiDiGraph()
     for n, _ in enumerate(adjacency_matrix):
         G.add_node(n)
     for row_index, row in enumerate(adjacency_matrix):
