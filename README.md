@@ -53,10 +53,9 @@ that:
 **A**<sub>*t+1*</sub> = *g*(**A**<sub>*t*</sub>, **S**<sub>*t*</sub>)
 
 
-A network may have nodes added or removed at any given timestep; however,
-this framework will consider that a network has a total fixed number of
-nodes at all times, and that nodes may become connected or fully
-disconnected from the network instead.
+There are no restrictions to the kinds of topological changes that a
+network may undergo over the course of its evolution. A network may have
+nodes added or removed at any given timestep.
 
 To learn more, please refer to the scientific literature on the subject:
 
@@ -132,6 +131,8 @@ the Netomaton framework. Follow the link to learn more:
 * [Travelling Salesman Problem with the Hopfield-Tank Neural Net](demos/hopfield_tank_tsp/README.md)
 
 * [Substitution Systems](demos/substitution_systems/README.md)
+
+* [Wireworld](demos/wireworld/README.md)
 
 Additionally, this library includes a number of utility functions for
 working with the results produced by the automata. For example, there

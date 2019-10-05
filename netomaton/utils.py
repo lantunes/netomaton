@@ -2,6 +2,7 @@ import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import matplotlib.collections as mcoll
 
 
 def plot_grid(activities, shape=None, slice=-1, title='', colormap='Greys', vmin=None, vmax=None,
@@ -40,12 +41,28 @@ def plot_grid_multiple(ca_list, shape=None, slice=-1, titles=None, colormap='Gre
     plt.show()
 
 
-def animate(activities, title='', shape=None, save=False, interval=50, colormap='Greys', vmin=None, vmax=None):
+def animate(activities, title='', shape=None, save=False, interval=50, colormap='Greys', vmin=None, vmax=None,
+            show_grid=False):
     if shape is not None:
         activities = _reshape_for_animation(activities, shape)
     cmap = plt.get_cmap(colormap)
-    fig = plt.figure()
+    fig, ax = plt.subplots()
     plt.title(title)
+
+    grid_linewidth = 0.0
+    if show_grid:
+        plt.xticks(np.arange(-.5, len(activities[0][0]), 1), "")
+        plt.yticks(np.arange(-.5, len(activities[0]), 1), "")
+        plt.tick_params(axis='both', which='both', length=0)
+        grid_linewidth = 0.5
+
+    vertical = np.arange(-.5, len(activities[0][0]), 1)
+    horizontal = np.arange(-.5, len(activities[0]), 1)
+    lines = ([[(x, y) for y in (-.5, horizontal[-1])] for x in vertical] +
+             [[(x, y) for x in (-.5, vertical[-1])] for y in horizontal])
+    grid = mcoll.LineCollection(lines, linestyles='-', linewidths=grid_linewidth, color='grey')
+    ax.add_collection(grid)
+
     im = plt.imshow(activities[0], animated=True, cmap=cmap, vmin=vmin, vmax=vmax)
     i = {'index': 0}
     def updatefig(*args):
@@ -53,7 +70,7 @@ def animate(activities, title='', shape=None, save=False, interval=50, colormap=
         if i['index'] == len(activities):
             i['index'] = 0
         im.set_array(activities[i['index']])
-        return im,
+        return im, grid
     ani = animation.FuncAnimation(fig, updatefig, interval=interval, blit=True, save_count=len(activities))
     if save:
         ani.save('evolved.gif', dpi=80, writer="imagemagick")
