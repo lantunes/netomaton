@@ -91,47 +91,26 @@ various kinds of collective computation models, all implemented using
 the Netomaton framework. Follow the link to learn more:
 
 * [Elementary Cellular Automata](demos/elementary_ca/README.md)
-
 * [1D Cellular Automata with Totalistic Rules](demos/totalistic_ca/README.md)
-
 * [Reversible 1D Cellular Automata](demos/reversible_ca/README.md)
-
 * [Density Classification with Evolved 1D Cellular Automata](demos/ca_density_classification/README.md)
-
 * [Density Classification with a Watts-Strogatz small-world graph](demos/small_world_density_classification/README.md)
-
 * [Asynchronous Automata](demos/asynchronous_automata/README.md)
-
 * [Continuous Automata](demos/continuous_automata/README.md)
-
 * [Finite State Machines](demos/finite_state_machine/README.md)
-
 * [Pushdown Automata](demos/pushdown_automata/README.md)
-
 * [Turing Machines](demos/turing_machine/README.md)
-
 * [Langton's Lambda and Measures of Complexity](demos/langtons_lambda/README.md)
-
 * [2D Cellular Automata](demos/totalistic_ca2d/README.md)
-
 * [Conway's Game of Life](demos/game_of_life/README.md)
-
 * [Gray-Scott Reaction-Diffusion Model](demos/reaction_diffusion/README.md)
-
 * [Hexagonal Cell Lattices](demos/hexagonal_ca/README.md)
-
 * [Hopfield Network](demos/hopfield_net/README.md)
-
 * [Perturbations](demos/perturbation_demo/README.md)
-
 * [Sandpiles](demos/sandpiles/README.md)
-
 * [Continuous-Time Models](demos/continuous_time_models/README.md)
-
 * [Travelling Salesman Problem with the Hopfield-Tank Neural Net](demos/hopfield_tank_tsp/README.md)
-
 * [Substitution Systems](demos/substitution_systems/README.md)
-
 * [Wireworld](demos/wireworld/README.md)
 
 Additionally, this library includes a number of utility functions for
