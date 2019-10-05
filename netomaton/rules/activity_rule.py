@@ -118,3 +118,15 @@ def game_of_life_rule(ctx):
             return 1  # Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
         else:
             return 0
+
+
+def wireworld_rule(ctx):
+    if ctx.current_activity == 0:  # empty
+        return 0
+    if ctx.current_activity == 1:  # electron head
+        return 2
+    if ctx.current_activity == 2:  # electron tail
+        return 3
+    if ctx.current_activity == 3:  # conductor
+        electron_head_count = ctx.activities.count(1)
+        return 1 if electron_head_count == 1 or electron_head_count == 2 else 3
