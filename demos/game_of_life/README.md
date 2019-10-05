@@ -37,7 +37,7 @@ initial_conditions[2416] = 1
 initial_conditions[2417] = 1
 
 activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=60,
-                           activity_rule=lambda ctx: ntm.rules.game_of_life_rule(ctx))
+                           activity_rule=ntm.rules.game_of_life_rule)
 
 ntm.animate(activities, shape=(60, 60))
 ```
