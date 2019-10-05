@@ -22,4 +22,4 @@ if __name__ == "__main__":
 
     ntm.plot_grid(padded, show_grid=True)
 
-    ntm.animate_network(connectivities, interval=250, save=True)
+    ntm.animate_network(connectivities, interval=250)
