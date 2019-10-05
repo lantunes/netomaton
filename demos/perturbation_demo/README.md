@@ -28,7 +28,7 @@ def perturb(pctx):
     return pctx.node_activity
 
 activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=100,
-                           activity_rule=lambda ctx: ntm.rules.nks_ca_rule(ctx, 30),
+                           activity_rule=ntm.rules.nks_ca_rule(30),
                            perturbation=perturb)
 
 ntm.plot_grid(activities)
@@ -44,15 +44,14 @@ adjacency_matrix = ntm.network.cellular_automaton(n=200)
 initial_conditions = np.random.randint(0, 2, 200)
 
 def perturbed_rule(ctx):
-    a = ntm.rules.nks_ca_rule(ctx, 90)
+    rule = ntm.rules.nks_ca_rule(90)
     if t % 10 == 0:
         return 1
-    return a
-
-r = ntm.ReversibleRule(perturbed_rule)
+    return rule(ctx)
 
 activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=100,
-                           activity_rule=r.activity_rule, past_conditions=[initial_conditions])
+                           activity_rule=ntm.ReversibleRule(perturbed_rule),
+                           past_conditions=[initial_conditions])
 
 ntm.plot_grid(activities)
 ```

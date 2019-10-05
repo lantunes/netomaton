@@ -31,7 +31,7 @@ rule_number = 6667021275756174439087127638698866559
 print("density of 1s: %s" % (np.count_nonzero(initial_conditions) / 149))
 
 activities, adjacencies = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=149,
-                                     activity_rule=lambda ctx: ntm.rules.binary_ca_rule(ctx, rule_number))
+                                     activity_rule=ntm.rules.binary_ca_rule(rule_number))
 
 ntm.plot_grid(activities)
 ```

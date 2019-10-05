@@ -7,9 +7,8 @@ if __name__ == '__main__':
 
     initial_conditions = np.random.randint(0, 2, 200)
 
-    r = ntm.ReversibleRule(lambda ctx: ntm.rules.nks_ca_rule(ctx, 90))
-
     activities, adjacencies = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=100,
-                                         activity_rule=r.activity_rule, past_conditions=[initial_conditions])
+                                         activity_rule=ntm.ReversibleRule(ntm.rules.nks_ca_rule(90)),
+                                         past_conditions=[initial_conditions])
 
     ntm.plot_grid(activities)

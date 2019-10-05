@@ -163,7 +163,7 @@ class TestRules(RuleTest):
         initial_conditions = np.array(expected[0]).flatten()
         adjacency_matrix = adjacency.cellular_automaton(n=size, r=1)
         activities, adjacencies = evolve(initial_conditions, adjacency_matrix, timesteps=rows,
-                                         activity_rule=lambda ctx: rules.nks_ca_rule(ctx, rule))
+                                         activity_rule=rules.nks_ca_rule(rule))
         return activities
 
     @staticmethod
@@ -172,7 +172,7 @@ class TestRules(RuleTest):
         initial_conditions = np.array(expected[0]).flatten()
         adjacency_matrix = adjacency.cellular_automaton(n=size, r=r)
         activities, adjacencies = evolve(initial_conditions, adjacency_matrix, timesteps=rows,
-                                         activity_rule=lambda ctx: rules.binary_ca_rule(ctx, rule))
+                                         activity_rule=rules.binary_ca_rule(rule))
         return activities
 
     @staticmethod
@@ -181,7 +181,7 @@ class TestRules(RuleTest):
         initial_conditions = np.array(expected[0]).flatten()
         adjacency_matrix = adjacency.cellular_automaton(n=size, r=1)
         activities, adjacencies = evolve(initial_conditions, adjacency_matrix, timesteps=rows,
-                                         activity_rule=lambda ctx: rules.totalistic_ca(ctx, k, rule))
+                                         activity_rule=rules.totalistic_ca(k, rule))
         return activities
 
     @staticmethod
@@ -190,5 +190,5 @@ class TestRules(RuleTest):
         initial_conditions = np.array(expected[0]).reshape(rows * size).flatten()
         adjacency_matrix = adjacency.cellular_automaton2d(rows=rows, cols=size, r=1, neighbourhood=neighbourhood)
         activities, adjacencies = evolve(initial_conditions, adjacency_matrix, timesteps=steps,
-                                         activity_rule=lambda ctx: rules.totalistic_ca(ctx, k=2, rule=rule))
+                                         activity_rule=rules.totalistic_ca(k=2, rule=rule))
         return np.array(activities).reshape((steps, rows, size))

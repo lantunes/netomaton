@@ -10,7 +10,7 @@ class HopfieldNet:
     of the network should settle into one of the training patterns.
     """
     def __init__(self, n):
-        self._activity_rule = AsynchronousRule(activity_rule=self._rule, n=n, randomize_each_cycle=True).activity_rule
+        self._activity_rule = AsynchronousRule(activity_rule=self._rule, n=n, randomize_each_cycle=True)
         self._num_nodes = n
 
     def train(self, P):

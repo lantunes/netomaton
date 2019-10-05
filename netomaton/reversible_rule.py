@@ -12,7 +12,7 @@ class ReversibleRule:
         """
         self._activity_rule = activity_rule
 
-    def activity_rule(self, ctx):
+    def __call__(self, ctx):
         regular_result = self._activity_rule(ctx)
         new_result = regular_result ^ ctx.past_activity_of(ctx.node_index)
         return new_result

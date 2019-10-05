@@ -3,19 +3,22 @@ import random
 import numpy as np
 
 
-def table_rule(ctx, table):
+def table_rule(table):
     """
     A rule where the state is converted into a string, and looked up in the given table, to yield the return value.
-    :param ctx: the NodeContext, where the activities are a k-color array of length 2r + 1
-    :param table: a table (map) of string representations of each neighbourhood state to the associated next 
+    :param table: a table (map) of string representations of each neighbourhood state to the associated next
            cell state value; for example, for k = 2 and r = 2, a valid table might be: 
            {'101': 1, '111': 0, '011': 0, '110': 1, '000': 0, '100': 0, '010': 0, '001': 1}
-    :return: a number, from 0 to k - 1, associated with the given state as specified in the given table
+    :return: a function representing the activity rule, where the context activities are a k-color array of length
+             2r + 1, and the function returns a number, from 0 to k - 1, associated with the given state as specified
+             in the given table
     """
-    state_repr = ''.join(str(x) for x in ctx.activities)
-    if not state_repr in table:
-        raise Exception("could not find state '%s' in table" % state_repr)
-    return table[state_repr]
+    def _rule(ctx):
+        state_repr = ''.join(str(x) for x in ctx.activities)
+        if not state_repr in table:
+            raise Exception("could not find state '%s' in table" % state_repr)
+        return table[state_repr]
+    return _rule
 
 
 def random_rule_table(k, r, lambda_val=None, quiescent_state=None, strong_quiescence=False, isotropic=False):

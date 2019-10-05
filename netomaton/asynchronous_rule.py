@@ -36,7 +36,7 @@ class AsynchronousRule:
         np.random.shuffle(self._update_order)
         self._update_order = self._update_order.tolist()
 
-    def activity_rule(self, ctx):
+    def __call__(self, ctx):
         if ctx.node_index in self._update_order:
             self._num_applied += 1
         if not self._should_update(ctx.node_index):

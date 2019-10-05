@@ -16,7 +16,7 @@ if __name__ == '__main__':
         return pctx.node_activity
 
     activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=100,
-                               activity_rule=lambda ctx: ntm.rules.nks_ca_rule(ctx, 30),
+                               activity_rule=ntm.rules.nks_ca_rule(30),
                                perturbation=perturb)
 
     ntm.plot_grid(activities)

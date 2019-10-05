@@ -8,8 +8,8 @@ if __name__ == '__main__':
     # NKS page 442 - Rule 122R
     adjacency_matrix = ntm.network.cellular_automaton(n=100)
     initial_conditions = [0]*40 + [1]*20 + [0]*40
-    r = ntm.ReversibleRule(lambda ctx: ntm.rules.nks_ca_rule(ctx, 122))
-    activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=1000, activity_rule=r.activity_rule,
+    activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=1000,
+                               activity_rule=ntm.ReversibleRule(ntm.rules.nks_ca_rule(122)),
                                past_conditions=[initial_conditions])
 
     timestep = []
