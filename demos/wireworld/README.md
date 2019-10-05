@@ -1,4 +1,4 @@
-### Wireworld
+# Wireworld
 
 Wireworld is a Turing-complete Cellular Automaton, first described by
 Brian Silverman in 1987. Wireworld can be used to simulate electronic
