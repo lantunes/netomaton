@@ -47,7 +47,7 @@ ntm.animate(activities, shape=(13, 14), interval=120, show_grid=True, show_margi
 
 The full source code for this example can be found [here](wireworld_diodes_demo.py).
 
-An exmaple of a Wireworld XOR gate is given below:
+An example of a Wireworld XOR gate is given below:
 ```python
 import netomaton as ntm
 from matplotlib.colors import ListedColormap
