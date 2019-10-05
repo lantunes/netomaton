@@ -35,5 +35,5 @@ if __name__ == "__main__":
 
     activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, activity_rule=wireworld, timesteps=15)
 
-    ntm.animate(activities, shape=(13, 14), interval=120, show_grid=True,
+    ntm.animate(activities, shape=(13, 14), interval=120, show_grid=True, show_margin=False, scale=0.3,
                 colormap=ListedColormap(["black", "blue", "red", "yellow"]))

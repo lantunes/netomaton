@@ -40,10 +40,10 @@ def wireworld(ctx):
 
 activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, activity_rule=wireworld, timesteps=15)
 
-ntm.animate(activities, shape=(13, 14), interval=120, show_grid=True,
+ntm.animate(activities, shape=(13, 14), interval=120, show_grid=True, show_margin=False, scale=0.3,
             colormap=ListedColormap(["black", "blue", "red", "yellow"]))
 ```
-<img src="../../resources/wireworld_diodes.gif" width="50%"/>
+<img src="../../resources/wireworld_diodes.gif" width="75%"/>
 
 The full source code for this example can be found [here](wireworld_diodes_demo.py).
 
@@ -83,11 +83,11 @@ def wireworld(ctx):
 
 activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, activity_rule=wireworld, timesteps=25)
 
-ntm.animate(activities, shape=(13, 24), interval=120, show_grid=True,
+ntm.animate(activities, shape=(13, 24), interval=120, show_grid=True, show_margin=False, scale=0.3,
             colormap=ListedColormap(["black", "blue", "red", "yellow"]))
 ```
 
-<img src="../../resources/wireworld_xor.gif" width="50%"/>
+<img src="../../resources/wireworld_xor.gif" width="75%"/>
 
 The full source code for this example can be found [here](wireworld_xor_demo.py).
 

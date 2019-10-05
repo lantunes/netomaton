@@ -42,12 +42,14 @@ def plot_grid_multiple(ca_list, shape=None, slice=-1, titles=None, colormap='Gre
 
 
 def animate(activities, title='', shape=None, save=False, interval=50, colormap='Greys', vmin=None, vmax=None,
-            show_grid=False):
+            show_grid=False, show_margin=True, scale=0.6, dpi=80):
     if shape is not None:
         activities = _reshape_for_animation(activities, shape)
     cmap = plt.get_cmap(colormap)
     fig, ax = plt.subplots()
     plt.title(title)
+    if not show_margin:
+        fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
 
     grid_linewidth = 0.0
     if show_grid:
@@ -64,6 +66,10 @@ def animate(activities, title='', shape=None, save=False, interval=50, colormap=
     ax.add_collection(grid)
 
     im = plt.imshow(activities[0], animated=True, cmap=cmap, vmin=vmin, vmax=vmax)
+    if not show_margin:
+        baseheight, basewidth = im.get_size()
+        fig.set_size_inches(basewidth*scale, baseheight*scale, forward=True)
+
     i = {'index': 0}
     def updatefig(*args):
         i['index'] += 1
@@ -73,11 +79,11 @@ def animate(activities, title='', shape=None, save=False, interval=50, colormap=
         return im, grid
     ani = animation.FuncAnimation(fig, updatefig, interval=interval, blit=True, save_count=len(activities))
     if save:
-        ani.save('evolved.gif', dpi=80, writer="imagemagick")
+        ani.save('evolved.gif', dpi=dpi, writer="imagemagick")
     plt.show()
 
 
-def animate_plot1D(x, y, save=False, interval=50):
+def animate_plot1D(x, y, save=False, interval=50, dpi=80):
     fig1 = plt.figure()
     line, = plt.plot(x, y[0])
     def update_line(activity):
@@ -85,7 +91,7 @@ def animate_plot1D(x, y, save=False, interval=50):
         return line,
     ani = animation.FuncAnimation(fig1, update_line, frames=y, blit=True, interval=interval)
     if save:
-        ani.save('plot.gif', dpi=80, writer="imagemagick")
+        ani.save('plot.gif', dpi=dpi, writer="imagemagick")
     plt.show()
 
 
@@ -119,7 +125,7 @@ def plot_network(adjacency_matrix):
     plt.show()
 
 
-def animate_network(adjacency_matrices, save=False, interval=50):
+def animate_network(adjacency_matrices, save=False, interval=50, dpi=80):
     fig, ax = plt.subplots()
 
     def update(adjacency_matrix):
@@ -138,5 +144,5 @@ def animate_network(adjacency_matrices, save=False, interval=50):
     ani = animation.FuncAnimation(fig, update, frames=adjacency_matrices, interval=interval,
                                   save_count=len(adjacency_matrices))
     if save:
-        ani.save('evolved.gif', dpi=80, writer="imagemagick")
+        ani.save('evolved.gif', dpi=dpi, writer="imagemagick")
     plt.show()
