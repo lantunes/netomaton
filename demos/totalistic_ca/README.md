@@ -1,4 +1,4 @@
-### 1D Cellular Automata with Totalistic Rules
+# 1D Cellular Automata with Totalistic Rules
 
 The number of states, or colors, that a cell in a Cellular Automaton can adopt is given by _k_. For example, in a binary Cellular Automaton a cell can
 assume only values of 0 and 1, and thus has _k_ = 2. A built-in function, `totalistic_ca`,

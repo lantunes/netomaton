@@ -1,4 +1,4 @@
-### Timesteps and Input
+# Timesteps and Input
 
 The Netomaton `evolve` function accepts two different parameters that
 are used to specify how the network should be evolved: the `timesteps`

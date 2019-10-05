@@ -1,4 +1,4 @@
-### Asynchronous Automata
+# Asynchronous Automata
 
 Network Automata are usually processed synchronously. That is, each node's
 state is based strictly on the activity of its neighbourhood in the previous

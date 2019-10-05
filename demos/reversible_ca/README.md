@@ -1,4 +1,4 @@
-### Reversible 1D Cellular Automata
+# Reversible 1D Cellular Automata
 
 Network automata can be explicitly made to be reversible. The following example demonstrates the
 creation of the elementary reversible Cellular Automaton rule 90R:

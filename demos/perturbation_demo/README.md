@@ -1,4 +1,4 @@
-### Perturbations
+# Perturbations
 
 Network Automata may be perturbed at any point in time during their
 evolution. This may model the effects of some external forcing applied

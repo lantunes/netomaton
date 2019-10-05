@@ -1,4 +1,4 @@
-### Animating Network Automata
+# Animating Network Automata
 
 Network Automata can be animated with the Netomaton `animate` function.
 

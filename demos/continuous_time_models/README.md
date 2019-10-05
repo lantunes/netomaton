@@ -1,4 +1,4 @@
-### Continuous-Time Models
+# Continuous-Time Models
 
 Some models of computation treat time as continuous. These kinds of
 models often define "equations of motion" that describe the dynamics

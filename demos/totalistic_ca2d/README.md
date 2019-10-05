@@ -1,4 +1,4 @@
-### 2D Cellular Automata
+# 2D Cellular Automata
 
 Netomaton supports 2-dimensional Cellular Automata with periodic
 boundary conditions. The number of states, k, can be any whole number.

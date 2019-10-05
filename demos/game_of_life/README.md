@@ -1,4 +1,4 @@
-### Conway's Game of Life
+# Conway's Game of Life
 
 Conway's Game of Life is a well-known 2D Cellular Automaton.
 

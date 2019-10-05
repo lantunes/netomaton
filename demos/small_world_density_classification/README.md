@@ -1,4 +1,4 @@
-### Density classification with a small-world network
+# Density classification with a small-world network
 
 This demo is inspired by "Collective dynamics of ‘small-world’ networks",
 by Duncan J. Watts and Steven H. Strogatz (Nature 393, no. 6684

@@ -1,4 +1,4 @@
-### Turing Machine
+# Turing Machine
 
 There are two different ways that a Turing Machine can be described in
 the context of the Netomaton framework:

@@ -1,4 +1,4 @@
-### Hexagonal Cell Lattices
+# Hexagonal Cell Lattices
 
 Netomaton supports automata with hexagonal node lattices. A hexagonal
 node with a neighbourhood of radius 1 is depicted below:

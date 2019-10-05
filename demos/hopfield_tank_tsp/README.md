@@ -1,4 +1,4 @@
-### Travelling Salesman Problem with the Hopfield-Tank Neural Net
+# Travelling Salesman Problem with the Hopfield-Tank Neural Net
 
 The Hopfield-Tank Neural Network is a model of a network of densely
 connected non-linear analog neurons. The model provides solutions to the

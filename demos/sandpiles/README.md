@@ -1,4 +1,4 @@
-### Sandpiles
+# Sandpiles
 
 Netomaton offers an implementation of the Abelian sandpile model.
 

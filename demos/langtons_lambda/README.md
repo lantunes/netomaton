@@ -1,4 +1,4 @@
-### Langton's Lambda and Measures of Complexity
+# Langton's Lambda and Measures of Complexity
 
 One way to specify Cellular Automata rules is with rule tables. Rule tables are enumerations of all possible
 neighbourhood states together with their node state mappings. For any given neighbourhood state, a rule table provides

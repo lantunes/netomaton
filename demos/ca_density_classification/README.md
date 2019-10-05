@@ -1,4 +1,4 @@
-### Density Classification with Evolved 1D Cellular Automata
+# Density Classification with Evolved 1D Cellular Automata
 
 When creating a 1D Cellular Automaton adjacency matrix, the size of the
 cell neighbourhood can be varied by setting the parameter _*r*_. The

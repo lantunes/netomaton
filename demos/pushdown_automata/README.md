@@ -1,4 +1,4 @@
-### Pushdown Automata
+# Pushdown Automata
 
 This example illustrates the construction of a Pushdown Automaton.
 Although simplistic, it demonstrates how Pushdown Automata can be

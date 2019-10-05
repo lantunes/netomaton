@@ -1,4 +1,4 @@
-### Hopfield Network
+# Hopfield Network
 
 The Hopfield Network can be thought of as a network automaton with a
 complete graph. The nodes (or neurons) are binary units, and

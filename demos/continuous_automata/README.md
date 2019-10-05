@@ -1,4 +1,4 @@
-### Continuous Automata
+# Continuous Automata
 
 Network Automata needn't consist of discrete activities. The units in an
 automaton can also take on continuous-valued activities.

@@ -1,4 +1,4 @@
-### Finite State Machine
+# Finite State Machine
 
 This example illustrates the construction of a Finite State Machine.
 Although simplistic, it demonstrates how Finite State Machines can be
