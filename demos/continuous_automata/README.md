@@ -1,7 +1,7 @@
 # Continuous Automata
 
 Network Automata needn't consist of discrete activities. The units in an
-automaton can also take on continuous-valued activities.
+automaton can also take on continuous-valued activities (i.e. states).
 
 The example below implements a continuous-valued Cellular Automaton
 from Wolfram's NKS book, found on page 157:
