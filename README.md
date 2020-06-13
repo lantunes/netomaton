@@ -192,8 +192,8 @@ which provides a DOI, as well as an easy way to generate citations in a number o
 For example, this project may be cited as:
 
 
-> Antunes, Luis M. (2019, September 28). Netomaton: A Python Library for working with Network 
-Automata. Zenodo. http://doi.org/10.5281/zenodo.3893141
+> Antunes, Luis M. (2019, September 28). Netomaton: A Python Library for working with 
+Network Automata (Version 0.2.0). Zenodo. http://doi.org/10.5281/zenodo.3893141
 
 
 BibTeX:
@@ -205,6 +205,7 @@ BibTeX:
   month        = sep,
   year         = 2019,
   publisher    = {Zenodo},
+  version      = {0.2.0},
   doi          = {10.5281/zenodo.3893141},
   url          = {https://doi.org/10.5281/zenodo.3893141}
 }
