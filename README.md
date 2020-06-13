@@ -182,3 +182,38 @@ There are a number of unit tests for this project. To run the tests:
 ```
 $ pytest tests
 ```
+
+--------------------
+
+### Citation Info
+
+This project has been published on [Zenodo](https://zenodo.org/record/3893141#.XuUOg55KhZI),
+which provides a DOI, as well as an easy way to generate citations in a number of formats.
+For example, this project may be cited as:
+
+
+> Antunes, Luis M. (2019, September 28). Netomaton: A Python Library for working with Network 
+Automata. Zenodo. http://doi.org/10.5281/zenodo.3893141
+
+
+BibTeX:
+```
+@software{antunes_luis_m_2019_3893141,
+  author       = {Antunes, Luis M.},
+  title        = {{Netomaton: A Python Library for working with 
+                   Network Automata}},
+  month        = sep,
+  year         = 2019,
+  publisher    = {Zenodo},
+  doi          = {10.5281/zenodo.3893141},
+  url          = {https://doi.org/10.5281/zenodo.3893141}
+}
+```
+
+### Stars
+
+Please star this repository if you find it useful, or use it as part of your research.
+
+### Copyrights
+
+Copyright (c) 2018-2020 Luis M. Antunes (@lantunes) All rights reserved.
