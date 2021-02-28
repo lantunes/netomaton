@@ -62,6 +62,8 @@ To learn more, please refer to the scientific literature on the subject:
 
 > Wolfram, S. (2002). A New Kind of Science (pp. 475–545). Champaign, IL: Wolfram Media.
 
+> Tomassini, Marco. "Generalized automata networks." International Conference on Cellular Automata. Springer, Berlin, Heidelberg, 2006.
+
 > Sayama, Hiroki, and Craig Laramee. "Generative network automata: A generalized framework for modeling adaptive network dynamics using graph rewritings." Adaptive Networks. Springer, Berlin, Heidelberg, 2009. 311-332.
 
 > Smith, David MD, et al. "Network automata: Coupling structure and function in dynamic networks." Advances in Complex Systems 14.03 (2011): 317-339.
