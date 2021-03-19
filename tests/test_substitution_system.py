@@ -69,6 +69,20 @@ class TestSubstitutionSystem(RuleTest):
         })
         np.testing.assert_equal(expected, actual)
 
+    def test_substitution_demo7(self):
+        expected = self._convert_to_list_of_lists("substitution_system7.ca")
+        actual = self._evolve_substitution_system(expected, rules={
+            "111": "22",
+            "112": "121",
+            "121": "11",
+            "122": "",
+            "211": "212",
+            "212": "1",
+            "221": "22",
+            "222": "211",
+        })
+        np.testing.assert_equal(expected, actual)
+
     @staticmethod
     def _evolve_substitution_system(expected, rules):
         rows = len(expected)
