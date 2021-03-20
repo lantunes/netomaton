@@ -125,7 +125,7 @@ def plot_network(adjacency_matrix):
     plt.show()
 
 
-def animate_network(adjacency_matrices, save=False, interval=50, dpi=80):
+def animate_network(adjacency_matrices, save=False, interval=50, dpi=80, layout="shell", with_labels=True):
     fig, ax = plt.subplots()
 
     def update(adjacency_matrix):
@@ -139,7 +139,12 @@ def animate_network(adjacency_matrices, save=False, interval=50, dpi=80):
                 if val != 0.:
                     G.add_edge(row_index, node_index)
 
-        nx.draw_shell(G, with_labels=True)
+        if layout == "shell":
+            nx.draw_shell(G, with_labels=with_labels)
+        elif layout == "spring":
+            nx.draw_spring(G, with_labels=with_labels)
+        else:
+            raise Exception("unsupported layout: %s" % layout)
 
     ani = animation.FuncAnimation(fig, update, frames=adjacency_matrices, interval=interval,
                                   save_count=len(adjacency_matrices))
