@@ -3,7 +3,7 @@ import scipy.sparse as sparse
 import collections
 
 
-class NodeContext2(object):
+class NodeContext_2(object):
     """
     The NodeContext consists of the states, identities (as node indices), and adjancency matrix weights of the nodes
     that influence a given node. Each of the properties (i.e. activities, neighbour_indices, connection states) are
@@ -47,7 +47,7 @@ class NodeContext2(object):
         self.removed_nodes.append(nodel_label)
 
 
-class ConnectivityContext2(object):
+class ConnectivityContext_2(object):
     def __init__(self, connectivities, activities, t):
         self._connectivities = connectivities
         self._activities = activities
@@ -112,8 +112,8 @@ def evolve_2(initial_conditions, topology, activity_rule, timesteps=None, input=
             neighbourhood_activities = [last_activities[neighbour_label] for neighbour_label in neighbour_labels]
             past_activities = None
             node_in = None if inp == "__timestep__" else inp[node_label] if _is_indexable(inp) else inp
-            ctx = NodeContext2(node_label, t, last_activities, neighbour_labels, neighbourhood_activities,
-                               connectivity_map[node_label], current_activity, past_activities, node_in)
+            ctx = NodeContext_2(node_label, t, last_activities, neighbour_labels, neighbourhood_activities,
+                                connectivity_map[node_label], current_activity, past_activities, node_in)
 
             new_activity = activity_rule(ctx)
 
@@ -140,7 +140,7 @@ def evolve_2(initial_conditions, topology, activity_rule, timesteps=None, input=
         if connectivity_rule:
             # TODO we should support the option to have the connectivity rule executed before the activity rule
             # the connectivity rule receives any changes made to the network via the activity rule
-            connectivity_map = connectivity_rule(ConnectivityContext2(connectivity_map, activities_over_time[t], t))
+            connectivity_map = connectivity_rule(ConnectivityContext_2(connectivity_map, activities_over_time[t], t))
             connectivities_over_time[t] = copy_connectivity_map(connectivity_map)
 
         t += 1
@@ -232,16 +232,16 @@ def _get_input_function(timesteps=None, input=None):
         if callable(input):
             return input, 1
         else:
-            return _ListInputFunction(input), len(input)+1
+            return _ListInputFunction_2(input), len(input)+1
 
-    return _TimestepInputFunction(timesteps), timesteps
+    return _TimestepInputFunction_2(timesteps), timesteps
 
 
 def _is_indexable(obj):
     return isinstance(obj, collections.Sequence)
 
 
-class _TimestepInputFunction:
+class _TimestepInputFunction_2:
     def __init__(self, num_steps):
         self._num_steps = num_steps
 
@@ -251,7 +251,7 @@ class _TimestepInputFunction:
         return "__timestep__"
 
 
-class _ListInputFunction:
+class _ListInputFunction_2:
     def __init__(self, input_list):
         self._input_list = input_list
 

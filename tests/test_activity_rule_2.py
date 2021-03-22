@@ -1,25 +1,25 @@
 import netomaton.network as adjacency
 import netomaton.rules as rules
-from netomaton import NodeContext2, evolve_2
+from netomaton import NodeContext_2, evolve_2
 from .rule_test import *
 
 
 class TestRules(RuleTest):
 
     def test_majority_rule(self):
-        actual = rules.majority_rule_2(NodeContext2(0, 1, {}, [0, 1, 2, 3, 4], [1, 2, 1, 3, 4], [1., 1., 1., 1., 1.], 0, None, None))
+        actual = rules.majority_rule_2(NodeContext_2(0, 1, {}, [0, 1, 2, 3, 4], [1, 2, 1, 3, 4], [1., 1., 1., 1., 1.], 0, None, None))
         expected = 1
         self.assertEqual(expected, actual)
 
-        actual = rules.majority_rule_2(NodeContext2(0, 1, {}, [0, 1, 2, 3, 4], [2, 2, 2, 2, 2], [1., 1., 1., 1., 1.], 0, None, None))
+        actual = rules.majority_rule_2(NodeContext_2(0, 1, {}, [0, 1, 2, 3, 4], [2, 2, 2, 2, 2], [1., 1., 1., 1., 1.], 0, None, None))
         expected = 2
         self.assertEqual(expected, actual)
 
-        actual = rules.majority_rule_2(NodeContext2(0, 1, {}, [0], [3], [1.], 0, None, None))
+        actual = rules.majority_rule_2(NodeContext_2(0, 1, {}, [0], [3], [1.], 0, None, None))
         expected = 3
         self.assertEqual(expected, actual)
 
-        actual = rules.majority_rule_2(NodeContext2(0, 1, {}, [0, 1, 2], [0., 0., 5423.], [1., 1., 1.], 0, None, None))
+        actual = rules.majority_rule_2(NodeContext_2(0, 1, {}, [0, 1, 2], [0., 0., 5423.], [1., 1., 1.], 0, None, None))
         expected = 0.
         self.assertEqual(expected, actual)
 
