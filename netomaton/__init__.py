@@ -14,3 +14,8 @@ from .substitution_system import *
 
 from . import network
 from . import rules
+
+from .evolution_2 import *
+from .substitution_system_2 import *
+from .wolfram_physics_model import *
+from . import vis

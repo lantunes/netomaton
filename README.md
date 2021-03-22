@@ -16,7 +16,7 @@ pip install netomaton
 ```
 
 Requirements for using this library are Python 3.6, numpy 1.15.4,
-matplotlib 3.0.2, and networkx 2.2.
+matplotlib 3.0.2, and networkx 2.5.
 
 
 ### What are Network Automata?
@@ -114,6 +114,7 @@ the Netomaton framework. Follow the link to learn more:
 * [Wireworld](demos/wireworld/README.md)
 * [Random Attachment Model](demos/random_attachment_model/README.md)
 * [Randomly Growing Network](demos/randomly_growing_network/README.md)
+* [Wolfram Physics Model](demos/wolfram_physics/README.md)
 
 Additionally, this library includes a number of utility functions for
 working with the results produced by the automata. For example, there
