@@ -12,19 +12,15 @@ if __name__ == "__main__":
     N = 200
     adjacency_matrix = [[0 for _ in range(N)] for _ in range(N)]  # begin with a fully disconnected network of size N
 
-    def activity_rule(ctx):
-        # we aren't interested in the activity in this example, so the node's activity will always be the same
-        return 1
-
     def connectivity_rule(cctx):
-        choices = np.random.choice([n for n in cctx.connectivities], size=2, replace=False)
-        cctx.connectivities[choices[0]][choices[1]] = 1.0
-        cctx.connectivities[choices[1]][choices[0]] = 1.0
+        choices = np.random.choice([n for n in cctx.connectivity_map], size=2, replace=False)
+        cctx.connectivity_map[choices[0]][choices[1]] = [{}]
+        cctx.connectivity_map[choices[1]][choices[0]] = [{}]
 
-        return cctx.connectivities
+        return cctx.connectivity_map
 
     _, connectivities = ntm.evolve_2(initial_conditions=[1]*N, topology=adjacency_matrix,
-                                     activity_rule=activity_rule, connectivity_rule=connectivity_rule, timesteps=N)
+                                     connectivity_rule=connectivity_rule, timesteps=N)
 
     # plot degree distribution
     degree_counts = {}

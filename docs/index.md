@@ -56,23 +56,127 @@ e.g. a->b->c
 
 - how would we represent a (directed, weighted) hypergraph?
 - the value includes both the edge weight and its ID, as a 2-tuple (the edge ID can be any object, e.g. int, str)
-e.g. consider the following hypergraph (from https://en.wikipedia.org/wiki/Hypergraph):
+
+e.g.: [(1,2),(1,2,3,1,2),(4,3),(4,3),(5,4)]  //Wolfram Model configuration
+
+{
+	1: {
+		3: [                      // items in the array represent multplicity; e.g. there is one connection from 3 to 1 here
+			{
+				"label": "1",
+				"hyperedge": {
+					"index": 2
+				}
+			}
+		]
+	},
+	2: {
+		1: [                      // there are two connections from 1 to 2 here
+			{
+				"label": "1",     //optional, but required if hyperedge; string; the label identifying the edge
+				"weight": 1.0,    //optional
+				"unary": false,   //optional, false by default; if true, the incoming node must match the node receiving the connection
+				"hyperedge": {    //optional; hyperedge metadata
+					"index": 0       //optional; indicates the position in the n-ary relation
+				}
+			},
+			{
+				"weight": 1.0,
+			},
+			{
+				"label": "1",
+				"hyperedge": {
+					"index": 3
+				}
+			}
+		]
+	},
+	3: {
+		2: [
+			{
+				"label": "1",
+				"hyperedge": {
+					"index": 1
+				}
+			}
+		],
+		4: [{}, {}]               // there are two edges from 4 to 3
+	},
+	4: {
+		5: [{}]                   // there is one edge from 5 to 4
+	},
+	5: {}                         // 5 has no incoming connections
+}
+
+
+e.g. consider the following directed hypergraph (from https://en.wikipedia.org/wiki/Hypergraph):
 
 V={1,2,3,4,5,6} 
 E={a1,a2,a3,a4,a5}
  ={({1},{2}), ({2},{3}), ({3},{1}), ({2,3},{4,5}), ({3,5},{6})}.
 
 {
-  1: {3: (1.0, "a3")},
-  2: {1: (1.0, "a1")},
-  3: {2: (1.0, "a2")},
-  4: {2: (1.0, "a4"), 3: (1.0, "a4")},
-  5: {2: (1.0, "a4"), 3: (1.0, "a4")},
-  6: {3: (1.0, "a5"), 5: (1.0, "a5")}
+  1: {
+  	3: [{
+  		"label": "a3"
+  	}]
+  },
+  2: {
+  	1: [{
+  		"label": "a1"
+  	}]
+  },
+  3: {
+  	2: [{
+  		"label": "a2"
+  	}]
+  },
+  4: {
+  	2: [
+  		{
+  			"label": "a4"
+  			"hyperedge": {}  // the label is enough to indicate a hyperedge in this case
+  		}
+  	],
+  	3: [
+  		{
+  			"label": "a4"
+  			"hyperedge": {}	
+  		}
+  	]
+  },
+  5: {
+  	2: [
+  		{
+  			"label": "a4"
+  			"hyperedge": {}
+  		}
+  	],
+  	3: [
+  		{
+  			"label": "a4"
+  			"hyperedge": {}	
+  		}
+  	]
+  },
+  6: {
+  	3: [
+  		{
+  			"label": "a5"
+  			"hyperedge": {}	
+  		}
+  	], 
+  	5: [
+  		{
+  			"label": "a5"
+  			"hyperedge": {}	
+  		}
+  	]
+  }
 }
-- the weights are the same for all connections (1.0 in this case)
 
-- how do we represent multi-edges? i.e. multiple edges from the same start and end node?
+The connectivity map provides a list of all the nodes in the network.
+- for each node, it lists all the incoming nodes, and the states of those connections
 
 -- the value of an incoming connection in the connectivity map is model-specific
 -- in the case of an ECA it could be anything (i.e. 1.0, "", it doesn't matter); in the case of a Hopfield net it is
@@ -82,9 +186,21 @@ E={a1,a2,a3,a4,a5}
 
 # Time Evolution
 
+- a node's state is called its activity
+-- a network's activity is the state of all its nodes
+
+- a link between two nodes is called a connection
+-- connections also have state, called the connection state
+
 ## The Activity Rule
 
+- the activity rule is optional
+
 ## The Connectivity Rule
+
+TODO rename to Topology Rule
+
+- the connectivity rule is optional
 
 ## Timesteps and Input
 

@@ -39,16 +39,21 @@ if __name__ == '__main__':
     # }
     # config = [(1, 1, 1)]
 
+    # rules = {
+    #     "in": [("x", "y", "x")], "out": [("w", "z", "w"), ("z", "y", "y"), ("x", "z", "y"), ("u", "z", "u")]
+    # }
+    # config = [(1, 1, 1)]
+
     rules = {
-        "in": [("x", "y", "x")], "out": [("w", "z", "w"), ("z", "y", "y"), ("x", "z", "y"), ("u", "z", "u")]
+        "in": [("x", "y")], "out": [("z", "y"), ("y", "x")]
     }
-    config = [(1, 1, 1)]
+    config = [(1, 1)]
 
     model = ntm.WolframPhysicsModel(config, rules)
 
-    activities, _ = ntm.evolve_2(model.initial_conditions, topology=model.connectivity_map,
-                                 activity_rule=model.activity_rule, timesteps=4)
+    _, connectivities = ntm.evolve_2(topology=model.connectivity_map, connectivity_rule=model.connectivity_rule,
+                                     timesteps=4)
 
-    configurations = model.to_configurations(activities)
+    configurations = model.to_configurations(connectivities)
 
     show_network(configuration_to_nx(configurations[-1]))

@@ -16,7 +16,7 @@ class NodeContext_2(object):
         """
         :param node_label: the label of the node being processed
         :param timestep: the current timestep
-        :param activities: the activities of all the nodes after the previous timestep #TODO change "activity" to "node state"
+        :param activities: the activities of all the nodes after the previous timestep
         :param neighbour_labels: the labels of all neighbour nodes
         :param neighbourhood_activities: the node states of all neighbourhood nodes
         :param connection_states: the states of all the incoming connections of the node being processed
@@ -48,14 +48,14 @@ class NodeContext_2(object):
 
 
 class ConnectivityContext_2(object):
-    def __init__(self, connectivities, activities, t):
-        self._connectivities = connectivities
+    def __init__(self, connectivity_map, activities, t):
+        self._connectivity_map = connectivity_map
         self._activities = activities
         self._timestep = t
 
     @property
-    def connectivities(self):
-        return self._connectivities
+    def connectivity_map(self):
+        return self._connectivity_map
 
     @property
     def activities(self):
@@ -66,8 +66,11 @@ class ConnectivityContext_2(object):
         return self._timestep
 
 
-def evolve_2(initial_conditions, topology, activity_rule, timesteps=None, input=None, connectivity_rule=None,
+def evolve_2(topology, initial_conditions=None, activity_rule=None, timesteps=None, input=None, connectivity_rule=None,
              perturbation=None, past_conditions=None, parallel=False, processes=None):
+
+    if initial_conditions is None:
+        initial_conditions = {}
 
     # convert initial_conditions to map, if it isn't already
     if not isinstance(initial_conditions, dict) and isinstance(initial_conditions, (list, np.ndarray)):
@@ -80,7 +83,7 @@ def evolve_2(initial_conditions, topology, activity_rule, timesteps=None, input=
 
     connectivity_map, was_adjacency_matrix = _get_connectivity_map(topology)
 
-    if len(initial_conditions) != len(connectivity_map):
+    if len(initial_conditions) != len(connectivity_map) and activity_rule:
         raise Exception("too few intial conditions specified [%s] for the number of given nodes [%s]" %
                         (len(initial_conditions), len(connectivity_map)))
 
@@ -96,46 +99,49 @@ def evolve_2(initial_conditions, topology, activity_rule, timesteps=None, input=
         if inp is None:
             break
 
-        last_activities = activities_over_time[t - 1]
         # past = _get_past_activities(past_conditions, activities_over_time, t) # TODO
         activities_over_time[t] = {}
+        connectivities_over_time[t] = {}
 
         # if t == len(activities_over_time): # TODO
         #     activities_over_time = _extend_activities(activities_over_time, initial_conditions)
 
-        added_nodes = []
-        removed_nodes = []
+        if activity_rule:
+            added_nodes = []
+            removed_nodes = []
 
-        for node_label in connectivity_map:
-            neighbour_labels = [k for k in connectivity_map[node_label]]
-            current_activity = last_activities[node_label]
-            neighbourhood_activities = [last_activities[neighbour_label] for neighbour_label in neighbour_labels]
-            past_activities = None
-            node_in = None if inp == "__timestep__" else inp[node_label] if _is_indexable(inp) else inp
-            ctx = NodeContext_2(node_label, t, last_activities, neighbour_labels, neighbourhood_activities,
-                                connectivity_map[node_label], current_activity, past_activities, node_in)
+            last_activities = activities_over_time[t - 1]
 
-            new_activity = activity_rule(ctx)
+            for node_label in connectivity_map:
+                neighbour_labels = [k for k in connectivity_map[node_label]]
+                current_activity = last_activities[node_label]
+                neighbourhood_activities = [last_activities[neighbour_label] for neighbour_label in neighbour_labels]
+                past_activities = None
+                node_in = None if inp == "__timestep__" else inp[node_label] if _is_indexable(inp) else inp
+                ctx = NodeContext_2(node_label, t, last_activities, neighbour_labels, neighbourhood_activities,
+                                    connectivity_map[node_label], current_activity, past_activities, node_in)
 
-            added_nodes.extend(ctx.added_nodes)
-            removed_nodes.extend(ctx.removed_nodes)
+                new_activity = activity_rule(ctx)
 
-            if node_label not in ctx.removed_nodes:
-                activities_over_time[t][node_label] = new_activity
+                added_nodes.extend(ctx.added_nodes)
+                removed_nodes.extend(ctx.removed_nodes)
 
-        # adjust connectivity map according to node deletions and insertions
-        for node_label in removed_nodes:
-            del connectivity_map[node_label]
+                if node_label not in ctx.removed_nodes:
+                    activities_over_time[t][node_label] = new_activity
 
-        for state, outgoing_links, node_label in added_nodes:
-            if node_label is None:
-                last_node_index += 1
-                node_label = last_node_index
-            connectivity_map[node_label] = {}
-            for target, weight in outgoing_links.items():
-                connectivity_map[target][node_label] = weight
+            # adjust connectivity map according to node deletions and insertions
+            for node_label in removed_nodes:
+                del connectivity_map[node_label]
 
-            activities_over_time[t][node_label] = state
+            for state, outgoing_links, node_label in added_nodes:
+                if node_label is None:
+                    last_node_index += 1
+                    node_label = last_node_index
+                connectivity_map[node_label] = {}
+                for target, weight in outgoing_links.items():
+                    connectivity_map[target][node_label] = weight
+
+                activities_over_time[t][node_label] = state
 
         if connectivity_rule:
             # TODO we should support the option to have the connectivity rule executed before the activity rule
@@ -146,7 +152,8 @@ def evolve_2(initial_conditions, topology, activity_rule, timesteps=None, input=
         t += 1
 
     if was_adjacency_matrix:
-        activities_over_time = _convert_activities_map_to_list(activities_over_time)
+        if activity_rule:
+            activities_over_time = _convert_activities_map_to_list(activities_over_time)
         if connectivity_rule:
             connectivities_over_time = _convert_connectivities_map_to_list(connectivities_over_time)
 
@@ -158,9 +165,23 @@ def copy_connectivity_map(conn_map):
     for k1, v1 in conn_map.items():
         new_links = type(v1)()
         for k2, v2 in v1.items():
-            new_links[k2] = v2
+            new_links[k2] = _deep_copy_value(v2)
         new_map[k1] = new_links
     return new_map
+
+
+def _deep_copy_value(val):
+    if isinstance(val, (list, tuple)):
+        new_val = []
+        for v in val:
+            new_val.append(_deep_copy_value(v))
+        val = tuple(new_val) if isinstance(val, tuple) else new_val
+    elif isinstance(val, (dict, collections.OrderedDict)):
+        new_val = type(val)()
+        for k, v in val.items():
+            new_val[k] = _deep_copy_value(v)
+        val = new_val
+    return val
 
 
 def _convert_activities_map_to_list(activities_map_over_time):
@@ -182,7 +203,7 @@ def _convert_connectivities_map_to_list(connectivities_map_over_time):
         adjacency_matrix = [[0. for _ in range(num_nodes)] for _ in range(num_nodes)]
         for c in sorted(connectivities):  #TODO do we need to sort?
             for n in sorted(connectivities[c]):  #TODO do we need to sort?
-                adjacency_matrix[n][c] = connectivities[c][n]
+                adjacency_matrix[n][c] = connectivities[c][n]["weight"] if "weight" in connectivities[c][n] else 1.0
         connectivities_over_time.append(adjacency_matrix)
     return connectivities_over_time
 
@@ -219,7 +240,7 @@ def _convert_adjacency_matrix_to_connectivity_map(adjacency_matrix):
         connectivity_map[n] = {}
         nonzero_indices = nonzero_index_map[n]
         for i, neighbour_index in enumerate(nonzero_indices):
-            connectivity_map[n][neighbour_index] = weight_map[n][i]
+            connectivity_map[n][neighbour_index] = [{"weight": weight_map[n][i]}]
 
     return connectivity_map
 

@@ -22,10 +22,10 @@ class SubstitutionSystem2:
         # (even though the 3.6 language spec doesn't officially support it)
         connectivity_map = {}
         for i in range(n):
-            node_map = {i: 1.0}
+            node_map = {i: [{}]}
             for j in range(1, self._neighbourhood_size):
                 if (i + j) < n:
-                    node_map[i + j] = 1.0
+                    node_map[i + j] = [{}]
             connectivity_map[i] = node_map
         return connectivity_map
 

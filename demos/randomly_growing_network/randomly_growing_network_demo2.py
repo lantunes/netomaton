@@ -25,25 +25,20 @@ if __name__ == "__main__":
 
     adjacency_matrix = [[1.0]]  # begin with a single-node network
 
-    def activity_rule(ctx):
-        # we aren't interested in the activity in this example, so the node's activity will always be the same
-        return 1.0
-
     def connectivity_rule(cctx):
-        num_nodes = len(cctx.connectivities)
+        num_nodes = len(cctx.connectivity_map)
         new_label = num_nodes
-        cctx.connectivities[new_label] = {new_label: 1.0}
-        cctx.activities[new_label] = 1.0
+        cctx.connectivity_map[new_label] = {new_label: [{}]}
         if random.random() < delta:
             # choose 2 nodes at random, without replacement
-            choices = np.random.choice(list(cctx.activities), size=2, replace=False)
-            cctx.connectivities[choices[0]][choices[1]] = 1.0
-            cctx.connectivities[choices[1]][choices[0]] = 1.0
+            choices = np.random.choice(list(cctx.connectivity_map.keys()), size=2, replace=False)
+            cctx.connectivity_map[choices[0]][choices[1]] = [{}]
+            cctx.connectivity_map[choices[1]][choices[0]] = [{}]
 
-        return cctx.connectivities
+        return cctx.connectivity_map
 
     _, connectivities = ntm.evolve_2(initial_conditions=[1], topology=adjacency_matrix,
-                                     activity_rule=activity_rule, connectivity_rule=connectivity_rule, timesteps=200)
+                                     connectivity_rule=connectivity_rule, timesteps=200)
 
     # plot degree distribution
     degree_counts = {}

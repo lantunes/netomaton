@@ -21,6 +21,6 @@ class TestWireworldRule(RuleTest):
         steps, rows, size = expected.shape
         initial_conditions = np.array(expected[0]).reshape(rows * size).flatten()
         adjacency_matrix = network.cellular_automaton2d(rows=rows, cols=size, neighbourhood="Moore")
-        activities, _ = evolve_2(initial_conditions, adjacency_matrix, timesteps=steps,
+        activities, _ = evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=steps,
                                  activity_rule=rules.wireworld_rule_2)
         return np.array(activities).reshape((steps, rows, size))

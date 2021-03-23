@@ -22,7 +22,7 @@ if __name__ == "__main__":
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     ]
 
-    activities, _ = ntm.evolve_2(initial_conditions, adjacency_matrix, timesteps=25,
+    activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=25,
                                  activity_rule=ntm.rules.wireworld_rule_2)
 
     ntm.animate(activities, shape=(13, 24), interval=120, show_grid=True, show_margin=False, scale=0.3,
