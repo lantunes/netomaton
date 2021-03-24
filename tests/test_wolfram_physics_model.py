@@ -789,6 +789,50 @@ class TestWolframPhysicsModel(RuleTest):
         ]
         self._assert_configurations_over_time_equal(actual, expected)
 
+    def test_wm1653(self):
+        rules = {
+            "in": [("x", "y")], "out": [("w", "y", "x"), ("x", "w"), ("w", "y")]
+        }
+        config = [(1, 1)]
+        actual = self._evolve_wolfram_physics_model(config, rules, 4)
+        expected = [
+            [(1, 1)],
+            [(2, 1, 1), (1, 2), (2, 1)],
+            [(2, 1, 1), (3, 2, 1), (1, 3), (3, 2), (4, 1, 2), (2, 4), (4, 1)],
+            [(2, 1, 1), (3, 2, 1), (4, 1, 2), (5, 3, 1), (1, 5), (5, 3),  (6, 2, 3), (3, 6), (6, 2),  (7, 4, 2), (2, 7),
+             (7, 4),  (8, 1, 4), (4, 8), (8, 1)]
+        ]
+        self._assert_configurations_over_time_equal(actual, expected)
+
+    def test_wm161(self):
+        rules = {
+            "in": [("x",)], "out": [("x", "y"), ("x",)]
+        }
+        config = [(1,)]
+        actual = self._evolve_wolfram_physics_model(config, rules, 4)
+        expected = [
+            [(1,)],
+            [(1, 2), (1,)],
+            [(1, 2), (1, 3), (1,)],
+            [(1, 2), (1, 3), (1, 4), (1,)]
+        ]
+        self._assert_configurations_over_time_equal(actual, expected)
+
+    def test_wm17494(self):
+        rules = {
+            "in": [(1, 2, 3), (1, 4, 5), (3, 6)],
+            "out": [(7, 8, 7), (7, 5, 6), (9, 5, 5), (1, 7, 4), (7, 5), (5, 10), (11, 6), (6, 9)]
+        }
+        config = [(1, 1, 1), (1, 1, 1), (1, 1)]
+        actual = self._evolve_wolfram_physics_model(config, rules, 3)
+        expected = [
+            [(1, 1, 1), (1, 1, 1), (1, 1)],
+            [(2, 3, 2), (2, 1, 1), (4, 1, 1), (1, 2, 1), (2, 1), (1, 5), (6, 1), (1, 4)],
+            [(4, 1, 1), (1, 2, 1), (1, 5), (6, 1), (1, 4),
+             (7, 8, 7), (7, 1, 1), (9, 1, 1), (2, 7, 1), (7, 1), (1, 10), (11, 1), (1, 9)]
+        ]
+        self._assert_configurations_over_time_equal(actual, expected)
+
     @staticmethod
     def _evolve_wolfram_physics_model(config, rules, timesteps):
         model = WolframPhysicsModel(config, rules)

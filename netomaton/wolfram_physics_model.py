@@ -79,6 +79,7 @@ class WolframPhysicsModel:
         relations = self.connectivity_map_to_config(cctx.connectivity_map)
 
         matched_relations = []
+        unmatched_relations = []
         partially_matched = []
 
         # keep scanning until there is an iteration where no matches are produced
@@ -106,10 +107,14 @@ class WolframPhysicsModel:
 
                 scanning = match_found
 
+            # move all partially matched to unmatched
+            unmatched_relations.extend(partially_matched)
+            partially_matched = []
+
         new_config = []
         # add the relations that did not match the rules
         new_config.extend(relations)
-        new_config.extend(partially_matched)
+        new_config.extend(unmatched_relations)
         # add the new relations
         for matched, bindings in matched_relations:
             for rule_out in self.rules["out"]:
@@ -126,7 +131,7 @@ class WolframPhysicsModel:
         return self.connectivity_map
 
     def _matches(self, rule, relation, symbol_bindings):
-        if len(rule) == 1 and len(relation) > 1:
+        if len(rule) != len(relation):
             #  rule does not match this relation
             return False
 
