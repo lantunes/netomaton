@@ -66,6 +66,33 @@ class ConnectivityContext_2(object):
         return self._timestep
 
 
+class PerturbationContext_2(object):
+    """
+    The PerturbationContext contains the node label, activity and input for a particular timestep.
+    """
+    def __init__(self, node_label, node_activity, timestep, input):
+        self._node_label = node_label
+        self._node_activity = node_activity
+        self._timestep = timestep
+        self._input = input
+
+    @property
+    def node_label(self):
+        return self._node_label
+
+    @property
+    def node_activity(self):
+        return self._node_activity
+
+    @property
+    def timestep(self):
+        return self._timestep
+
+    @property
+    def input(self):
+        return self._input
+
+
 def evolve_2(topology, initial_conditions=None, activity_rule=None, timesteps=None, input=None, connectivity_rule=None,
              perturbation=None, past_conditions=None, parallel=False, processes=None):
 
@@ -91,7 +118,7 @@ def evolve_2(topology, initial_conditions=None, activity_rule=None, timesteps=No
     if connectivity_rule:
         connectivities_over_time[0] = copy_connectivity_map(connectivity_map)
 
-    last_node_index = len(connectivity_map) - 1
+    last_node_label = len(connectivity_map) - 1
 
     t = 1
     while True:
@@ -112,22 +139,28 @@ def evolve_2(topology, initial_conditions=None, activity_rule=None, timesteps=No
 
             last_activities = activities_over_time[t - 1]
 
-            for node_label in connectivity_map:
-                neighbour_labels = [k for k in connectivity_map[node_label]]
+            for node_label, incoming_connections in connectivity_map.items():
+                neighbour_labels = [k for k in incoming_connections]
                 current_activity = last_activities[node_label]
                 neighbourhood_activities = [last_activities[neighbour_label] for neighbour_label in neighbour_labels]
                 past_activities = None
                 node_in = None if inp == "__timestep__" else inp[node_label] if _is_indexable(inp) else inp
                 ctx = NodeContext_2(node_label, t, last_activities, neighbour_labels, neighbourhood_activities,
-                                    connectivity_map[node_label], current_activity, past_activities, node_in)
+                                    incoming_connections, current_activity, past_activities, node_in)
 
                 new_activity = activity_rule(ctx)
 
-                added_nodes.extend(ctx.added_nodes)
-                removed_nodes.extend(ctx.removed_nodes)
+                if ctx.added_nodes:
+                    added_nodes.extend(ctx.added_nodes)
+                if ctx.removed_nodes:
+                    removed_nodes.extend(ctx.removed_nodes)
 
                 if node_label not in ctx.removed_nodes:
                     activities_over_time[t][node_label] = new_activity
+
+                if perturbation is not None:
+                    pctx = PerturbationContext_2(node_label, activities_over_time[t][node_label], t, node_in)
+                    activities_over_time[t][node_label] = perturbation(pctx)
 
             # adjust connectivity map according to node deletions and insertions
             for node_label in removed_nodes:
@@ -135,8 +168,8 @@ def evolve_2(topology, initial_conditions=None, activity_rule=None, timesteps=No
 
             for state, outgoing_links, node_label in added_nodes:
                 if node_label is None:
-                    last_node_index += 1
-                    node_label = last_node_index
+                    last_node_label += 1
+                    node_label = last_node_label
                 connectivity_map[node_label] = {}
                 for target, weight in outgoing_links.items():
                     connectivity_map[target][node_label] = weight

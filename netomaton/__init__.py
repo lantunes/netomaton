@@ -18,4 +18,5 @@ from . import rules
 from .evolution_2 import *
 from .substitution_system_2 import *
 from .wolfram_physics_model import *
+from .sandpile_2 import *
 from . import vis
