@@ -13,7 +13,7 @@ if __name__ == "__main__":
     adjacency_matrix = [[0 for _ in range(N)] for _ in range(N)]  # begin with a fully disconnected network of size N
 
     def connectivity_rule(cctx):
-        choices = np.random.choice([n for n in cctx.connectivity_map], size=2, replace=False)
+        choices = np.random.choice([n for n in cctx.connectivity_map], size=2, replace=True)
         cctx.connectivity_map[choices[0]][choices[1]] = [{}]
         cctx.connectivity_map[choices[1]][choices[0]] = [{}]
 
