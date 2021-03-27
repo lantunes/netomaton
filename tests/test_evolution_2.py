@@ -3,7 +3,7 @@ import unittest
 import netomaton as ntm
 
 
-class TestFunctions2(unittest.TestCase):
+class TestFunctions(unittest.TestCase):
 
     def test_copy_connectivity_map(self):
         conn_map = {
