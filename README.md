@@ -110,6 +110,7 @@ the Netomaton framework. Follow the link to learn more:
 * [Sandpiles](demos/sandpiles/README.md)
 * [Continuous-Time Models](demos/continuous_time_models/README.md)
 * [Travelling Salesman Problem with the Hopfield-Tank Neural Net](demos/hopfield_tank_tsp/README.md)
+* [Logistic Map](demos/logistic_map/README.md)
 * [Substitution Systems](demos/substitution_systems/README.md)
 * [Wireworld](demos/wireworld/README.md)
 * [Random Attachment Model](demos/random_attachment_model/README.md)

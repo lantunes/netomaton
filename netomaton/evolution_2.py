@@ -21,8 +21,8 @@ class NodeContext_2(object):
         :param neighbourhood_activities: the node states of all neighbourhood nodes
         :param connection_states: the states of all the incoming connections of the node being processed
         :param current_activity: the state of the node after the previous timestep
-        :param past_activities: #TODO
-        :param input: #TODO
+        :param past_activities: the past activities of previous timesteps for all nodes
+        :param input: the input for this timestep, if provided, or None otherwise
         """
         self.node_label = node_label
         self.timestep = timestep
@@ -45,6 +45,15 @@ class NodeContext_2(object):
 
     def remove_node(self, nodel_label):
         self.removed_nodes.append(nodel_label)
+
+    def past_activity_of(self, node_label, past_activity_index=-1):
+        """
+        Returns the activity of the node with the given node label, in the past.
+        :param node_label: the label of the node whose activity is being requested
+        :param past_activity_index: the index of the past activity (-1 means the timestep before the last timestep)
+        :return: the activity of the node with the given label, in the past
+        """
+        return self.past_activities[past_activity_index][node_label]
 
 
 class ConnectivityContext_2(object):
@@ -126,7 +135,7 @@ def evolve_2(topology, initial_conditions=None, activity_rule=None, timesteps=No
         if inp is None:
             break
 
-        # past = _get_past_activities(past_conditions, activities_over_time, t) # TODO
+        past = _get_past_activities(past_conditions, activities_over_time, t)
         activities_over_time[t] = {}
         connectivities_over_time[t] = {}
 
@@ -143,10 +152,9 @@ def evolve_2(topology, initial_conditions=None, activity_rule=None, timesteps=No
                 neighbour_labels = [k for k in incoming_connections]
                 current_activity = last_activities[node_label]
                 neighbourhood_activities = [last_activities[neighbour_label] for neighbour_label in neighbour_labels]
-                past_activities = None
                 node_in = None if inp == "__timestep__" else inp[node_label] if _is_indexable(inp) else inp
                 ctx = NodeContext_2(node_label, t, last_activities, neighbour_labels, neighbourhood_activities,
-                                    incoming_connections, current_activity, past_activities, node_in)
+                                    incoming_connections, current_activity, past, node_in)
 
                 new_activity = activity_rule(ctx)
 
@@ -276,6 +284,22 @@ def _convert_adjacency_matrix_to_connectivity_map(adjacency_matrix):
             connectivity_map[n][neighbour_index] = [{"weight": weight_map[n][i]}]
 
     return connectivity_map
+
+
+def _get_past_activities(past_conditions, activities_over_time, t):
+    if past_conditions and len(past_conditions) > 0:
+        past_activities = [None]*len(past_conditions)
+        last_t = t - 1
+        for i in range(len(past_conditions)-1, -1, -1):
+
+            curr_past_cond = past_conditions[last_t-1] if last_t < 1 else activities_over_time[last_t-1]
+            if not isinstance(curr_past_cond, dict) and isinstance(curr_past_cond, (list, np.ndarray)):
+                curr_past_cond = {i: v for i, v in enumerate(curr_past_cond)}
+
+            past_activities[i] = curr_past_cond
+            last_t -= 1
+        return past_activities
+    return None
 
 
 def _get_input_function(timesteps=None, input=None):
