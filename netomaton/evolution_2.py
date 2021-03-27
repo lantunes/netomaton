@@ -139,9 +139,6 @@ def evolve_2(topology, initial_conditions=None, activity_rule=None, timesteps=No
         activities_over_time[t] = {}
         connectivities_over_time[t] = {}
 
-        # if t == len(activities_over_time): # TODO
-        #     activities_over_time = _extend_activities(activities_over_time, initial_conditions)
-
         if activity_rule:
             added_nodes = []
             removed_nodes = []
