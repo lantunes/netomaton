@@ -21,4 +21,5 @@ from .wolfram_physics_model import *
 from .sandpile_2 import *
 from .asynchronous_rule_2 import *
 from .hopfield_net_2 import *
+from .reversible_rule_2 import *
 from . import vis
