@@ -65,10 +65,10 @@ activities, _ = ntm.evolve(initial_conditions, tm.adjacency_matrix,
 ntm.plot_grid(activities, node_annotations=tm.head_activities(activities), show_grid=True)
 ```
 
-<img src="../../resources/turing_2.png" width="23%"/>
+<img src="../../resources/turing2.png" width="23%"/>
 
 The `TapeCentricTuringMachine` is based on approach **2**, described
-above. The complete source code for this example is [here](turing_machine_demo_2.py).
+above. The complete source code for this example is [here](turing_machine_demo2.py).
 
 In the example above, the initial state (i.e. the tape) is very simple,
 and there are only four rules. But with just a little more complexity,
@@ -117,11 +117,11 @@ activities, _ = ntm.evolve(initial_conditions, tm.adjacency_matrix,
 ntm.plot_grid(activities, node_annotations=tm.head_activities(activities), show_grid=True)
 ```
 
-<img src="../../resources/turing_2c.png" width="83%"/>
+<img src="../../resources/turing2c.png" width="83%"/>
 
 The plot on the right is the compressed output of running the machine
 for 5000 steps, and it clearly demonstrates that Rule 110 is emulated.
-(The code for this plot can be seen [here](turing_machine_demo_2c.py),
+(The code for this plot can be seen [here](turing_machine_demo2c.py),
 along with the full source code for this example.)
 
 The `HeadCentricTuringMachine` is based on approach **1**, described
@@ -161,12 +161,12 @@ tape_history, head_activities = tm.activities_for_plotting(activities)
 ntm.plot_grid(tape_history, node_annotations=head_activities, show_grid=True)
 ```
 
-<img src="../../resources/turing_1b.png" width="22%"/>
+<img src="../../resources/turing1b.png" width="22%"/>
 
 Note that the `evolve` function is given the `input` parameter, which in
 this case is a function, which returns the value the head is currently
 reading, and `None` when (and if) the machine reaches the terminating
-state of 'q6'. The full source code for this example is [here](turing_machine_demo_1b.py).
+state of 'q6'. The full source code for this example is [here](turing_machine_demo1b.py).
 
 Both the `TapeCentricTuringMachine` and `HeadCentricTuringMachine` will
 produce the same results. However, the `HeadCentricTuringMachine` may
