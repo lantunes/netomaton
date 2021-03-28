@@ -152,3 +152,36 @@ def animate_network(adjacency_matrices, save=False, interval=50, dpi=80, layout=
     if save:
         ani.save('evolved.gif', dpi=dpi, writer="imagemagick")
     plt.show()
+
+
+def animate_connectivity_map(connectivity_maps, save=False, interval=50, dpi=80, layout="shell",
+                    with_labels=True, node_color="b", node_size=30):
+    fig, ax = plt.subplots()
+
+    def update(connectivity_map):
+        ax.clear()
+
+        G = connectivity_map_to_nx(connectivity_map)
+
+        if layout == "shell":
+            nx.draw_shell(G, with_labels=with_labels, node_color=node_color, node_size=node_size)
+        elif layout == "spring":
+            nx.draw_spring(G, with_labels=with_labels, node_color=node_color, node_size=node_size)
+        else:
+            raise Exception("unsupported layout: %s" % layout)
+
+    ani = animation.FuncAnimation(fig, update, frames=connectivity_maps.values(), interval=interval,
+                                  save_count=len(connectivity_maps))
+    if save:
+        ani.save('evolved.gif', dpi=dpi, writer="imagemagick")
+    plt.show()
+
+
+def connectivity_map_to_nx(connectivity_map):
+    G = nx.MultiDiGraph()
+    for node in connectivity_map:
+        G.add_node(node)
+        for from_node, connection_state in connectivity_map[node].items():
+            for _ in connection_state:
+                G.add_edge(from_node, node)
+    return G

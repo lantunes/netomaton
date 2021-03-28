@@ -2,21 +2,13 @@ import netomaton as ntm
 
 if __name__ == "__main__":
 
-    # rules = {
-    #     "2": "212",
-    #     "1": "121"
-    # }
-    # initial_conditions = [2]
-
+    # NKS p. 82 (left)
     rules = {
-        "22": "22",
-        "21": "1",
-        "12": "21",
-        "11": ""
+        "2": "21",
+        "1": "12"
     }
-    initial_conditions = [1, 2, 2, 1]
-
-    timesteps = 4
+    initial_conditions = [2]
+    timesteps = 6
 
     subn_system = ntm.SubstitutionSystem_2(rules, len(initial_conditions))
 

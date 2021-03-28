@@ -123,9 +123,7 @@ def evolve_2(topology, initial_conditions=None, activity_rule=None, timesteps=No
         raise Exception("too few intial conditions specified [%s] for the number of given nodes [%s]" %
                         (len(initial_conditions), len(connectivity_map)))
 
-    connectivities_over_time = {}
-    if connectivity_rule:
-        connectivities_over_time[0] = copy_connectivity_map(connectivity_map)
+    connectivities_over_time = {0: copy_connectivity_map(connectivity_map)}
 
     last_node_label = len(connectivity_map) - 1
 
@@ -176,10 +174,13 @@ def evolve_2(topology, initial_conditions=None, activity_rule=None, timesteps=No
                     last_node_label += 1
                     node_label = last_node_label
                 connectivity_map[node_label] = {}
-                for target, weight in outgoing_links.items():
-                    connectivity_map[target][node_label] = weight
+                for target, connection_state in outgoing_links.items():
+                    connectivity_map[target][node_label] = connection_state
 
                 activities_over_time[t][node_label] = state
+
+            if added_nodes or removed_nodes:
+                connectivities_over_time[t] = copy_connectivity_map(connectivity_map)
 
         if connectivity_rule:
             # TODO we should support the option to have the connectivity rule executed before the activity rule

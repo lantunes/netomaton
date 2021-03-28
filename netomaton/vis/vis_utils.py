@@ -3,8 +3,6 @@ import webbrowser
 import networkx as nx
 
 
-# TODO implement connectivity_map_to_nx
-
 def configuration_to_nx(config):
     G = nx.MultiDiGraph()
     for relation in config:

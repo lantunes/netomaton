@@ -2,12 +2,7 @@ import netomaton as ntm
 
 if __name__ == "__main__":
 
-    # rules = {
-    #     "2": "212",
-    #     "1": "121"
-    # }
-    # initial_conditions = [2]
-
+    # NKS p. 86
     rules = {
         "22": "22",
         "21": "1",
@@ -15,8 +10,7 @@ if __name__ == "__main__":
         "11": ""
     }
     initial_conditions = [1, 2, 2, 1]
-
-    timesteps = 4
+    timesteps = 13
 
     subn_system = ntm.SubstitutionSystem_2(rules, len(initial_conditions))
 
@@ -25,5 +19,6 @@ if __name__ == "__main__":
                                               activity_rule=subn_system.activity_rule, timesteps=timesteps)
 
     padded = subn_system.pad(activities)
-
     ntm.plot_grid(padded, show_grid=True)
+
+    ntm.animate_connectivity_map(connectivities, interval=250)

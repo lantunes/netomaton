@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class SubstitutionSystem2:
+class SubstitutionSystem_2:
     def __init__(self, rules, n):
         self._rules = rules
         self._neighbourhood_size = self._get_neighbourhood_size(rules)
@@ -46,7 +46,7 @@ class SubstitutionSystem2:
             self._num_nodes_added += 1
             outgoing_links = {}
             for j in range(0, min(self._num_nodes_added, self._neighbourhood_size)):
-                outgoing_links[new_node_label - j] = 1.0
+                outgoing_links[new_node_label - j] = [{}]
             ctx.add_node(int(state), outgoing_links, new_node_label)
 
         # we return None here, since the graph has been re-written through the context, and the newly added node(s)

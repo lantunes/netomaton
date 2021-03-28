@@ -86,7 +86,7 @@ class TestSubstitutionSystem(RuleTest):
     def _evolve_substitution_system(expected, rules):
         rows = len(expected)
         initial_conditions = np.array(expected[0]).flatten()
-        subn_system = ntm.SubstitutionSystem2(rules, len(initial_conditions))
+        subn_system = ntm.SubstitutionSystem_2(rules, len(initial_conditions))
         activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=subn_system.connectivity_map,
                                      activity_rule=subn_system.activity_rule, timesteps=rows)
         activities = [[activities[k][e] for e in sorted(activities[k])] for k in sorted(activities)]
