@@ -3,6 +3,8 @@ from math import sqrt
 import networkx as nx
 import numpy as np
 
+# TODO provide a connectivity_map.py, that does everything here, except returns connectivity maps
+
 
 def cellular_automaton(n, r=1, boundary="periodic"):
     """

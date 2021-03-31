@@ -40,7 +40,7 @@ class NodeContext_2(object):
         return self.activities[node_label]
 
     # TODO support incoming_links also; must provide one or the other
-    def add_node(self, state, outgoing_links, nodel_label=None):
+    def add_node(self, state, outgoing_links, nodel_label):
         self.added_nodes.append((state, outgoing_links, nodel_label))
 
     def remove_node(self, nodel_label):
@@ -101,7 +101,7 @@ class PerturbationContext_2(object):
     def input(self):
         return self._input
 
-
+# TODO rename "connectivity" everywhere; to "topology" perhaps?
 def evolve_2(topology, initial_conditions=None, activity_rule=None, timesteps=None, input=None, connectivity_rule=None,
              perturbation=None, past_conditions=None, parallel=False, processes=None):
 
@@ -125,8 +125,6 @@ def evolve_2(topology, initial_conditions=None, activity_rule=None, timesteps=No
 
     connectivities_over_time = {0: copy_connectivity_map(connectivity_map)}
 
-    last_node_label = len(connectivity_map) - 1
-
     t = 1
     while True:
         inp = input_fn(t)
@@ -138,41 +136,14 @@ def evolve_2(topology, initial_conditions=None, activity_rule=None, timesteps=No
         connectivities_over_time[t] = {}
 
         if activity_rule:
-            added_nodes = []
-            removed_nodes = []
-
-            last_activities = activities_over_time[t - 1]
-
-            for node_label, incoming_connections in connectivity_map.items():
-                neighbour_labels = [k for k in incoming_connections]
-                current_activity = last_activities[node_label]
-                neighbourhood_activities = [last_activities[neighbour_label] for neighbour_label in neighbour_labels]
-                node_in = None if inp == "__timestep__" else inp[node_label] if _is_indexable(inp) else inp
-                ctx = NodeContext_2(node_label, t, last_activities, neighbour_labels, neighbourhood_activities,
-                                    incoming_connections, current_activity, past, node_in)
-
-                new_activity = activity_rule(ctx)
-
-                if ctx.added_nodes:
-                    added_nodes.extend(ctx.added_nodes)
-                if ctx.removed_nodes:
-                    removed_nodes.extend(ctx.removed_nodes)
-
-                if node_label not in ctx.removed_nodes:
-                    activities_over_time[t][node_label] = new_activity
-
-                if perturbation is not None:
-                    pctx = PerturbationContext_2(node_label, activities_over_time[t][node_label], t, node_in)
-                    activities_over_time[t][node_label] = perturbation(pctx)
+            added_nodes, removed_nodes = do_activity_rule(t, inp, activities_over_time, connectivity_map,
+                                                          activity_rule, past, perturbation)
 
             # adjust connectivity map according to node deletions and insertions
             for node_label in removed_nodes:
                 del connectivity_map[node_label]
 
             for state, outgoing_links, node_label in added_nodes:
-                if node_label is None:
-                    last_node_label += 1
-                    node_label = last_node_label
                 connectivity_map[node_label] = {}
                 for target, connection_state in outgoing_links.items():
                     connectivity_map[target][node_label] = connection_state
@@ -184,6 +155,7 @@ def evolve_2(topology, initial_conditions=None, activity_rule=None, timesteps=No
 
         if connectivity_rule:
             # TODO we should support the option to have the connectivity rule executed before the activity rule
+            # TODO we need a demo that uses the connectivity rule before the activity rule
             # the connectivity rule receives any changes made to the network via the activity rule
             connectivity_map = connectivity_rule(ConnectivityContext_2(connectivity_map, activities_over_time[t], t))
             connectivities_over_time[t] = copy_connectivity_map(connectivity_map)
@@ -197,6 +169,37 @@ def evolve_2(topology, initial_conditions=None, activity_rule=None, timesteps=No
             connectivities_over_time = _convert_connectivities_map_to_list(connectivities_over_time)
 
     return activities_over_time, connectivities_over_time
+
+
+def do_activity_rule(t, inp, activities_over_time, connectivity_map, activity_rule, past, perturbation):
+    added_nodes = []
+    removed_nodes = []
+
+    last_activities = activities_over_time[t - 1]
+
+    for node_label, incoming_connections in connectivity_map.items():
+        neighbour_labels = [k for k in incoming_connections]
+        current_activity = last_activities[node_label]
+        neighbourhood_activities = [last_activities[neighbour_label] for neighbour_label in neighbour_labels]
+        node_in = None if inp == "__timestep__" else inp[node_label] if _is_indexable(inp) else inp
+        ctx = NodeContext_2(node_label, t, last_activities, neighbour_labels, neighbourhood_activities,
+                            incoming_connections, current_activity, past, node_in)
+
+        new_activity = activity_rule(ctx)
+
+        if ctx.added_nodes:
+            added_nodes.extend(ctx.added_nodes)
+        if ctx.removed_nodes:
+            removed_nodes.extend(ctx.removed_nodes)
+
+        if node_label not in ctx.removed_nodes:
+            activities_over_time[t][node_label] = new_activity
+
+        if perturbation is not None:
+            pctx = PerturbationContext_2(node_label, activities_over_time[t][node_label], t, node_in)
+            activities_over_time[t][node_label] = perturbation(pctx)
+
+    return added_nodes, removed_nodes
 
 
 def copy_connectivity_map(conn_map):

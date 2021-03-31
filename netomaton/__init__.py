@@ -23,4 +23,6 @@ from .asynchronous_rule_2 import *
 from .hopfield_net_2 import *
 from .reversible_rule_2 import *
 from .turing_machine_2 import *
+from .rule_tables_2 import *
+from .hopfield_tank_tsp_net_2 import *
 from . import vis
