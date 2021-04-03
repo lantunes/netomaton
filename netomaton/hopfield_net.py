@@ -2,7 +2,7 @@ from .asynchronous_rule import *
 import numpy as np
 
 
-class HopfieldNet:
+class HopfieldNet_2:
     """
     The Hopfield net implemented here expects bipolar ({-1,1}), and not binary ({0,1}), values. It consists of a
     training step, where the weights of the adjacency matrix are established, using a simple Hebbian learning rule,
@@ -10,7 +10,7 @@ class HopfieldNet:
     of the network should settle into one of the training patterns.
     """
     def __init__(self, n):
-        self._activity_rule = AsynchronousRule(activity_rule=self._rule, n=n, randomize_each_cycle=True)
+        self._activity_rule = AsynchronousRule_2(activity_rule=self._rule, n=n, randomize_each_cycle=True)
         self._num_nodes = n
 
     def train(self, P):
@@ -38,8 +38,8 @@ class HopfieldNet:
         :return: the new value of the node
         """
         V = 0
-        for i, _ in enumerate(ctx.activities):
-            V += ctx.weights[i] * ctx.activities[i]
+        for neighbour_label in ctx.neighbour_labels:
+            V += ctx.connection_states[neighbour_label][0]["weight"] * ctx.activities[neighbour_label]
         return 1 if V >= 0 else -1
 
     @property

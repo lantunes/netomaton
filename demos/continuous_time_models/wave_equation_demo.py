@@ -1,15 +1,14 @@
 import netomaton as ntm
 import numpy as np
 
-
 if __name__ == "__main__":
     """
     Simulates the Wave Equation:
-    
+
     ∂²u/∂t² = ∂²u/∂x²
-    
+
     Reproduces the middle plot of Wolfram's NKS, page 163. 
-    
+
     See: https://www.wolframscience.com/nks/p163--partial-differential-equations/
     """
     nx = 401  # the number of nodes (i.e. the number of points in the grid)
@@ -22,18 +21,20 @@ if __name__ == "__main__":
 
     adjacency_matrix = ntm.topology.adjacency.cellular_automaton(nx)
 
+
     def activity_rule(ctx):
         un_i = ctx.current_activity
-        left_index = (ctx.node_index - 1) % nx
-        un_i_m1 = ctx.activity_of(left_index)
-        right_index = (ctx.node_index + 1) % nx
-        un_i_p1 = ctx.activity_of(right_index)
+        left_label = (ctx.node_label - 1) % nx
+        un_i_m1 = ctx.activity_of(left_label)
+        right_label = (ctx.node_label + 1) % nx
+        un_i_p1 = ctx.activity_of(right_label)
         # the activity not at the previous timestep, but the timestep before that
-        un_m1_i = ctx.past_activity_of(ctx.node_index)
-        return ((dt**2 * (un_i_p1 - 2*un_i + un_i_m1)) / dx**2) + (2*un_i - un_m1_i)
+        un_m1_i = ctx.past_activity_of(ctx.node_label)
+        return ((dt ** 2 * (un_i_p1 - 2 * un_i + un_i_m1)) / dx ** 2) + (2 * un_i - un_m1_i)
 
-    activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, activity_rule, timesteps=nt,
-                               past_conditions=[initial_conditions])
+
+    activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                                 activity_rule=activity_rule, timesteps=nt, past_conditions=[initial_conditions])
 
     ntm.plot_grid(activities)
 

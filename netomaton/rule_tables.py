@@ -3,37 +3,37 @@ import random
 import numpy as np
 
 
-def table_rule(table):
+def table_rule_2(table):
     """
     A rule where the state is converted into a string, and looked up in the given table, to yield the return value.
     :param table: a table (map) of string representations of each neighbourhood state to the associated next
-           cell state value; for example, for k = 2 and r = 2, a valid table might be: 
+           cell state value; for example, for k = 2 and r = 2, a valid table might be:
            {'101': 1, '111': 0, '011': 0, '110': 1, '000': 0, '100': 0, '010': 0, '001': 1}
     :return: a function representing the activity rule, where the context activities are a k-color array of length
              2r + 1, and the function returns a number, from 0 to k - 1, associated with the given state as specified
              in the given table
     """
     def _rule(ctx):
-        state_repr = ''.join(str(x) for x in ctx.activities)
+        state_repr = ''.join(str(x) for x in ctx.neighbourhood_activities)
         if not state_repr in table:
             raise Exception("could not find state '%s' in table" % state_repr)
         return table[state_repr]
     return _rule
 
 
-def random_rule_table(k, r, lambda_val=None, quiescent_state=None, strong_quiescence=False, isotropic=False):
+def random_rule_table_2(k, r, lambda_val=None, quiescent_state=None, strong_quiescence=False, isotropic=False):
     """
-    Constructs and returns a random rule table, as described in [Langton, C. G. (1990). Computation at the edge of 
-    chaos: phase transitions and emergent computation. Physica D: Nonlinear Phenomena, 42(1-3), 12-37.], using 
+    Constructs and returns a random rule table, as described in [Langton, C. G. (1990). Computation at the edge of
+    chaos: phase transitions and emergent computation. Physica D: Nonlinear Phenomena, 42(1-3), 12-37.], using
     the "random-table" method.
     :param k: the number of cell states
     :param r: the radius of the cellular automaton neighbourhood
-    :param lambda_val: a real number in (0., 1.), representing the value of lambda; if None, a default value of 
+    :param lambda_val: a real number in (0., 1.), representing the value of lambda; if None, a default value of
                        1.0 - 1/k will be used, where all states will be represented equally in the rule table
     :param quiescent_state: the state, a number in {0,...,k - 1}, to use as the quiescent state
     :param strong_quiescence: if True, all neighbourhood states uniform in cell state i will map to cell state i
     :param isotropic: if True, all planar rotations of a neighbourhood state will map to the same cell state
-    :return: a tuple containing: a table describing a rule, constructed using the "random-table" table method as 
+    :return: a tuple containing: a table describing a rule, constructed using the "random-table" table method as
              described by C. G. Langton, the actual lambda value, and the quiescent state used
     """
     states = []
@@ -70,14 +70,14 @@ def random_rule_table(k, r, lambda_val=None, quiescent_state=None, strong_quiesc
     return table, actual_lambda_val, quiescent_state
 
 
-def table_walk_through(rule_table, lambda_val, k, r, quiescent_state, strong_quiescence=False, isotropic=False):
+def table_walk_through_2(rule_table, lambda_val, k, r, quiescent_state, strong_quiescence=False, isotropic=False):
     """
-    Perturbs the given rule table using the "table-walk-through" approach described in [Langton, C. G. (1990). 
-    Computation at the edge of chaos: phase transitions and emergent computation. Physica D: Nonlinear Phenomena, 
-    42(1-3), 12-37.]. The table's actual lambda value will be increased or decreased, incrementally and stochastically, 
+    Perturbs the given rule table using the "table-walk-through" approach described in [Langton, C. G. (1990).
+    Computation at the edge of chaos: phase transitions and emergent computation. Physica D: Nonlinear Phenomena,
+    42(1-3), 12-37.]. The table's actual lambda value will be increased or decreased, incrementally and stochastically,
     until it reaches the given lambda value.
-    :param rule_table: a table (map) of string representations of each neighbourhood state to the associated next 
-                       cell state value; for example, for k = 2 and r = 2, a valid table might be: 
+    :param rule_table: a table (map) of string representations of each neighbourhood state to the associated next
+                       cell state value; for example, for k = 2 and r = 2, a valid table might be:
                        {'101': 1, '111': 0, '011': 0, '110': 1, '000': 0, '100': 0, '010': 0, '001': 1}
     :param lambda_val: a real number in (0., 1.), representing the value of lambda
     :param k: the number of cell states
@@ -85,7 +85,7 @@ def table_walk_through(rule_table, lambda_val, k, r, quiescent_state, strong_qui
     :param quiescent_state: the state, a number in {0,...,k - 1}, to use as the quiescent state
     :param strong_quiescence: if True, all neighbourhood states uniform in cell state i will map to cell state i
     :param isotropic: if True, all planar rotations of a neighbourhood state will map to the same cell state
-    :return: a tuple containing: a table describing a rule, constructed using the "table-walk-through" method as 
+    :return: a tuple containing: a table describing a rule, constructed using the "table-walk-through" method as
              described by C. G. Langton, the actual lambda value
     """
     def actual_lambda():

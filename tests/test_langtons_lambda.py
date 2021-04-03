@@ -57,8 +57,8 @@ class TestLangtonsLambda(RuleTest):
         random.seed(43543)
         expected = self._convert_to_list_of_list_of_lists("rule_table_walkthrough.ca")
 
-        rule_table, actual_lambda, quiescent_state = ntm.random_rule_table(lambda_val=0.0, k=4, r=2,
-                                                                           strong_quiescence=True, isotropic=True)
+        rule_table, actual_lambda, quiescent_state = ntm.random_rule_table_2(lambda_val=0.0, k=4, r=2,
+                                                                             strong_quiescence=True, isotropic=True)
 
         lambda_vals = [0.15, 0.37, 0.75]
         ca_list = []

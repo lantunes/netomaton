@@ -60,7 +60,6 @@ class TestSubstitutionSystem(RuleTest):
         })
         np.testing.assert_equal(expected, actual)
 
-
     def test_substitution_demo6(self):
         expected = self._convert_to_list_of_lists("substitution_system6.ca")
         actual = self._evolve_substitution_system(expected, rules={
@@ -87,8 +86,8 @@ class TestSubstitutionSystem(RuleTest):
     def _evolve_substitution_system(expected, rules):
         rows = len(expected)
         initial_conditions = np.array(expected[0]).flatten()
-        subn_system = ntm.SubstitutionSystem(rules, len(initial_conditions))
-        activities, _ = ntm.evolve(initial_conditions, subn_system.adjacency_matrix,
-                                   connectivity_rule=subn_system.connectivity_rule,
-                                   activity_rule=subn_system.activity_rule, timesteps=rows)
+        subn_system = ntm.SubstitutionSystem_2(rules, len(initial_conditions))
+        activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=subn_system.connectivity_map,
+                                     activity_rule=subn_system.activity_rule, timesteps=rows)
+        activities = [[activities[k][e] for e in sorted(activities[k])] for k in sorted(activities)]
         return activities

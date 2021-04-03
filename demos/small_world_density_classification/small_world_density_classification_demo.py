@@ -17,7 +17,7 @@ if __name__ == '__main__':
 
     print("density of 1s: %s" % (np.count_nonzero(initial_conditions) / 149))
 
-    activities, adjacencies = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=149,
-                                         activity_rule=ntm.rules.majority_rule)
+    activities, adjacencies = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                                           activity_rule=ntm.rules.majority_rule_2, timesteps=149)
 
     ntm.plot_grid(activities)

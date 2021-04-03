@@ -12,21 +12,14 @@ class TestRandomAttachmentModel(RuleTest):
         N = 25
         adjacency_matrix = [[0 for _ in range(N)] for _ in range(N)]
 
-        def activity_rule(ctx):
-            return 1
-
         def connectivity_rule(cctx):
-            new_adjacencies = [[i for i in x] for x in cctx.last_adjacencies]
+            choices = np.random.choice([n for n in cctx.connectivity_map], size=2, replace=True)
+            cctx.connectivity_map[choices[0]][choices[1]] = [{}]
+            cctx.connectivity_map[choices[1]][choices[0]] = [{}]
 
-            idx1 = np.random.choice(list(range(len(new_adjacencies))))
-            idx2 = np.random.choice(list(range(len(new_adjacencies))))
+            return cctx.connectivity_map
 
-            new_adjacencies[idx1][idx2] = 1
-            new_adjacencies[idx2][idx1] = 1
+        _, connectivities = ntm.evolve_2(initial_conditions=[1] * N, topology=adjacency_matrix,
+                                         connectivity_rule=connectivity_rule, timesteps=N)
 
-            return new_adjacencies
-
-        _, adjacencies = ntm.evolve(initial_conditions=[1] * N, adjacency_matrix=adjacency_matrix,
-                                    activity_rule=activity_rule, connectivity_rule=connectivity_rule, timesteps=N)
-
-        np.testing.assert_equal(expected, adjacencies)
+        np.testing.assert_equal(expected, connectivities)

@@ -1,81 +1,73 @@
 import numpy as np
 
 
-class SubstitutionSystem:
+class SubstitutionSystem_2:
     def __init__(self, rules, n):
         self._rules = rules
-        self._adjacency_matrix = self._init_adjacency_matrix(n)
+        self._neighbourhood_size = self._get_neighbourhood_size(rules)
+        self._connectivity_map = self._init_connectivity_map(n)
+        self._last_node_index = n - 1
+        self._num_nodes_added = 0
+        self._last_timestep = 0
 
-    def _init_adjacency_matrix(self, n):
-        neighbourhood_size = len(next(iter(self._rules)))
-        adjacency_matrix = [[1] + [0]*(n-1)]
-        idx = 1
-        for i in range(1, n):
-            row = [0 for _ in range(n)]
-            row[idx] = 1
-            for j in range(1, neighbourhood_size):
-                next_idx = idx - j
-                if next_idx >= 0:
-                    row[next_idx] = 1
-            idx += 1
-            adjacency_matrix.append(row)
-        return adjacency_matrix
+    def _get_neighbourhood_size(self, rules):
+        neighbourhood_size = len(next(iter(rules)))
+        for key in rules:
+            if len(key) != neighbourhood_size:
+                raise Exception("all keys in the rule map must be the same length")
+        return neighbourhood_size
+
+    def _init_connectivity_map(self, n):
+        # since we require Python 3.6, and dicts respect insertion order, we're using a plain dict here
+        # (even though the 3.6 language spec doesn't officially support it)
+        connectivity_map = {}
+        for i in range(n):
+            node_map = {i: [{}]}
+            for j in range(1, self._neighbourhood_size):
+                if (i + j) < n:
+                    node_map[i + j] = [{}]
+            connectivity_map[i] = node_map
+        return connectivity_map
+
+    def activity_rule(self, ctx):
+        ctx.remove_node(ctx.node_label)
+
+        self._update_last_timestep(ctx)
+
+        if len(ctx.neighbour_labels) != self._neighbourhood_size:
+            return
+
+        current_state = self._get_state(ctx)
+        new_state = self._rules[current_state]
+
+        for i, state in enumerate(new_state):
+            self._last_node_index += 1
+            new_node_label = self._last_node_index
+            self._num_nodes_added += 1
+            outgoing_links = {}
+            for j in range(0, min(self._num_nodes_added, self._neighbourhood_size)):
+                outgoing_links[new_node_label - j] = [{}]
+            ctx.add_node(int(state), outgoing_links, new_node_label)
+
+        # we return None here, since the graph has been re-written through the context, and the newly added node(s)
+        #  carry the state information
+
+    def _update_last_timestep(self, ctx):
+        if self._last_timestep != ctx.timestep:
+            self._num_nodes_added = 0
+        self._last_timestep = ctx.timestep
 
     def _get_state(self, ctx):
         state = ""
-        for idx in ctx.neighbour_indices:
-            state += str(ctx.activity_of(idx))
+        for neighbour in ctx.neighbour_labels:
+            state += str(ctx.activity_of(neighbour))
         return state
 
-    def activity_rule(self, ctx):
-        current_state = self._get_state(ctx)
-        if not current_state in self._rules:
-            ctx.remove(ctx.node_index)
-            return 0
-
-        new_state = self._rules[current_state]
-        if len(new_state) == 0:
-            ctx.remove(ctx.node_index)
-            return 0
-
-        for i in range(1, len(new_state)):
-            ctx.insert(ctx.node_index+i, int(new_state[i]))
-        return int(new_state[0])
-
-    def connectivity_rule(self, ctx):
-        neighbourhood_size = len(next(iter(self._rules)))
-        activities = ''.join([str(a) for a in ctx.last_activities])
-
-        connectivity_map = {}
-        new_idx = 0
-        for idx, activity in enumerate(activities):
-            state = activities[idx:(idx+neighbourhood_size)]
-            if not state in self._rules:
-                continue
-
-            new_state = self._rules[state]
-            if len(new_state) == 0:
-                continue
-
-            for i in range(len(new_state)):
-                connectivity_map[new_idx] = {new_idx: 1}
-                for j in range(1, neighbourhood_size):
-                    next_idx = new_idx - j
-                    if next_idx >= 0:
-                        connectivity_map[new_idx][next_idx] = 1
-                new_idx += 1
-
-        adjacency = np.zeros((len(connectivity_map), len(connectivity_map)))
-        for row, vals in connectivity_map.items():
-            for col, val in vals.items():
-                adjacency[row][col] = val
-
-        return adjacency
-
     @property
-    def adjacency_matrix(self):
-        return self._adjacency_matrix
+    def connectivity_map(self):
+        return self._connectivity_map
 
     def pad(self, activities):
+        activities = [[activities[k][e] for e in sorted(activities[k])] for k in sorted(activities)]
         max_len = np.max([len(a) for a in activities])
         return np.asarray([np.pad(a, (0, max_len - len(a)), 'constant', constant_values=0) for a in activities])

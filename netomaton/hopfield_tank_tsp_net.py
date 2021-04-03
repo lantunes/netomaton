@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-class HopfieldTankTSPNet:
+class HopfieldTankTSPNet_2:
     """
     Based on J. J. Hopfield and D. W. Tank, "'Neural' Computation of Decisions in Optimization Problems",
     Biol. Cybern: 52, 141-152 (1985).
@@ -54,6 +54,8 @@ class HopfieldTankTSPNet:
         return distances
 
     def get_permutation_matrix(self, activities):
+        if not isinstance(activities, np.ndarray):
+            activities = np.array(activities)
         f = lambda u: self._V(u)
         return f(activities[-1].reshape(len(self._points), len(self._points)))
 
@@ -164,23 +166,23 @@ class HopfieldTankTSPNet:
     def _V(self, u):
         return (1/2) * (1 + np.tanh(u / self._u_0))
 
-    def _get_opposite_neighbour_activity(self, activities, neighbour_indices, opposite_neighbour_index):
+    def _get_opposite_neighbour_activity(self, activities, neighbour_indices, opposite_neighbour_label):
         for i, n in enumerate(neighbour_indices):
-            if n == opposite_neighbour_index:
+            if n == opposite_neighbour_label:
                 return activities[i]
-        raise Exception("could not find the opposite neighbour index: %d" % opposite_neighbour_index)
+        raise Exception("could not find the opposite neighbour index: %d" % opposite_neighbour_label)
 
     def activity_rule(self, ctx):
         current_activity = ctx.current_activity
-        node_row, node_col = self._node_label_map[ctx.node_index]
+        node_row, node_col = self._node_label_map[ctx.node_label]
 
         A_sum = 0
         B_sum = 0
         C_sum = 0
         D_sum = 0
-        for i, neighbour_activity in enumerate(ctx.activities):
-            neighbour_index = ctx.neighbour_indices[i]
-            neighbour_node_row, neighbour_node_col = self._node_label_map[neighbour_index]
+        for i, neighbour_activity in enumerate(ctx.neighbourhood_activities):
+            neighbour_label = ctx.neighbour_labels[i]
+            neighbour_node_row, neighbour_node_col = self._node_label_map[neighbour_label]
 
             if neighbour_node_row == node_row and neighbour_node_col != node_col:
                 A_sum += self._V(neighbour_activity)
@@ -192,8 +194,8 @@ class HopfieldTankTSPNet:
             C_sum += self._V(neighbour_activity)
 
             if neighbour_node_col == ((node_col - 1) % len(self._points)):
-                opp_neighbour_index = self._coordinate_map[(neighbour_node_row, (node_col + 1) % len(self._points))]
-                opp_neighbour_activity = self._get_opposite_neighbour_activity(ctx.activities, ctx.neighbour_indices, opp_neighbour_index)
+                opp_neighbour_label = self._coordinate_map[(neighbour_node_row, (node_col + 1) % len(self._points))]
+                opp_neighbour_activity = self._get_opposite_neighbour_activity(ctx.neighbourhood_activities, ctx.neighbour_labels, opp_neighbour_label)
                 D_sum += (self._distances_map[(neighbour_node_row, node_row)] * (self._V(neighbour_activity) + self._V(opp_neighbour_activity)))
 
         activity = (-current_activity) - (self._A * A_sum) - (self._B * B_sum) - (self._C * (C_sum - self._n)) - (self._D * D_sum)

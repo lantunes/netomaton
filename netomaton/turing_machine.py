@@ -1,7 +1,7 @@
 from .topology.adjacency import cellular_automaton
 
 
-class TuringMachine:
+class TuringMachine_2:
     LEFT = 0
     STAY = 1
     RIGHT = 2
@@ -14,7 +14,7 @@ class TuringMachine:
         pass
 
 
-class TapeCentricTuringMachine(TuringMachine):
+class TapeCentricTuringMachine_2(TuringMachine_2):
     """
     A Turing Machine modelled as a Network Automaton with a number of nodes representing the tape (with the same local
     connectivity as an Elementary Cellular Automaton), whose states are mutated as the tape is written to, and separate
@@ -36,12 +36,12 @@ class TapeCentricTuringMachine(TuringMachine):
             self._current_timestep = ctx.timestep
         head_state, head_pos = self._head_history[self._current_timestep - 1]
         node_state = ctx.current_activity
-        if ctx.node_index == head_pos:
+        if ctx.node_label == head_pos:
             try:
                 next_head_state, new_node_state, direction = self._rule_table[head_state][node_state]
             except KeyError as err:
                 raise Exception("no rule defined for head state %s, input %s" % (head_state, node_state)) from err
-            self._head_history.append((next_head_state, ctx.neighbour_indices[direction]))
+            self._head_history.append((next_head_state, ctx.neighbour_labels[direction]))
             return new_node_state
         return node_state
 
@@ -52,7 +52,7 @@ class TapeCentricTuringMachine(TuringMachine):
         return annotations
 
 
-class HeadCentricTuringMachine(TuringMachine):
+class HeadCentricTuringMachine_2(TuringMachine_2):
     """
     A Turing Machine modelled as a Network Automaton with a single node that carries the state of the head, and a
     separate tape that is read from and written to during processing.
@@ -98,11 +98,11 @@ class HeadCentricTuringMachine(TuringMachine):
         return next_head_state, self._head_pos
 
     def _next_pos(self, direction, head_pos):
-        if direction == TuringMachine.LEFT:
+        if direction == TuringMachine_2.LEFT:
             return (head_pos - 1) % len(self._tape_history[-1])
-        elif direction == TuringMachine.RIGHT:
+        elif direction == TuringMachine_2.RIGHT:
             return (head_pos + 1) % len(self._tape_history[-1])
-        elif direction == TuringMachine.STAY:
+        elif direction == TuringMachine_2.STAY:
             return head_pos
         else:
             raise Exception("unsupported direction: %s" % direction)

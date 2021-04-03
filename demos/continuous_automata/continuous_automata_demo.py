@@ -10,12 +10,12 @@ if __name__ == '__main__':
 
     # NKS page 157
     def activity_rule(ctx):
-        activities = ctx.activities
+        activities = ctx.neighbourhood_activities
         result = (sum(activities) / len(activities)) * (3 / 2)
         frac, whole = math.modf(result)
         return frac
 
-    activities, adjacencies = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=150,
-                                         activity_rule=activity_rule)
+    activities, adjacencies = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                                           activity_rule=activity_rule, timesteps=150)
 
     ntm.plot_grid(activities)

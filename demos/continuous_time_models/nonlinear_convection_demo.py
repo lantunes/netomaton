@@ -22,12 +22,13 @@ if __name__ == "__main__":
     def activity_rule(ctx):
         un_i = ctx.current_activity
         # the space derivative is handled using the Backward Difference, i.e. the value of the neighbour to the left
-        left_index = (ctx.node_index - 1) % nx
-        un_i_m1 = ctx.activity_of(left_index)
+        left_label = (ctx.node_label - 1) % nx
+        un_i_m1 = ctx.activity_of(left_label)
         return un_i - un_i * dt / dx * (un_i - un_i_m1)
 
 
-    activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, activity_rule, timesteps=nt)
+    activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                                 activity_rule=activity_rule, timesteps=nt)
 
     ntm.plot_grid(activities)
 

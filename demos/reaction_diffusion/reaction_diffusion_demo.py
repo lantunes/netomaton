@@ -39,22 +39,24 @@ if __name__ == '__main__':
         prev_u = ctx.current_activity[0]
         prev_v = ctx.current_activity[1]
 
-        neighbourhood_u = [ctx.activities[i][0] for i, idx in enumerate(ctx.neighbour_indices) if idx != ctx.node_index]
-        neighbourhood_v = [ctx.activities[i][1] for i, idx in enumerate(ctx.neighbour_indices) if idx != ctx.node_index]
+        neighbourhood_u = [ctx.neighbourhood_activities[i][0] for i, idx in enumerate(ctx.neighbour_labels) if
+                           idx != ctx.node_label]
+        neighbourhood_v = [ctx.neighbourhood_activities[i][1] for i, idx in enumerate(ctx.neighbour_labels) if
+                           idx != ctx.node_label]
 
         diffusion_u = sum(neighbourhood_u) - (4 * prev_u)
         diffusion_v = sum(neighbourhood_v) - (4 * prev_v)
 
-        inter_u = (-prev_u * prev_v**2) + f*(1 - prev_u)
-        inter_v = (prev_u * prev_v**2) - (k)*prev_v
+        inter_u = (-prev_u * prev_v ** 2) + f * (1 - prev_u)
+        inter_v = (prev_u * prev_v ** 2) - (k) * prev_v
 
         new_u = prev_u + (r_u * diffusion_u) + inter_u
         new_v = prev_v + (r_v * diffusion_v) + inter_v
 
         return new_u, new_v
 
-    activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=3000,
-                               activity_rule=react_diffuse)
+    activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                                 activity_rule=react_diffuse, timesteps=3000)
 
     # we want to visualize the concentrations of U only
     activities = [[j[0] for j in i] for i in activities]

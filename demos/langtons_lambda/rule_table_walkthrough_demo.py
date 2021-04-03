@@ -12,13 +12,13 @@ if __name__ == '__main__':
 
         initial_conditions = ntm.init_random(128, k=4)
 
-        rule_table, actual_lambda = ntm.table_walk_through(rule_table, lambda_vals[i], k=4, r=2,
-                                                           quiescent_state=quiescent_state, strong_quiescence=True)
+        rule_table, actual_lambda = ntm.table_walk_through_2(rule_table, lambda_vals[i], k=4, r=2,
+                                                             quiescent_state=quiescent_state, strong_quiescence=True)
         print(actual_lambda)
 
         # evolve the cellular automaton for 200 time steps
-        activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=200,
-                                   activity_rule=ntm.table_rule(rule_table))
+        activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                                     activity_rule=ntm.table_rule_2(rule_table), timesteps=200)
 
         ca_list.append(activities)
         avg_node_entropy = ntm.average_node_entropy(activities)

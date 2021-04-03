@@ -30,7 +30,7 @@ if __name__ == '__main__':
     initial_conditions[2416] = 1
     initial_conditions[2417] = 1
 
-    activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=60,
-                               activity_rule=ntm.rules.game_of_life_rule)
+    activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=60,
+                                 activity_rule=ntm.rules.game_of_life_rule_2)
 
     ntm.animate(activities, shape=(60, 60))

@@ -8,9 +8,9 @@ if __name__ == '__main__':
     # NKS page 442 - Rule 122R
     adjacency_matrix = ntm.topology.adjacency.cellular_automaton(n=100)
     initial_conditions = [0]*40 + [1]*20 + [0]*40
-    activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=1000,
-                               activity_rule=ntm.ReversibleRule(ntm.rules.nks_ca_rule(122)),
-                               past_conditions=[initial_conditions])
+    activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                                 activity_rule=ntm.ReversibleRule_2(ntm.rules.nks_ca_rule_2(122)),
+                                 past_conditions=[initial_conditions], timesteps=1000)
 
     timestep = []
     average_node_entropies = []

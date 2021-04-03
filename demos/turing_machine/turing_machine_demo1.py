@@ -1,5 +1,5 @@
 import netomaton as ntm
-from netomaton import TuringMachine, HeadCentricTuringMachine
+from netomaton import TuringMachine_2, HeadCentricTuringMachine_2
 
 
 if __name__ == "__main__":
@@ -13,20 +13,20 @@ if __name__ == "__main__":
 
     rule_table = {
         HEAD['up']: {
-            CELL['on']: [HEAD['up'], CELL['off'], TuringMachine.RIGHT],
-            CELL['off']: [HEAD['down'], CELL['on'], TuringMachine.RIGHT]
+            CELL['on']: [HEAD['up'], CELL['off'], TuringMachine_2.RIGHT],
+            CELL['off']: [HEAD['down'], CELL['on'], TuringMachine_2.RIGHT]
         },
         HEAD['down']: {
-            CELL['on']: [HEAD['up'], CELL['on'], TuringMachine.LEFT],
-            CELL['off']: [HEAD['down'], CELL['on'], TuringMachine.LEFT]
+            CELL['on']: [HEAD['up'], CELL['on'], TuringMachine_2.LEFT],
+            CELL['off']: [HEAD['down'], CELL['on'], TuringMachine_2.LEFT]
         }
     }
 
-    tm = HeadCentricTuringMachine(tape=[0]*21, rule_table=rule_table,
-                                  initial_head_state=HEAD['up'], initial_head_position=3, max_timesteps=61)
+    tm = HeadCentricTuringMachine_2(tape=[0]*21, rule_table=rule_table,
+                                    initial_head_state=HEAD['up'], initial_head_position=3, max_timesteps=61)
 
-    activities, _ = ntm.evolve(tm.initial_conditions, tm.adjacency_matrix,
-                               activity_rule=tm.activity_rule, input=tm.input_function)
+    activities, _ = ntm.evolve_2(initial_conditions=tm.initial_conditions, topology=tm.adjacency_matrix,
+                                 activity_rule=tm.activity_rule, input=tm.input_function)
 
     tape_history, head_activities = tm.activities_for_plotting(activities)
 

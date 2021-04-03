@@ -17,12 +17,15 @@ if __name__ == "__main__":
     initial_conditions = [1, 2, 2, 1]
     timesteps = 101
 
-    subn_system = ntm.SubstitutionSystem(rules, len(initial_conditions))
+    subn_system = ntm.SubstitutionSystem_2(rules, len(initial_conditions))
 
-    activities, connectivities = ntm.evolve(initial_conditions, subn_system.adjacency_matrix,
-                                            connectivity_rule=subn_system.connectivity_rule,
-                                            activity_rule=subn_system.activity_rule, timesteps=timesteps)
+    activities, connectivities = ntm.evolve_2(initial_conditions=initial_conditions,
+                                              topology=subn_system.connectivity_map,
+                                              activity_rule=subn_system.activity_rule, timesteps=timesteps)
 
     padded = subn_system.pad(activities)
 
     ntm.plot_grid(padded, show_grid=True)
+
+    nx = ntm.connectivity_map_to_nx(connectivities[timesteps-1])
+    ntm.vis.show_network(nx)

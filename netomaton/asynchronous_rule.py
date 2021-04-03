@@ -2,7 +2,7 @@ import numpy as np
 from .rules import *
 
 
-class AsynchronousRule:
+class AsynchronousRule_2:
     """
     Creates an asynchronous automaton rule with a cyclic update scheme. Also known as a sequential cellular
     automaton rule, in NKS. This rule wraps a given rule, making the given rule asynchronous. To learn more about
@@ -37,9 +37,9 @@ class AsynchronousRule:
         self._update_order = self._update_order.tolist()
 
     def __call__(self, ctx):
-        if ctx.node_index in self._update_order:
+        if ctx.node_label in self._update_order:
             self._num_applied += 1
-        if not self._should_update(ctx.node_index):
+        if not self._should_update(ctx.node_label):
             self._check_for_end_of_cycle()
             return ctx.current_activity
         self._check_for_end_of_cycle()

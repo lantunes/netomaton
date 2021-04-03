@@ -9,8 +9,11 @@ class TestHexEvolution(RuleTest):
 
         initial_conditions = ntm.init_simple2d(60, 60)
 
-        activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=31,
-                                   activity_rule=lambda ctx: 1 if sum(ctx.activities) == 1 else ctx.current_activity)
+        def activity_rule(ctx):
+            return 1 if sum(ctx.neighbourhood_activities) == 1 else ctx.current_activity
+
+        activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=31,
+                                     activity_rule=activity_rule)
 
         expected = self._convert_to_list_of_lists("snowflake.ca")
-        np.testing.assert_equal(expected, activities.tolist())
+        np.testing.assert_equal(expected, activities)
