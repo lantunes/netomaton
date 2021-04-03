@@ -13,7 +13,7 @@ The code below attempts to reproduce the experiment they are referring to:
 import netomaton as ntm
 import numpy as np
 
-adjacency_matrix = ntm.network.watts_strogatz_graph(n=149, k=8, p=0.5)
+adjacency_matrix = ntm.topology.adjacency.watts_strogatz_graph(n=149, k=8, p=0.5)
 
 initial_conditions = np.random.randint(0, 2, 149)
 

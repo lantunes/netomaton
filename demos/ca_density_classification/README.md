@@ -21,7 +21,7 @@ import netomaton as ntm
 import numpy as np
 
 # set r to 3, for a neighbourhood size of 7
-adjacency_matrix = ntm.network.cellular_automaton(149, r=3)
+adjacency_matrix = ntm.topology.adjacency.cellular_automaton(149, r=3)
 
 initial_conditions = np.random.randint(0, 2, 149)
 

@@ -16,7 +16,7 @@ Consider the Cellular Automaton Rule 30 below, which is perturbed at
 every timestep such that node with index 100 is changed randomly to
 either a 0 or a 1:
 ```python
-adjacency_matrix = ntm.network.cellular_automaton(n=200)
+adjacency_matrix = ntm.topology.adjacency.cellular_automaton(n=200)
 initial_conditions = [0] * 100 + [1] + [0] * 99
 
 def perturb(pctx):
@@ -40,7 +40,7 @@ rule function with yet another function. Such an approach offers more
 control over when the activity is determined, and what is done with it.
 Below is an example of a perturbed Cellular Automaton rule 90R:
 ```python
-adjacency_matrix = ntm.network.cellular_automaton(n=200)
+adjacency_matrix = ntm.topology.adjacency.cellular_automaton(n=200)
 initial_conditions = np.random.randint(0, 2, 200)
 
 def perturbed_rule(ctx):

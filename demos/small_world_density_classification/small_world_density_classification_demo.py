@@ -11,7 +11,7 @@ if __name__ == '__main__':
     running on a ring lattice." The code below attempts to reproduce the experiment they are referring to.
     """
 
-    adjacency_matrix = ntm.network.watts_strogatz_graph(n=149, k=8, p=0.5)
+    adjacency_matrix = ntm.topology.adjacency.watts_strogatz_graph(n=149, k=8, p=0.5)
 
     initial_conditions = np.random.randint(0, 2, 149)
 

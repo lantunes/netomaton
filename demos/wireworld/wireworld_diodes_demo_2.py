@@ -4,7 +4,7 @@ from matplotlib.colors import ListedColormap
 
 if __name__ == "__main__":
 
-    adjacency_matrix = ntm.network.cellular_automaton2d(rows=13, cols=14, neighbourhood="Moore")
+    adjacency_matrix = ntm.topology.adjacency.cellular_automaton2d(rows=13, cols=14, neighbourhood="Moore")
 
     initial_conditions = [
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,

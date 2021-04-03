@@ -74,7 +74,7 @@ implemented with the Netomaton library:
 ```python
 import netomaton as ntm
 
-adjacency_matrix = ntm.network.cellular_automaton(n=200)
+adjacency_matrix = ntm.topology.adjacency.cellular_automaton(n=200)
 
 initial_conditions = [0] * 100 + [1] + [0] * 99
 

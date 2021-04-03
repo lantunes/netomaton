@@ -1,7 +1,7 @@
 import netomaton as ntm
 
 if __name__ == '__main__':
-    adjacency_matrix = ntm.network.cellular_automaton(n=200)
+    adjacency_matrix = ntm.topology.adjacency.cellular_automaton(n=200)
 
     initial_conditions = ntm.init_random(200)
 

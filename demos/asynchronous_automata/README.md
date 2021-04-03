@@ -22,7 +22,7 @@ automaton from Wolfram's NKS Notes on Chapter 9, section 10:
 ```python
 import netomaton as ntm
 
-adjacency_matrix = ntm.network.cellular_automaton(n=21)
+adjacency_matrix = ntm.topology.adjacency.cellular_automaton(n=21)
 
 initial_conditions =[0]*10 + [1] + [0]*10
 

@@ -9,7 +9,7 @@ An example of Wireworld diodes is given below:
 import netomaton as ntm
 from matplotlib.colors import ListedColormap
 
-adjacency_matrix = ntm.network.cellular_automaton2d(rows=13, cols=14, neighbourhood="Moore")
+adjacency_matrix = ntm.topology.adjacency.cellular_automaton2d(rows=13, cols=14, neighbourhood="Moore")
 
 initial_conditions = [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -42,7 +42,7 @@ An example of a Wireworld XOR gate is given below:
 import netomaton as ntm
 from matplotlib.colors import ListedColormap
 
-adjacency_matrix = ntm.network.cellular_automaton2d(rows=13, cols=24, neighbourhood="Moore")
+adjacency_matrix = ntm.topology.adjacency.cellular_automaton2d(rows=13, cols=24, neighbourhood="Moore")
 
 initial_conditions = [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,

@@ -10,7 +10,7 @@ from Wolfram's NKS book, found on page 157:
 import math
 import netomaton as ntm
 
-adjacency_matrix = ntm.network.cellular_automaton(n=200)
+adjacency_matrix = ntm.topology.adjacency.cellular_automaton(n=200)
 
 initial_conditions = [0.0]*100 + [1.0] + [0.0]*99
 

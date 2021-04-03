@@ -10,7 +10,7 @@ class TestPerturbation(RuleTest):
         np.random.seed(10)
         expected = self._convert_to_list_of_lists("perturbation.ca", dtype=float)
 
-        adjacency_matrix = ntm.network.cellular_automaton(n=200)
+        adjacency_matrix = ntm.topology.adjacency.cellular_automaton(n=200)
         initial_conditions = [0] * 100 + [1] + [0] * 99
 
         noise_amount = 0.02
@@ -41,7 +41,7 @@ class TestPerturbation(RuleTest):
         np.random.seed(0)
         expected = self._convert_to_list_of_lists("perturbation_reversible.ca")
 
-        adjacency_matrix = ntm.network.cellular_automaton(n=200)
+        adjacency_matrix = ntm.topology.adjacency.cellular_automaton(n=200)
 
         initial_conditions = np.random.randint(0, 2, 200)
 
@@ -61,7 +61,7 @@ class TestPerturbation(RuleTest):
         np.random.seed(0)
         expected = self._convert_to_list_of_lists("perturbation_eca.ca")
 
-        adjacency_matrix = ntm.network.cellular_automaton(n=200)
+        adjacency_matrix = ntm.topology.adjacency.cellular_automaton(n=200)
         initial_conditions = [0] * 100 + [1] + [0] * 99
 
         def perturb(pctx):

@@ -8,7 +8,7 @@ class TestLangtonsLambda(RuleTest):
 
     def test_average_mutual_information(self):
         np.random.seed(0)
-        adjacency_matrix = ntm.network.cellular_automaton(n=200)
+        adjacency_matrix = ntm.topology.adjacency.cellular_automaton(n=200)
 
         initial_conditions = ntm.init_random(200)
 
@@ -22,7 +22,7 @@ class TestLangtonsLambda(RuleTest):
 
     def test_average_node_entropy(self):
         np.random.seed(0)
-        adjacency_matrix = ntm.network.cellular_automaton(n=200)
+        adjacency_matrix = ntm.topology.adjacency.cellular_automaton(n=200)
 
         initial_conditions = ntm.init_random(200)
 
@@ -42,7 +42,7 @@ class TestLangtonsLambda(RuleTest):
         rule_table, actual_lambda, quiescent_state = ntm.random_rule_table_2(lambda_val=0.37, k=4, r=2,
                                                                              strong_quiescence=True, isotropic=True)
 
-        adjacency_matrix = ntm.network.cellular_automaton(n=128, r=2)
+        adjacency_matrix = ntm.topology.adjacency.cellular_automaton(n=128, r=2)
 
         initial_conditions = ntm.init_random(128, k=4, n_randomized=20)
 
@@ -65,7 +65,7 @@ class TestLangtonsLambda(RuleTest):
         avg_node_entropies = []
         avg_mutual_informations = []
         for i in range(0, 3):
-            adjacency_matrix = ntm.network.cellular_automaton(n=128, r=2)
+            adjacency_matrix = ntm.topology.adjacency.cellular_automaton(n=128, r=2)
 
             initial_conditions = ntm.init_random(128, k=4)
 

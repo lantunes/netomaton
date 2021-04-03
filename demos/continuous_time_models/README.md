@@ -73,7 +73,7 @@ import netomaton as ntm
 space = np.linspace(25, -25, 120)
 initial_conditions = [np.exp(-x ** 2) for x in space]
 
-adjacency_matrix = ntm.network.cellular_automaton(120)
+adjacency_matrix = ntm.topology.adjacency.cellular_automaton(120)
 
 a = 0.25
 dt = .5
@@ -120,7 +120,7 @@ dt = .05  # the amount of time each timestep covers
 space = np.linspace(20, -20, nx)
 initial_conditions = [np.exp(-x ** 2) for x in space]
 
-adjacency_matrix = ntm.network.cellular_automaton(nx)
+adjacency_matrix = ntm.topology.adjacency.cellular_automaton(nx)
 
 def activity_rule(ctx):
     un_i = ctx.current_activity

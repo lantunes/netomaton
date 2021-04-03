@@ -1,4 +1,4 @@
-import netomaton.network as adjacency
+from netomaton.topology import adjacency
 import netomaton.rules as rules
 from netomaton import NodeContext_2, evolve_2
 from .rule_test import *

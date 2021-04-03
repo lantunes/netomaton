@@ -14,7 +14,7 @@ if __name__ == "__main__":
     nu = .07  # the value of viscosity
     dt = dx * nu  # the amount of time each timestep covers
 
-    adjacency_matrix = ntm.network.cellular_automaton(nx)
+    adjacency_matrix = ntm.topology.adjacency.cellular_automaton(nx)
 
     # Sawtooth initial conditions
     initial_conditions = [4., 4.06283185, 4.12566371, 4.18849556, 4.25132741,

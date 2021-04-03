@@ -7,7 +7,7 @@ creation of the elementary reversible Cellular Automaton rule 90R:
 import netomaton as ntm
 import numpy as np
 
-adjacency_matrix = ntm.network.cellular_automaton(n=200)
+adjacency_matrix = ntm.topology.adjacency.cellular_automaton(n=200)
 
 initial_conditions = np.random.randint(0, 2, 200)
 

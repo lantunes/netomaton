@@ -1,4 +1,4 @@
-from .network import cellular_automaton
+from .topology.adjacency import cellular_automaton
 
 
 class TuringMachine_2:

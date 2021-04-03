@@ -5,7 +5,7 @@ from .rule_test import *
 class TestHexEvolution(RuleTest):
 
     def test_snowflake(self):
-        adjacency_matrix = ntm.network.cellular_automaton2d(60, 60, r=1, neighbourhood="Hex")
+        adjacency_matrix = ntm.topology.adjacency.cellular_automaton2d(60, 60, r=1, neighbourhood="Hex")
 
         initial_conditions = ntm.init_simple2d(60, 60)
 

@@ -1,5 +1,3 @@
-from math import sqrt
-
 import networkx as nx
 import numpy as np
 

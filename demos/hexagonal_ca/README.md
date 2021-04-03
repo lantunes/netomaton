@@ -12,7 +12,7 @@ of Wolfram's *A New Kind of Science*:
 ```python
 import netomaton as ntm
 
-adjacency_matrix = ntm.network.cellular_automaton2d(60, 60, r=1, neighbourhood="Hex")
+adjacency_matrix = ntm.topology.adjacency.cellular_automaton2d(60, 60, r=1, neighbourhood="Hex")
 
 initial_conditions = ntm.init_simple2d(60, 60)
 

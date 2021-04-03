@@ -1,1 +1,0 @@
-from .adjacency import *

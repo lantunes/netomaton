@@ -15,7 +15,7 @@ if __name__ == "__main__":
     sigma = .2                 # Courant number
     dt = sigma * dx ** 2 / nu  # the amount of time each timestep covers
 
-    adjacency_matrix = ntm.network.cellular_automaton(nx)
+    adjacency_matrix = ntm.topology.adjacency.cellular_automaton(nx)
 
     initial_conditions = [1.] * 10 + [2.] * 11 + [1.] * 20
 

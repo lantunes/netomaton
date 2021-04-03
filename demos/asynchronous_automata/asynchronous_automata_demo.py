@@ -2,7 +2,7 @@ import netomaton as ntm
 
 
 if __name__ == '__main__':
-    adjacency_matrix = ntm.network.cellular_automaton(n=21)
+    adjacency_matrix = ntm.topology.adjacency.cellular_automaton(n=21)
 
     # implements the rule 60 sequential automaton from the NKS Notes on
     #   Chapter 9, section 10: "Sequential cellular automata"

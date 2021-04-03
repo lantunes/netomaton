@@ -12,7 +12,7 @@ from .utils import *
 from .hopfield_tank_tsp_net import *
 from .substitution_system import *
 
-from . import network
+from . import topology
 from . import rules
 
 from .evolution_2 import *

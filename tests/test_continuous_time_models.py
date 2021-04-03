@@ -13,7 +13,7 @@ class TestContinuousTimeModels(RuleTest):
         nu = .07  # the value of viscosity
         dt = dx * nu  # the amount of time each timestep covers
 
-        adjacency_matrix = ntm.network.cellular_automaton(nx)
+        adjacency_matrix = ntm.topology.adjacency.cellular_automaton(nx)
 
         # Sawtooth initial conditions
         initial_conditions = [4., 4.06283185, 4.12566371, 4.18849556, 4.25132741,
@@ -60,7 +60,7 @@ class TestContinuousTimeModels(RuleTest):
         sigma = .2  # Courant number
         dt = sigma * dx ** 2 / nu  # the amount of time each timestep covers
 
-        adjacency_matrix = ntm.network.cellular_automaton(nx)
+        adjacency_matrix = ntm.topology.adjacency.cellular_automaton(nx)
 
         initial_conditions = [1.] * 10 + [2.] * 11 + [1.] * 20
 
@@ -86,7 +86,7 @@ class TestContinuousTimeModels(RuleTest):
         dx = 2 / (nx - 1)  # the distance between any pair of adjacent points
         k = 1  # wavespeed of 1
 
-        adjacency_matrix = ntm.network.cellular_automaton(nx)
+        adjacency_matrix = ntm.topology.adjacency.cellular_automaton(nx)
 
         initial_conditions = [1.] * 10 + [2.] * 11 + [1.] * 20
 
@@ -110,7 +110,7 @@ class TestContinuousTimeModels(RuleTest):
         dt = .025  # the amount of time each timestep covers
         dx = 2 / (nx - 1)  # the distance between any pair of adjacent points
 
-        adjacency_matrix = ntm.network.cellular_automaton(nx)
+        adjacency_matrix = ntm.topology.adjacency.cellular_automaton(nx)
 
         initial_conditions = [1.] * 10 + [2.] * 11 + [1.] * 20
 
@@ -132,7 +132,7 @@ class TestContinuousTimeModels(RuleTest):
         space = np.linspace(25, -25, 120)
         initial_conditions = [np.exp(-x ** 2) for x in space]
 
-        adjacency_matrix = ntm.network.cellular_automaton(120)
+        adjacency_matrix = ntm.topology.adjacency.cellular_automaton(120)
 
         a = 0.25
         dt = .5
@@ -161,7 +161,7 @@ class TestContinuousTimeModels(RuleTest):
         space = np.linspace(20, -20, nx)
         initial_conditions = [np.exp(-x ** 2) for x in space]
 
-        adjacency_matrix = ntm.network.cellular_automaton(nx)
+        adjacency_matrix = ntm.topology.adjacency.cellular_automaton(nx)
 
         def activity_rule(ctx):
             un_i = ctx.current_activity

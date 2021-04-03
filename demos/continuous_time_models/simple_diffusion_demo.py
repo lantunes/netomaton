@@ -18,7 +18,7 @@ if __name__ == "__main__":
     space = np.linspace(25, -25, 120)
     initial_conditions = [np.exp(-x ** 2) for x in space]
 
-    adjacency_matrix = ntm.network.cellular_automaton(120)
+    adjacency_matrix = ntm.topology.adjacency.cellular_automaton(120)
 
     a = 0.25
     dt = .5

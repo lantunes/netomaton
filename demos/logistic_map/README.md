@@ -1,6 +1,8 @@
 # Logistic Map
 
-# TODO
+<!--
+TODO write description
+-->
 
 > May, R. M. (1976). Special mathematical models with very complicated dynamics. Nature.
 

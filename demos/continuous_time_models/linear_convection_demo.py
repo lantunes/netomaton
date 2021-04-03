@@ -15,7 +15,7 @@ if __name__ == "__main__":
     dx = 2 / (nx - 1)  # the distance between any pair of adjacent points
     k = 1              # wavespeed of 1
 
-    adjacency_matrix = ntm.network.cellular_automaton(nx)
+    adjacency_matrix = ntm.topology.adjacency.cellular_automaton(nx)
 
     initial_conditions = [1.]*10 + [2.]*11 + [1.]*20
 

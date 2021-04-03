@@ -1,6 +1,6 @@
 import numpy as np
 
-from .network import cellular_automaton2d
+from .topology.adjacency import cellular_automaton2d
 
 
 class Sandpile:
