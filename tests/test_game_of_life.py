@@ -33,7 +33,7 @@ class TestGameOfLifeRule(RuleTest):
         initial_conditions[2416] = 1
         initial_conditions[2417] = 1
 
-        activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=60,
-                                     activity_rule=ntm.rules.game_of_life_rule_2)
+        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=60,
+                                   activity_rule=ntm.rules.game_of_life_rule)
 
         np.testing.assert_equal(expected, activities)

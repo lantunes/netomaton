@@ -1,7 +1,7 @@
 from .rule_test import *
 import numpy as np
 import netomaton as ntm
-from netomaton import HopfieldNet_2
+from netomaton import HopfieldNet
 
 
 class TestHopfieldNet(RuleTest):
@@ -37,7 +37,7 @@ class TestHopfieldNet(RuleTest):
         zero = [-1 if x == 0 else x for x in zero]
         P = [zero, one, two]
 
-        hopfield_net = HopfieldNet_2(n=30)
+        hopfield_net = HopfieldNet(n=30)
         hopfield_net.train(P)
 
         expected_weights = [[ 0, -1, -1, -1, 1, -1, 1, -1, 3, -1, -1, 1, -1, 3, -1, -1, 3, 1, 1, -1, 1, 1, -1, 1, -1, 3, 1, -1, 1, 3],
@@ -85,7 +85,7 @@ class TestHopfieldNet(RuleTest):
 
         initial_conditions = half_two
 
-        activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=hopfield_net.adjacency_matrix,
-                                     timesteps=hopfield_net.num_nodes * 7, activity_rule=hopfield_net.activity_rule)
+        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=hopfield_net.adjacency_matrix,
+                                   timesteps=hopfield_net.num_nodes * 7, activity_rule=hopfield_net.activity_rule)
 
         np.testing.assert_equal(expected_activities, activities)

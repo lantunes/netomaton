@@ -1,13 +1,13 @@
 import unittest
 import numpy as np
-from netomaton import HopfieldTankTSPNet_2, evolve_2
+from netomaton import HopfieldTankTSPNet, evolve
 
 
 class TestHopfieldTankTSPNet(unittest.TestCase):
 
     def test_get_distances(self):
         points = [(0, 1), (0.23, 0.5), (0.6, 0.77), (0.33, 0.88)]
-        tsp_net = HopfieldTankTSPNet_2(points)
+        tsp_net = HopfieldTankTSPNet(points)
 
         distances = tsp_net.get_distances()
 
@@ -17,7 +17,7 @@ class TestHopfieldTankTSPNet(unittest.TestCase):
 
     def test_get_distances_map(self):
         points = [(0, 1), (0.23, 0.5), (0.6, 0.77), (0.33, 0.88)]
-        tsp_net = HopfieldTankTSPNet_2(points)
+        tsp_net = HopfieldTankTSPNet(points)
 
         distances = tsp_net.get_distances()
         distances_map = tsp_net._get_distances_map(distances)
@@ -44,7 +44,7 @@ class TestHopfieldTankTSPNet(unittest.TestCase):
 
     def test_get_tour_graph(self):
         points = [(0, 1), (0.23, 0.5), (0.6, 0.77), (0.33, 0.88)]
-        tsp_net = HopfieldTankTSPNet_2(points)
+        tsp_net = HopfieldTankTSPNet(points)
 
         permutation_matrix = [
             [0, 1, 0, 0],
@@ -67,7 +67,7 @@ class TestHopfieldTankTSPNet(unittest.TestCase):
 
     def test_get_node_label_map(self):
         points = [(0, 1), (0.23, 0.5), (0.6, 0.77), (0.33, 0.88)]
-        tsp_net = HopfieldTankTSPNet_2(points)
+        tsp_net = HopfieldTankTSPNet(points)
 
         node_label_map = tsp_net._get_node_label_map(points)
 
@@ -81,7 +81,7 @@ class TestHopfieldTankTSPNet(unittest.TestCase):
 
     def test_get_adjacency_matrix(self):
         points = [(0, 1), (0.23, 0.5), (0.6, 0.77), (0.33, 0.88)]
-        tsp_net = HopfieldTankTSPNet_2(points)
+        tsp_net = HopfieldTankTSPNet(points)
 
         node_label_map = tsp_net._get_node_label_map(points)
 
@@ -95,7 +95,7 @@ class TestHopfieldTankTSPNet(unittest.TestCase):
     def test_evolution(self):
         points = [(0, 1), (0.23, 0.5), (0.6, 0.77), (0.33, 0.88)]
         A, B, C, D, n, dt, timesteps = 120, 120, 40, 120, 5, 1e-05, 1000
-        tsp_net = HopfieldTankTSPNet_2(points, dt=dt, A=A, B=B, C=C, D=D, n=n)
+        tsp_net = HopfieldTankTSPNet(points, dt=dt, A=A, B=B, C=C, D=D, n=n)
 
         initial_conditions = [-0.022395203920575254, -0.023184407969001723, -0.022224769264670836,
                               -0.022411201286076467, -0.02308227809621827, -0.023463757363683353,
@@ -104,8 +104,8 @@ class TestHopfieldTankTSPNet(unittest.TestCase):
                               -0.021526161923257372, -0.02003505371915011, -0.023113647911417328,
                               -0.023001396844357286]
 
-        activities, _ = evolve_2(initial_conditions=initial_conditions, topology=tsp_net.adjacency_matrix,
-                                 activity_rule=tsp_net.activity_rule, timesteps=timesteps)
+        activities, _ = evolve(initial_conditions=initial_conditions, topology=tsp_net.adjacency_matrix,
+                               activity_rule=tsp_net.activity_rule, timesteps=timesteps)
 
         permutation_matrix = tsp_net.get_permutation_matrix(activities)
 

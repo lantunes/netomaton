@@ -12,8 +12,8 @@ class TestLangtonsLambda(RuleTest):
 
         initial_conditions = ntm.init_random(200)
 
-        activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=1000,
-                                     activity_rule=ntm.rules.nks_ca_rule_2(30))
+        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=1000,
+                                   activity_rule=ntm.rules.nks_ca_rule(30))
 
         # calculate the average mutual information between a node and itself in the next time step
         avg_mutual_information = ntm.average_mutual_information(activities)
@@ -26,8 +26,8 @@ class TestLangtonsLambda(RuleTest):
 
         initial_conditions = ntm.init_random(200)
 
-        activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=1000,
-                                     activity_rule=ntm.rules.nks_ca_rule_2(30))
+        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=1000,
+                                   activity_rule=ntm.rules.nks_ca_rule(30))
 
         # calculate the average node entropy; the value will be ~0.999 in this case
         avg_node_entropy = ntm.average_node_entropy(activities)
@@ -39,16 +39,16 @@ class TestLangtonsLambda(RuleTest):
         random.seed(43543)
         expected = self._convert_to_list_of_lists("rule_table.ca")
 
-        rule_table, actual_lambda, quiescent_state = ntm.random_rule_table_2(lambda_val=0.37, k=4, r=2,
-                                                                             strong_quiescence=True, isotropic=True)
+        rule_table, actual_lambda, quiescent_state = ntm.random_rule_table(lambda_val=0.37, k=4, r=2,
+                                                                           strong_quiescence=True, isotropic=True)
 
         adjacency_matrix = ntm.topology.adjacency.cellular_automaton(n=128, r=2)
 
         initial_conditions = ntm.init_random(128, k=4, n_randomized=20)
 
         # evolve the cellular automaton for 200 time steps
-        activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=200,
-                                     activity_rule=ntm.table_rule_2(rule_table))
+        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=200,
+                                   activity_rule=ntm.table_rule(rule_table))
 
         np.testing.assert_equal(expected, activities)
 
@@ -57,8 +57,8 @@ class TestLangtonsLambda(RuleTest):
         random.seed(43543)
         expected = self._convert_to_list_of_list_of_lists("rule_table_walkthrough.ca")
 
-        rule_table, actual_lambda, quiescent_state = ntm.random_rule_table_2(lambda_val=0.0, k=4, r=2,
-                                                                             strong_quiescence=True, isotropic=True)
+        rule_table, actual_lambda, quiescent_state = ntm.random_rule_table(lambda_val=0.0, k=4, r=2,
+                                                                           strong_quiescence=True, isotropic=True)
 
         lambda_vals = [0.15, 0.37, 0.75]
         ca_list = []
@@ -69,11 +69,11 @@ class TestLangtonsLambda(RuleTest):
 
             initial_conditions = ntm.init_random(128, k=4)
 
-            rule_table, actual_lambda = ntm.table_walk_through_2(rule_table, lambda_vals[i], k=4, r=2,
-                                                                 quiescent_state=quiescent_state, strong_quiescence=True)
+            rule_table, actual_lambda = ntm.table_walk_through(rule_table, lambda_vals[i], k=4, r=2,
+                                                               quiescent_state=quiescent_state, strong_quiescence=True)
             # evolve the cellular automaton for 200 time steps
-            activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                         activity_rule=ntm.table_rule_2(rule_table), timesteps=200)
+            activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                                       activity_rule=ntm.table_rule(rule_table), timesteps=200)
 
             ca_list.append(activities)
             avg_node_entropies.append(ntm.average_node_entropy(activities))

@@ -15,8 +15,8 @@ if __name__ == '__main__':
         return a * ctx.current_activity * (1 - ctx.current_activity)
 
 
-    activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                 activity_rule=activity_rule, timesteps=timesteps)
+    activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                               activity_rule=activity_rule, timesteps=timesteps)
 
     # plot the position and velocity as a function of time
     y = [a[0] for a in activities]

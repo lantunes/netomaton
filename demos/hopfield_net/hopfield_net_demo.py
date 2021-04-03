@@ -29,7 +29,7 @@ if __name__ == '__main__':
     two = [-1 if x == 0 else x for x in two]
     zero = [-1 if x == 0 else x for x in zero]
 
-    hopfield_net = ntm.HopfieldNet_2(n=30)
+    hopfield_net = ntm.HopfieldNet(n=30)
 
     hopfield_net.train([zero, one, two])
 
@@ -61,8 +61,8 @@ if __name__ == '__main__':
 
     initial_conditions = half_two
 
-    activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=hopfield_net.adjacency_matrix,
-                                 timesteps=hopfield_net.num_nodes * 7, activity_rule=hopfield_net.activity_rule)
+    activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=hopfield_net.adjacency_matrix,
+                               timesteps=hopfield_net.num_nodes * 7, activity_rule=hopfield_net.activity_rule)
 
     # view the weights, stored in the adjacency matrix
     # plot_grid(hopfield_net.adjacency_matrix)

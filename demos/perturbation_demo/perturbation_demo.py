@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
         return result
 
-    activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=100,
-                                 activity_rule=algebraic_rule_30, perturbation=perturbation)
+    activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=100,
+                               activity_rule=algebraic_rule_30, perturbation=perturbation)
 
     ntm.plot_grid(activities)

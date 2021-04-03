@@ -15,8 +15,7 @@ if __name__ == '__main__':
             return np.random.randint(2)
         return pctx.node_activity
 
-    activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=100,
-                                 activity_rule=ntm.rules.nks_ca_rule_2(30),
-                                 perturbation=perturb)
+    activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=100,
+                               activity_rule=ntm.rules.nks_ca_rule(30), perturbation=perturb)
 
     ntm.plot_grid(activities)

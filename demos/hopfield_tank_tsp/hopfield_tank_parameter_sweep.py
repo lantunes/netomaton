@@ -31,12 +31,12 @@ if __name__ == "__main__":
         converged = []
         for i in range(I):
 
-            tsp_net = ntm.HopfieldTankTSPNet_2(points, dt=dt, A=A, B=B, C=C, D=D, n=n)
+            tsp_net = ntm.HopfieldTankTSPNet(points, dt=dt, A=A, B=B, C=C, D=D, n=n)
 
             initial_conditions = [-0.022 + np.random.uniform(-0.1 * 0.02, 0.1 * 0.02) for _ in range(len(adjacency_matrix))]
 
-            activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                         activity_rule=tsp_net.activity_rule, timesteps=timesteps)
+            activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                                       activity_rule=tsp_net.activity_rule, timesteps=timesteps)
 
             permutation_matrix = tsp_net.get_permutation_matrix(activities)
 

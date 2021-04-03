@@ -3,7 +3,7 @@ import scipy.sparse as sparse
 import collections
 
 
-class NodeContext_2(object):
+class NodeContext(object):
     """
     The NodeContext consists of the states, identities (as node indices), and adjancency matrix weights of the nodes
     that influence a given node. Each of the properties (i.e. activities, neighbour_indices, connection states) are
@@ -56,7 +56,7 @@ class NodeContext_2(object):
         return self.past_activities[past_activity_index][node_label]
 
 
-class ConnectivityContext_2(object):
+class ConnectivityContext(object):
     def __init__(self, connectivity_map, activities, t):
         self._connectivity_map = connectivity_map
         self._activities = activities
@@ -75,7 +75,7 @@ class ConnectivityContext_2(object):
         return self._timestep
 
 
-class PerturbationContext_2(object):
+class PerturbationContext(object):
     """
     The PerturbationContext contains the node label, activity and input for a particular timestep.
     """
@@ -102,8 +102,8 @@ class PerturbationContext_2(object):
         return self._input
 
 # TODO rename "connectivity" everywhere; to "topology" perhaps?
-def evolve_2(topology, initial_conditions=None, activity_rule=None, timesteps=None, input=None, connectivity_rule=None,
-             perturbation=None, past_conditions=None):
+def evolve(topology, initial_conditions=None, activity_rule=None, timesteps=None, input=None, connectivity_rule=None,
+           perturbation=None, past_conditions=None):
 
     if initial_conditions is None:
         initial_conditions = {}
@@ -157,7 +157,7 @@ def evolve_2(topology, initial_conditions=None, activity_rule=None, timesteps=No
             # TODO we should support the option to have the connectivity rule executed before the activity rule
             # TODO we need a demo that uses the connectivity rule before the activity rule
             # the connectivity rule receives any changes made to the network via the activity rule
-            connectivity_map = connectivity_rule(ConnectivityContext_2(connectivity_map, activities_over_time[t], t))
+            connectivity_map = connectivity_rule(ConnectivityContext(connectivity_map, activities_over_time[t], t))
             connectivities_over_time[t] = copy_connectivity_map(connectivity_map)
 
         t += 1
@@ -182,8 +182,8 @@ def do_activity_rule(t, inp, activities_over_time, connectivity_map, activity_ru
         current_activity = last_activities[node_label]
         neighbourhood_activities = [last_activities[neighbour_label] for neighbour_label in neighbour_labels]
         node_in = None if inp == "__timestep__" else inp[node_label] if _is_indexable(inp) else inp
-        ctx = NodeContext_2(node_label, t, last_activities, neighbour_labels, neighbourhood_activities,
-                            incoming_connections, current_activity, past, node_in)
+        ctx = NodeContext(node_label, t, last_activities, neighbour_labels, neighbourhood_activities,
+                          incoming_connections, current_activity, past, node_in)
 
         new_activity = activity_rule(ctx)
 
@@ -196,7 +196,7 @@ def do_activity_rule(t, inp, activities_over_time, connectivity_map, activity_ru
             activities_over_time[t][node_label] = new_activity
 
         if perturbation is not None:
-            pctx = PerturbationContext_2(node_label, activities_over_time[t][node_label], t, node_in)
+            pctx = PerturbationContext(node_label, activities_over_time[t][node_label], t, node_in)
             activities_over_time[t][node_label] = perturbation(pctx)
 
     return added_nodes, removed_nodes
@@ -311,16 +311,16 @@ def _get_input_function(timesteps=None, input=None):
         if callable(input):
             return input, 1
         else:
-            return _ListInputFunction_2(input), len(input)+1
+            return _ListInputFunction(input), len(input)+1
 
-    return _TimestepInputFunction_2(timesteps), timesteps
+    return _TimestepInputFunction(timesteps), timesteps
 
 
 def _is_indexable(obj):
     return isinstance(obj, collections.Sequence)
 
 
-class _TimestepInputFunction_2:
+class _TimestepInputFunction:
     def __init__(self, num_steps):
         self._num_steps = num_steps
 
@@ -330,7 +330,7 @@ class _TimestepInputFunction_2:
         return "__timestep__"
 
 
-class _ListInputFunction_2:
+class _ListInputFunction:
     def __init__(self, input_list):
         self._input_list = input_list
 

@@ -20,7 +20,7 @@ class TestRandomlyGrowingNetwork(RuleTest):
 
             return cctx.connectivity_map
 
-        _, connectivities = ntm.evolve_2(initial_conditions=[1], topology=adjacency_matrix,
-                                         connectivity_rule=connectivity_rule, timesteps=25)
+        _, connectivities = ntm.evolve(initial_conditions=[1], topology=adjacency_matrix,
+                                       connectivity_rule=connectivity_rule, timesteps=25)
 
         np.testing.assert_equal(expected, connectivities)

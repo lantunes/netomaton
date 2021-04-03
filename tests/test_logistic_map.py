@@ -16,8 +16,8 @@ class TestLogisticMap(RuleTest):
         def activity_rule(ctx):
             return a * ctx.current_activity * (1 - ctx.current_activity)
 
-        activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                     activity_rule=activity_rule, timesteps=timesteps)
+        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                                   activity_rule=activity_rule, timesteps=timesteps)
 
         expected = [[0.5], [0.625], [0.5859375], [0.606536865234375], [0.5966247408650815], [0.6016591486318896],
                     [0.5991635437485985], [0.6004164789780495], [0.5997913268741273], [0.6001042277017528],

@@ -38,8 +38,8 @@ if __name__ == "__main__":
 
     initial_conditions = [(-2.00000, 0.00000)]
 
-    activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                 activity_rule=activity_rule, timesteps=1000)
+    activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                               activity_rule=activity_rule, timesteps=1000)
 
     # plot the position and velocity as a function of time
     positions = [a[0][0] for a in activities]

@@ -23,8 +23,8 @@ if __name__ == "__main__":
 
         return cctx.connectivity_map
 
-    _, connectivities = ntm.evolve_2(initial_conditions=[1], topology=adjacency_matrix,
-                                     connectivity_rule=connectivity_rule, timesteps=200)
+    _, connectivities = ntm.evolve(initial_conditions=[1], topology=adjacency_matrix,
+                                   connectivity_rule=connectivity_rule, timesteps=200)
 
     # animate time evolution of the network (NOTE: node self-links are not rendered)
     ntm.animate_network(connectivities, interval=350, layout="spring", with_labels=False)

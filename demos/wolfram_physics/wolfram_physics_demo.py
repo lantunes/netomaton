@@ -12,8 +12,8 @@ if __name__ == '__main__':
 
     model = ntm.WolframPhysicsModel(config, rules)
 
-    _, connectivities = ntm.evolve_2(topology=model.connectivity_map, connectivity_rule=model.connectivity_rule,
-                                     timesteps=198)
+    _, connectivities = ntm.evolve(topology=model.connectivity_map, connectivity_rule=model.connectivity_rule,
+                                   timesteps=198)
 
     configurations = model.to_configurations(connectivities)
 

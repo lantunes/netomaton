@@ -1,4 +1,4 @@
-from netomaton import evolve_2, WolframPhysicsModel
+from netomaton import evolve, WolframPhysicsModel
 from .rule_test import *
 
 
@@ -836,8 +836,8 @@ class TestWolframPhysicsModel(RuleTest):
     @staticmethod
     def _evolve_wolfram_physics_model(config, rules, timesteps):
         model = WolframPhysicsModel(config, rules)
-        _, connectivities = evolve_2(topology=model.connectivity_map, connectivity_rule=model.connectivity_rule,
-                                     timesteps=timesteps)
+        _, connectivities = evolve(topology=model.connectivity_map, connectivity_rule=model.connectivity_rule,
+                                   timesteps=timesteps)
         return model.to_configurations(connectivities)
 
     @staticmethod

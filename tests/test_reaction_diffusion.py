@@ -58,8 +58,8 @@ class TestReactionDiffusion(RuleTest):
 
             return new_u, new_v
 
-        activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                     activity_rule=react_diffuse, timesteps=30)
+        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                                   activity_rule=react_diffuse, timesteps=30)
 
         # we want to visualize the concentrations of U only
         activities = [[j[0] for j in i] for i in activities]

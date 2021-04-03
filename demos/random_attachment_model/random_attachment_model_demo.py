@@ -19,8 +19,8 @@ if __name__ == "__main__":
 
         return cctx.connectivity_map
 
-    _, connectivities = ntm.evolve_2(initial_conditions=[1]*N, topology=adjacency_matrix,
-                                     connectivity_rule=connectivity_rule, timesteps=N)
+    _, connectivities = ntm.evolve(initial_conditions=[1]*N, topology=adjacency_matrix,
+                                   connectivity_rule=connectivity_rule, timesteps=N)
 
     # plot degree distribution
     degree_counts = {}

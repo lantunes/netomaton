@@ -7,7 +7,7 @@ if __name__ == '__main__':
 
     initial_conditions = ntm.init_simple2d(60, 60)
 
-    activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=30,
-                                 activity_rule=ntm.rules.totalistic_ca_2(k=2, rule=126))
+    activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=30,
+                               activity_rule=ntm.rules.totalistic_ca(k=2, rule=126))
 
     ntm.plot_grid(activities, shape=(60, 60))

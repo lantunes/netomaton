@@ -1,25 +1,25 @@
 from netomaton.topology import adjacency
 import netomaton.rules as rules
-from netomaton import NodeContext_2, evolve_2
+from netomaton import NodeContext, evolve
 from .rule_test import *
 
 
 class TestRules(RuleTest):
 
     def test_majority_rule(self):
-        actual = rules.majority_rule_2(NodeContext_2(0, 1, {}, [0, 1, 2, 3, 4], [1, 2, 1, 3, 4], [1., 1., 1., 1., 1.], 0, None, None))
+        actual = rules.majority_rule(NodeContext(0, 1, {}, [0, 1, 2, 3, 4], [1, 2, 1, 3, 4], [1., 1., 1., 1., 1.], 0, None, None))
         expected = 1
         self.assertEqual(expected, actual)
 
-        actual = rules.majority_rule_2(NodeContext_2(0, 1, {}, [0, 1, 2, 3, 4], [2, 2, 2, 2, 2], [1., 1., 1., 1., 1.], 0, None, None))
+        actual = rules.majority_rule(NodeContext(0, 1, {}, [0, 1, 2, 3, 4], [2, 2, 2, 2, 2], [1., 1., 1., 1., 1.], 0, None, None))
         expected = 2
         self.assertEqual(expected, actual)
 
-        actual = rules.majority_rule_2(NodeContext_2(0, 1, {}, [0], [3], [1.], 0, None, None))
+        actual = rules.majority_rule(NodeContext(0, 1, {}, [0], [3], [1.], 0, None, None))
         expected = 3
         self.assertEqual(expected, actual)
 
-        actual = rules.majority_rule_2(NodeContext_2(0, 1, {}, [0, 1, 2], [0., 0., 5423.], [1., 1., 1.], 0, None, None))
+        actual = rules.majority_rule(NodeContext(0, 1, {}, [0, 1, 2], [0., 0., 5423.], [1., 1., 1.], 0, None, None))
         expected = 0.
         self.assertEqual(expected, actual)
 
@@ -162,8 +162,8 @@ class TestRules(RuleTest):
         rows, size = expected.shape
         initial_conditions = np.array(expected[0]).flatten()
         adjacency_matrix = adjacency.cellular_automaton(n=size, r=1)
-        activities, adjacencies = evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                           activity_rule=rules.nks_ca_rule_2(rule), timesteps=rows)
+        activities, adjacencies = evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                                         activity_rule=rules.nks_ca_rule(rule), timesteps=rows)
         return activities
 
     @staticmethod
@@ -171,8 +171,8 @@ class TestRules(RuleTest):
         rows, size = expected.shape
         initial_conditions = np.array(expected[0]).flatten()
         adjacency_matrix = adjacency.cellular_automaton(n=size, r=r)
-        activities, adjacencies = evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                           activity_rule=rules.binary_ca_rule_2(rule), timesteps=rows)
+        activities, adjacencies = evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                                         activity_rule=rules.binary_ca_rule(rule), timesteps=rows)
         return activities
 
     @staticmethod
@@ -180,8 +180,8 @@ class TestRules(RuleTest):
         rows, size = expected.shape
         initial_conditions = np.array(expected[0]).flatten()
         adjacency_matrix = adjacency.cellular_automaton(n=size, r=1)
-        activities, adjacencies = evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                           activity_rule=rules.totalistic_ca_2(k, rule), timesteps=rows)
+        activities, adjacencies = evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                                         activity_rule=rules.totalistic_ca(k, rule), timesteps=rows)
         return activities
 
     @staticmethod
@@ -189,6 +189,6 @@ class TestRules(RuleTest):
         steps, rows, size = expected.shape
         initial_conditions = np.array(expected[0]).reshape(rows * size).flatten()
         adjacency_matrix = adjacency.cellular_automaton2d(rows=rows, cols=size, r=1, neighbourhood=neighbourhood)
-        activities, adjacencies = evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                           activity_rule=rules.totalistic_ca_2(k=2, rule=rule), timesteps=steps)
+        activities, adjacencies = evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                                         activity_rule=rules.totalistic_ca(k=2, rule=rule), timesteps=steps)
         return np.array(activities).reshape((steps, rows, size))

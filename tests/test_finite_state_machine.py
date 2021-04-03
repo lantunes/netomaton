@@ -23,8 +23,8 @@ class TestFiniteStateMachine(RuleTest):
                 # COIN event
                 return states['unlocked']
 
-        activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                     input=events, activity_rule=fsm_rule)
+        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                                   input=events, activity_rule=fsm_rule)
 
         expected = [[0], [1], [0], [1], [0], [0]]
         np.testing.assert_equal(expected, activities)

@@ -42,8 +42,8 @@ if __name__ == "__main__":
             raise Exception("input rejected")
 
     try:
-        activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                     input=events, activity_rule=pda_rule)
+        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                                   input=events, activity_rule=pda_rule)
         print("'%s' accepted (final state: %s)" % (events.strip(), activities[-1][0]))
     except Exception:
         print("'%s' rejected!" % events.strip())

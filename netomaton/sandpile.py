@@ -3,7 +3,7 @@ import numpy as np
 from .topology.adjacency import cellular_automaton2d
 
 
-class Sandpile_2:
+class Sandpile:
     def __init__(self, rows, cols, is_closed_boundary=True):
         self._K = 4  # this value is hard-coded because the neighbourhood type, "von Neumann", is fixed
         self._adjacency_matrix = cellular_automaton2d(rows=rows, cols=cols, neighbourhood="von Neumann")

@@ -1,5 +1,5 @@
 import netomaton as ntm
-from netomaton import TuringMachine_2, TapeCentricTuringMachine_2
+from netomaton import TuringMachine, TapeCentricTuringMachine
 
 
 if __name__ == "__main__":
@@ -14,30 +14,30 @@ if __name__ == "__main__":
 
     rule_table = {
         HEAD['up']: {
-            CELL['a']: [HEAD['up'], CELL['b'], TuringMachine_2.LEFT],
-            CELL['b']: [HEAD['up'], CELL['a'], TuringMachine_2.RIGHT],
-            CELL['c']: [HEAD['up'], CELL['a'], TuringMachine_2.RIGHT],
-            CELL['d']: [HEAD['down'], CELL['e'], TuringMachine_2.RIGHT],
-            CELL['e']: [HEAD['down'], CELL['d'], TuringMachine_2.LEFT]
+            CELL['a']: [HEAD['up'], CELL['b'], TuringMachine.LEFT],
+            CELL['b']: [HEAD['up'], CELL['a'], TuringMachine.RIGHT],
+            CELL['c']: [HEAD['up'], CELL['a'], TuringMachine.RIGHT],
+            CELL['d']: [HEAD['down'], CELL['e'], TuringMachine.RIGHT],
+            CELL['e']: [HEAD['down'], CELL['d'], TuringMachine.LEFT]
         },
         HEAD['down']: {
-            CELL['a']: [HEAD['up'], CELL['d'], TuringMachine_2.LEFT],
-            CELL['b']: [HEAD['up'], CELL['a'], TuringMachine_2.RIGHT],
-            CELL['c']: [HEAD['up'], CELL['e'], TuringMachine_2.RIGHT],
-            CELL['d']: [HEAD['down'], CELL['e'], TuringMachine_2.RIGHT],
-            CELL['e']: [HEAD['down'], CELL['c'], TuringMachine_2.LEFT]
+            CELL['a']: [HEAD['up'], CELL['d'], TuringMachine.LEFT],
+            CELL['b']: [HEAD['up'], CELL['a'], TuringMachine.RIGHT],
+            CELL['c']: [HEAD['up'], CELL['e'], TuringMachine.RIGHT],
+            CELL['d']: [HEAD['down'], CELL['e'], TuringMachine.RIGHT],
+            CELL['e']: [HEAD['down'], CELL['c'], TuringMachine.LEFT]
         }
     }
 
     tape = "bbbbbbaeaaaaaaa"
 
-    tm = TapeCentricTuringMachine_2(n=len(tape), rule_table=rule_table,
-                                    initial_head_state=HEAD['up'], initial_head_position=8)
+    tm = TapeCentricTuringMachine(n=len(tape), rule_table=rule_table,
+                                  initial_head_state=HEAD['up'], initial_head_position=8)
 
     initial_conditions = [CELL[t] for t in tape]
 
-    activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=tm.adjacency_matrix,
-                                 activity_rule=tm.activity_rule, timesteps=58)
+    activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=tm.adjacency_matrix,
+                               activity_rule=tm.activity_rule, timesteps=58)
 
     ntm.plot_grid(activities, node_annotations=tm.head_activities(activities), show_grid=True)
 
@@ -48,11 +48,11 @@ if __name__ == "__main__":
 
     initial_conditions = [CELL[t] for t in tape]
 
-    tm = TapeCentricTuringMachine_2(n=len(tape), rule_table=rule_table,
-                                    initial_head_state=HEAD['up'], initial_head_position=52)
+    tm = TapeCentricTuringMachine(n=len(tape), rule_table=rule_table,
+                                  initial_head_state=HEAD['up'], initial_head_position=52)
 
-    activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=tm.adjacency_matrix,
-                                 activity_rule=tm.activity_rule, timesteps=5000)
+    activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=tm.adjacency_matrix,
+                               activity_rule=tm.activity_rule, timesteps=5000)
 
     head_activities = tm.head_activities(activities)
 

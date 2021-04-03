@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-class HopfieldTankTSPNet_2:
+class HopfieldTankTSPNet:
     """
     Based on J. J. Hopfield and D. W. Tank, "'Neural' Computation of Decisions in Optimization Problems",
     Biol. Cybern: 52, 141-152 (1985).

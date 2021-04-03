@@ -1,6 +1,6 @@
 
 
-class ReversibleRule_2:
+class ReversibleRule:
     """
     An automaton rule explicitly set up to be reversible.
     """

@@ -1,7 +1,7 @@
 from .topology.adjacency import cellular_automaton
 
 
-class TuringMachine_2:
+class TuringMachine:
     LEFT = 0
     STAY = 1
     RIGHT = 2
@@ -14,7 +14,7 @@ class TuringMachine_2:
         pass
 
 
-class TapeCentricTuringMachine_2(TuringMachine_2):
+class TapeCentricTuringMachine(TuringMachine):
     """
     A Turing Machine modelled as a Network Automaton with a number of nodes representing the tape (with the same local
     connectivity as an Elementary Cellular Automaton), whose states are mutated as the tape is written to, and separate
@@ -52,7 +52,7 @@ class TapeCentricTuringMachine_2(TuringMachine_2):
         return annotations
 
 
-class HeadCentricTuringMachine_2(TuringMachine_2):
+class HeadCentricTuringMachine(TuringMachine):
     """
     A Turing Machine modelled as a Network Automaton with a single node that carries the state of the head, and a
     separate tape that is read from and written to during processing.
@@ -98,11 +98,11 @@ class HeadCentricTuringMachine_2(TuringMachine_2):
         return next_head_state, self._head_pos
 
     def _next_pos(self, direction, head_pos):
-        if direction == TuringMachine_2.LEFT:
+        if direction == TuringMachine.LEFT:
             return (head_pos - 1) % len(self._tape_history[-1])
-        elif direction == TuringMachine_2.RIGHT:
+        elif direction == TuringMachine.RIGHT:
             return (head_pos + 1) % len(self._tape_history[-1])
-        elif direction == TuringMachine_2.STAY:
+        elif direction == TuringMachine.STAY:
             return head_pos
         else:
             raise Exception("unsupported direction: %s" % direction)

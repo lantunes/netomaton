@@ -7,7 +7,7 @@ if __name__ == '__main__':
 
     initial_conditions = [0] * 100 + [1] + [0] * 99
 
-    activities, adjacencies = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                           activity_rule=ntm.rules.nks_ca_rule_2(30), timesteps=100)
+    activities, adjacencies = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                                         activity_rule=ntm.rules.nks_ca_rule(30), timesteps=100)
 
     ntm.plot_grid(activities)

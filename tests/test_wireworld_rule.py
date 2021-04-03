@@ -1,6 +1,6 @@
 from netomaton.topology import adjacency
 import netomaton.rules as rules
-from netomaton import evolve_2
+from netomaton import evolve
 from .rule_test import *
 
 
@@ -21,6 +21,6 @@ class TestWireworldRule(RuleTest):
         steps, rows, size = expected.shape
         initial_conditions = np.array(expected[0]).reshape(rows * size).flatten()
         adjacency_matrix = adjacency.cellular_automaton2d(rows=rows, cols=size, neighbourhood="Moore")
-        activities, _ = evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=steps,
-                                 activity_rule=rules.wireworld_rule_2)
+        activities, _ = evolve(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=steps,
+                               activity_rule=rules.wireworld_rule)
         return np.array(activities).reshape((steps, rows, size))

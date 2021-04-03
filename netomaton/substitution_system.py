@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class SubstitutionSystem_2:
+class SubstitutionSystem:
     def __init__(self, rules, n):
         self._rules = rules
         self._neighbourhood_size = self._get_neighbourhood_size(rules)

@@ -33,8 +33,8 @@ if __name__ == "__main__":
         return ((dt ** 2 * (un_i_p1 - 2 * un_i + un_i_m1)) / dx ** 2) + (2 * un_i - un_m1_i)
 
 
-    activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                 activity_rule=activity_rule, timesteps=nt, past_conditions=[initial_conditions])
+    activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                               activity_rule=activity_rule, timesteps=nt, past_conditions=[initial_conditions])
 
     ntm.plot_grid(activities)
 

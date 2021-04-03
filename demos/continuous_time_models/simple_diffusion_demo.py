@@ -32,7 +32,7 @@ if __name__ == "__main__":
         return current + F * (right - 2 * current + left)
 
 
-    activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                 activity_rule=activity_rule, timesteps=75)
+    activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                               activity_rule=activity_rule, timesteps=75)
 
     ntm.plot_grid(activities)

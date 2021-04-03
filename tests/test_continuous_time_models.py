@@ -45,8 +45,8 @@ class TestContinuousTimeModels(RuleTest):
             un_i_p1 = ctx.activity_of(right_label)
             return un_i - un_i * dt / dx * (un_i - un_i_m1) + nu * dt / dx ** 2 * (un_i_p1 - 2 * un_i + un_i_m1)
 
-        activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                     activity_rule=activity_rule, timesteps=nt)
+        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                                   activity_rule=activity_rule, timesteps=nt)
 
         np.testing.assert_equal(expected, activities)
 
@@ -72,8 +72,8 @@ class TestContinuousTimeModels(RuleTest):
             un_i_p1 = ctx.activity_of(right_label)
             return un_i + nu * dt / dx ** 2 * (un_i_p1 - 2 * un_i + un_i_m1)
 
-        activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                     activity_rule=activity_rule, timesteps=nt)
+        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                                   activity_rule=activity_rule, timesteps=nt)
 
         np.testing.assert_equal(expected, activities)
 
@@ -97,8 +97,8 @@ class TestContinuousTimeModels(RuleTest):
             un_i_m1 = ctx.activity_of(left_label)
             return un_i - k * dt / dx * (un_i - un_i_m1)
 
-        activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                     activity_rule=activity_rule, timesteps=nt)
+        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                                   activity_rule=activity_rule, timesteps=nt)
 
         np.testing.assert_equal(expected, activities)
 
@@ -121,8 +121,8 @@ class TestContinuousTimeModels(RuleTest):
             un_i_m1 = ctx.activity_of(left_label)
             return un_i - un_i * dt / dx * (un_i - un_i_m1)
 
-        activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                     activity_rule=activity_rule, timesteps=nt)
+        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                                   activity_rule=activity_rule, timesteps=nt)
 
         np.testing.assert_equal(expected, activities)
 
@@ -145,8 +145,8 @@ class TestContinuousTimeModels(RuleTest):
             right = ctx.neighbourhood_activities[2]
             return current + F * (right - 2 * current + left)
 
-        activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                     activity_rule=activity_rule, timesteps=75)
+        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                                   activity_rule=activity_rule, timesteps=75)
 
         np.testing.assert_equal(expected, activities)
 
@@ -173,7 +173,7 @@ class TestContinuousTimeModels(RuleTest):
             un_m1_i = ctx.past_activity_of(ctx.node_label)
             return ((dt ** 2 * (un_i_p1 - 2 * un_i + un_i_m1)) / dx ** 2) + (2 * un_i - un_m1_i)
 
-        activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix, 
-                                     activity_rule=activity_rule, timesteps=nt, past_conditions=[initial_conditions])
+        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                                   activity_rule=activity_rule, timesteps=nt, past_conditions=[initial_conditions])
 
         np.testing.assert_equal(expected, activities)

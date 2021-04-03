@@ -32,8 +32,8 @@ class TestPerturbation(RuleTest):
 
             return result
 
-        activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=100,
-                                     activity_rule=algebraic_rule_30, perturbation=perturbation)
+        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=100,
+                                   activity_rule=algebraic_rule_30, perturbation=perturbation)
 
         np.testing.assert_equal(expected, activities)
 
@@ -46,14 +46,14 @@ class TestPerturbation(RuleTest):
         initial_conditions = np.random.randint(0, 2, 200)
 
         def perturbed_rule(ctx):
-            rule = ntm.rules.nks_ca_rule_2(90)
+            rule = ntm.rules.nks_ca_rule(90)
             if ctx.timestep % 10 == 0:
                 return 1
             return rule(ctx)
 
-        activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=100,
-                                     activity_rule=ntm.ReversibleRule_2(perturbed_rule),
-                                     past_conditions=[initial_conditions])
+        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=100,
+                                   activity_rule=ntm.ReversibleRule(perturbed_rule),
+                                   past_conditions=[initial_conditions])
 
         np.testing.assert_equal(expected, activities)
 
@@ -72,8 +72,8 @@ class TestPerturbation(RuleTest):
                 return np.random.randint(2)
             return pctx.node_activity
 
-        activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=100,
-                                     activity_rule=ntm.rules.nks_ca_rule_2(30),
-                                     perturbation=perturb)
+        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=100,
+                                   activity_rule=ntm.rules.nks_ca_rule(30),
+                                   perturbation=perturb)
 
         np.testing.assert_equal(expected, activities)

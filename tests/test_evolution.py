@@ -93,8 +93,8 @@ class TestFunctions(unittest.TestCase):
                 np.testing.assert_equal({0: [{'weight': 1.0}], 3: [{'weight': 1.0}], 4: [{'weight': .8}]},
                                         ctx.connection_states)
 
-        ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=2,
-                     activity_rule=evaluate_neighbourhoods)
+        ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=2,
+                   activity_rule=evaluate_neighbourhoods)
 
     def test_init_simple_1(self):
         arr = ntm.init_simple(1)
@@ -213,8 +213,8 @@ class TestFunctions(unittest.TestCase):
                 self.assertEqual(p, [{0: 2, 1: 2}])
             return ctx.current_activity + 1
 
-        activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                     activity_rule=activity_rule, timesteps=4, past_conditions=past_conditions)
+        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                                   activity_rule=activity_rule, timesteps=4, past_conditions=past_conditions)
 
         np.testing.assert_equal(activities, [
             [1, 1],
@@ -256,8 +256,8 @@ class TestFunctions(unittest.TestCase):
                 ])
             return ctx.current_activity + 1
 
-        activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                     activity_rule=activity_rule, timesteps=4, past_conditions=past_conditions)
+        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                                   activity_rule=activity_rule, timesteps=4, past_conditions=past_conditions)
 
         np.testing.assert_equal(activities, [
             [1, 1],

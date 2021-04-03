@@ -3,7 +3,7 @@ import random
 import numpy as np
 
 
-def table_rule_2(table):
+def table_rule(table):
     """
     A rule where the state is converted into a string, and looked up in the given table, to yield the return value.
     :param table: a table (map) of string representations of each neighbourhood state to the associated next
@@ -21,7 +21,7 @@ def table_rule_2(table):
     return _rule
 
 
-def random_rule_table_2(k, r, lambda_val=None, quiescent_state=None, strong_quiescence=False, isotropic=False):
+def random_rule_table(k, r, lambda_val=None, quiescent_state=None, strong_quiescence=False, isotropic=False):
     """
     Constructs and returns a random rule table, as described in [Langton, C. G. (1990). Computation at the edge of
     chaos: phase transitions and emergent computation. Physica D: Nonlinear Phenomena, 42(1-3), 12-37.], using
@@ -70,7 +70,7 @@ def random_rule_table_2(k, r, lambda_val=None, quiescent_state=None, strong_quie
     return table, actual_lambda_val, quiescent_state
 
 
-def table_walk_through_2(rule_table, lambda_val, k, r, quiescent_state, strong_quiescence=False, isotropic=False):
+def table_walk_through(rule_table, lambda_val, k, r, quiescent_state, strong_quiescence=False, isotropic=False):
     """
     Perturbs the given rule table using the "table-walk-through" approach described in [Langton, C. G. (1990).
     Computation at the edge of chaos: phase transitions and emergent computation. Physica D: Nonlinear Phenomena,

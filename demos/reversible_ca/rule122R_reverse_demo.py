@@ -18,9 +18,9 @@ if __name__ == '__main__':
                           1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1,
                           1, 1, 1, 0, 1, 1, 1]
 
-    activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                 activity_rule=ntm.ReversibleRule_2(ntm.rules.nks_ca_rule_2(122)),
-                                 past_conditions=[previous_state], timesteps=1002)
+    activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                               activity_rule=ntm.ReversibleRule(ntm.rules.nks_ca_rule(122)),
+                               past_conditions=[previous_state], timesteps=1002)
 
     timestep = []
     average_node_entropies = []

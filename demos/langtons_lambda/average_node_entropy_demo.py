@@ -5,8 +5,8 @@ if __name__ == '__main__':
 
     initial_conditions = ntm.init_random(200)
 
-    activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=1000,
-                                 activity_rule=ntm.rules.nks_ca_rule_2(30))
+    activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=1000,
+                               activity_rule=ntm.rules.nks_ca_rule(30))
 
     # calculate the average node entropy; the value will be ~0.999 in this case
     avg_node_entropy = ntm.average_node_entropy(activities)

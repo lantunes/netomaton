@@ -15,7 +15,7 @@ if __name__ == '__main__':
         frac, whole = math.modf(result)
         return frac
 
-    activities, adjacencies = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                           activity_rule=activity_rule, timesteps=150)
+    activities, adjacencies = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+                                         activity_rule=activity_rule, timesteps=150)
 
     ntm.plot_grid(activities)
