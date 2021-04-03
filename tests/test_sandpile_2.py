@@ -17,7 +17,7 @@ class TestSandpile(RuleTest):
             return pctx.node_activity
 
         activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=sandpile.adjacency_matrix,
-                                     activity_rule=sandpile.activity_rule, perturbation=perturb, parallel=True,  # TODO implement parallel support
+                                     activity_rule=sandpile.activity_rule, perturbation=perturb,
                                      timesteps=110)
 
         expected = self._convert_to_list_of_lists("sandpile.ca")

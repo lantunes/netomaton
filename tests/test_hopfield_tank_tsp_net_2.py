@@ -105,7 +105,7 @@ class TestHopfieldTankTSPNet(unittest.TestCase):
                               -0.023001396844357286]
 
         activities, _ = evolve_2(initial_conditions=initial_conditions, topology=tsp_net.adjacency_matrix,
-                                 activity_rule=tsp_net.activity_rule, timesteps=timesteps, parallel=True)
+                                 activity_rule=tsp_net.activity_rule, timesteps=timesteps)
 
         permutation_matrix = tsp_net.get_permutation_matrix(activities)
 

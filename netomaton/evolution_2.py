@@ -103,7 +103,7 @@ class PerturbationContext_2(object):
 
 # TODO rename "connectivity" everywhere; to "topology" perhaps?
 def evolve_2(topology, initial_conditions=None, activity_rule=None, timesteps=None, input=None, connectivity_rule=None,
-             perturbation=None, past_conditions=None, parallel=False, processes=None):
+             perturbation=None, past_conditions=None):
 
     if initial_conditions is None:
         initial_conditions = {}

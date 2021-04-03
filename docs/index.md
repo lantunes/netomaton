@@ -207,8 +207,3 @@ TODO rename to Topology Rule
 ## Initial and Past Conditions
 
 ## Perturbations
-
-## Parallel Execution
-
-- activity rule must not be stateful
-- can the connectivity rule be supported?

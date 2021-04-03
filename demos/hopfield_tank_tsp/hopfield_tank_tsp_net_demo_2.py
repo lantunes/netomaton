@@ -20,7 +20,7 @@ if __name__ == "__main__":
     initial_conditions = [-0.022 + np.random.uniform(-0.1*0.02, 0.1*0.02) for _ in range(len(adjacency_matrix))]
 
     activities, _ = ntm.evolve_2(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                 activity_rule=tsp_net.activity_rule, timesteps=timesteps, parallel=True)
+                                 activity_rule=tsp_net.activity_rule, timesteps=timesteps)
 
     ntm.animate(activities, shape=(10, 10))
 
