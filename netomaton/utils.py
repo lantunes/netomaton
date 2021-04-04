@@ -167,6 +167,8 @@ def animate_connectivity_map(connectivity_maps, save=False, interval=50, dpi=80,
             nx.draw_shell(G, with_labels=with_labels, node_color=node_color, node_size=node_size)
         elif layout == "spring":
             nx.draw_spring(G, with_labels=with_labels, node_color=node_color, node_size=node_size)
+        elif isinstance(layout, dict):
+            nx.draw(G, pos=layout, with_labels=with_labels, node_color=node_color, node_size=node_size)
         else:
             raise Exception("unsupported layout: %s" % layout)
 

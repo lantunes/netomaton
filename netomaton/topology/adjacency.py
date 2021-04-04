@@ -87,3 +87,10 @@ def _get_neighbourhood_points2d(a, b, r, criteria, rownum):
 def watts_strogatz_graph(n, k, p):
     G = nx.watts_strogatz_graph(n, k, p)
     return nx.adjacency_matrix(G).todense().tolist()
+
+
+def lattice(dim, periodic=False):
+    G = nx.grid_graph(dim=dim, periodic=periodic)
+    G = nx.convert_node_labels_to_integers(G, first_label=0)
+    G = G.to_directed()
+    return nx.adjacency_matrix(G).todense().tolist()

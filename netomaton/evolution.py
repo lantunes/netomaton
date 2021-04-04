@@ -101,7 +101,7 @@ class PerturbationContext(object):
     def input(self):
         return self._input
 
-# TODO rename "connectivity" everywhere; to "topology" perhaps?
+# TODO rename "connectivity" everywhere; to "topology" perhaps? as in "topological table"
 def evolve(topology, initial_conditions=None, activity_rule=None, timesteps=None, input=None, connectivity_rule=None,
            perturbation=None, past_conditions=None):
 
@@ -158,6 +158,8 @@ def evolve(topology, initial_conditions=None, activity_rule=None, timesteps=None
             # TODO we need a demo that uses the connectivity rule before the activity rule
             # the connectivity rule receives any changes made to the network via the activity rule
             connectivity_map = connectivity_rule(ConnectivityContext(connectivity_map, activities_over_time[t], t))
+            if not connectivity_map:
+                raise Exception("connectivity rule must return a connectivity map")
             connectivities_over_time[t] = copy_connectivity_map(connectivity_map)
 
         t += 1
