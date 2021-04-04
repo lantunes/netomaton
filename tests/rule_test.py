@@ -1,5 +1,6 @@
 import os
 import unittest
+import ast
 
 import numpy as np
 
@@ -54,3 +55,8 @@ class RuleTest(unittest.TestCase):
         content = [[h.split(',') for h in x] for x in content]
         content = [[[dtype(i) for i in h] for h in x] for x in content]
         return content
+
+    def _convert_from_literal(self, filename):
+        with open(os.path.join(THIS_DIR, 'resources', filename), 'r') as content_file:
+            content = content_file.read()
+            return ast.literal_eval(content)
