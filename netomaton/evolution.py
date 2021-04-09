@@ -150,7 +150,6 @@ def evolve(topology, initial_conditions=None, activity_rule=None, timesteps=None
                             added_nodes, removed_nodes)
 
         elif update_order is UpdateOrder.TOPOLOGY_FIRST:
-            # TODO create test (fungal growth)
             evolve_topology(connectivity_rule, t, activities_over_time[t - 1], connectivities_over_time)
             # added and removed nodes are ignore in this case
             evolve_activities(activity_rule, t, inp, activities_over_time, connectivities_over_time[t], past,
@@ -164,7 +163,7 @@ def evolve(topology, initial_conditions=None, activity_rule=None, timesteps=None
                               perturbation)
 
         else:
-            raise Exception("unsupported update_orderL: %s" % update_order)
+            raise Exception("unsupported update_order: %s" % update_order)
 
         t += 1
 

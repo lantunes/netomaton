@@ -1,5 +1,6 @@
 import netomaton as ntm
 import numpy as np
+from collections import defaultdict
 
 
 class FungalGrowthModel:
@@ -55,6 +56,7 @@ class FungalGrowthModel:
         curr_map = cctx.connectivity_map
         curr_in_degrees, curr_out_degrees = ntm.get_node_degrees(curr_map)
         new_map = ntm.copy_connectivity_map(curr_map)
+        new_out_degrees = defaultdict(int)
         for i, j in self._links:
             phi_S_i = 1 if cctx.activities[i] > 0 else 0
             phi_S_j = 1 if cctx.activities[j] > 0 else 0
@@ -68,38 +70,49 @@ class FungalGrowthModel:
                 p = 1 / (self._d - (self._degrees(curr_in_degrees, j) + self._degrees(curr_out_degrees, j)))
                 if np.random.random() < p:
                     new_map[i][j] = [{}]
+                    new_out_degrees[j] += 1
 
             elif A_i_j == 0 and A_j_i == 0 and phi_S_i == 1 and phi_S_j == 0:
                 p = 1 / (self._d - (self._degrees(curr_in_degrees, i) + self._degrees(curr_out_degrees, i)))
                 if np.random.random() < p:
                     new_map[j][i] = [{}]
+                    new_out_degrees[i] += 1
 
             elif A_i_j == 0 and A_j_i == 0 and phi_S_i == 1 and phi_S_j == 1:
                 p = 0.5
                 if np.random.random() < p:
                     new_map[j][i] = [{}]
+                    new_out_degrees[i] += 1
                 else:
                     new_map[i][j] = [{}]
+                    new_out_degrees[j] += 1
 
             elif A_i_j == 0 and A_j_i == 1 and phi_S_i == 0 and phi_S_j == 0:
                 new_map[i][j] = [{}]
+                new_out_degrees[j] += 1
             elif A_i_j == 0 and A_j_i == 1 and phi_S_i == 0 and phi_S_j == 1:
                 new_map[i][j] = [{}]
+                new_out_degrees[j] += 1
             elif A_i_j == 0 and A_j_i == 1 and phi_S_i == 1 and phi_S_j == 0:
                 new_map[i][j] = [{}]
+                new_out_degrees[j] += 1
             elif A_i_j == 0 and A_j_i == 1 and phi_S_i == 1 and phi_S_j == 1:
                 new_map[i][j] = [{}]
+                new_out_degrees[j] += 1
 
             elif A_i_j == 1 and A_j_i == 0 and phi_S_i == 0 and phi_S_j == 0:
                 new_map[j][i] = [{}]
+                new_out_degrees[i] += 1
             elif A_i_j == 1 and A_j_i == 0 and phi_S_i == 0 and phi_S_j == 1:
                 new_map[j][i] = [{}]
+                new_out_degrees[i] += 1
             elif A_i_j == 1 and A_j_i == 0 and phi_S_i == 1 and phi_S_j == 0:
                 new_map[j][i] = [{}]
+                new_out_degrees[i] += 1
             elif A_i_j == 1 and A_j_i == 0 and phi_S_i == 1 and phi_S_j == 1:
                 new_map[j][i] = [{}]
+                new_out_degrees[i] += 1
 
-        _, new_out_degrees = ntm.get_node_degrees(new_map)
         for j, v in new_map.items():
             for i in v:
                 new_map[j][i][0]["weight"] = 1 / self._degrees(new_out_degrees, i)
