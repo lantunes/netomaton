@@ -112,7 +112,7 @@ def _reshape_for_animation(activities, shape):
         raise Exception("shape must be a tuple of length 1 or 2")
 
 
-def plot_network(adjacency_matrix):
+def plot_network(adjacency_matrix, layout="shell", with_labels=True, node_color="#1f78b4", node_size=300):
     G = nx.MultiDiGraph()
     for n, _ in enumerate(adjacency_matrix):
         G.add_node(n)
@@ -121,7 +121,14 @@ def plot_network(adjacency_matrix):
             if val != 0.:
                 G.add_edge(row_index, node_index)
 
-    nx.draw_shell(G, with_labels=True)
+    if layout == "shell":
+        nx.draw_shell(G, with_labels=with_labels, node_color=node_color, node_size=node_size)
+    elif layout == "spring":
+        nx.draw_spring(G, with_labels=with_labels, node_color=node_color, node_size=node_size)
+    elif isinstance(layout, dict):
+        nx.draw(G, pos=layout, with_labels=with_labels, node_color=node_color, node_size=node_size)
+    else:
+        raise Exception("unsupported layout: %s" % layout)
     plt.show()
 
 
@@ -144,6 +151,8 @@ def animate_network(adjacency_matrices, save=False, interval=50, dpi=80, layout=
             nx.draw_shell(G, with_labels=with_labels, node_color=node_color, node_size=node_size)
         elif layout == "spring":
             nx.draw_spring(G, with_labels=with_labels, node_color=node_color, node_size=node_size)
+        elif isinstance(layout, dict):
+            nx.draw(G, pos=layout, with_labels=with_labels, node_color=node_color, node_size=node_size)
         else:
             raise Exception("unsupported layout: %s" % layout)
 
@@ -187,3 +196,15 @@ def connectivity_map_to_nx(connectivity_map):
             for _ in connection_state:
                 G.add_edge(from_node, node)
     return G
+
+
+def get_node_degrees(connectivity_map):
+    node_in_degrees = {}
+    node_out_degrees = {}
+    for k, v in connectivity_map.items():
+        node_in_degrees[k] = sum([len(c) for c in v.values()])
+        for k2 in v:
+            if k2 not in node_out_degrees:
+                node_out_degrees[k2] = 0
+            node_out_degrees[k2] += 1
+    return node_in_degrees, node_out_degrees

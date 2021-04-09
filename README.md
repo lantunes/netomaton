@@ -116,6 +116,7 @@ the Netomaton framework. Follow the link to learn more:
 * [Random Attachment Model](demos/random_attachment_model/README.md)
 * [Randomly Growing Network](demos/randomly_growing_network/README.md)
 * [Restricted Network Automata](demos/restricted_network_automata/README.md)
+* [Fungal Growth Model](demos/biologically_inspired_model/README.md)
 * [Wolfram Physics Model](demos/wolfram_physics/README.md)
 
 Additionally, this library includes a number of utility functions for

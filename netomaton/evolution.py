@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.sparse as sparse
 import collections
+from enum import Enum
 
 
 class NodeContext(object):
@@ -101,9 +102,16 @@ class PerturbationContext(object):
     def input(self):
         return self._input
 
+
+class UpdateOrder(Enum):
+    ACTIVITIES_FIRST = 1
+    TOPOLOGY_FIRST = 2
+    SYNCHRONOUS = 3
+
+
 # TODO rename "connectivity" everywhere; to "topology" perhaps? as in "topological table"
 def evolve(topology, initial_conditions=None, activity_rule=None, timesteps=None, input=None, connectivity_rule=None,
-           perturbation=None, past_conditions=None):
+           perturbation=None, past_conditions=None, update_order=UpdateOrder.ACTIVITIES_FIRST):
 
     if initial_conditions is None:
         initial_conditions = {}
@@ -123,7 +131,7 @@ def evolve(topology, initial_conditions=None, activity_rule=None, timesteps=None
         raise Exception("too few intial conditions specified [%s] for the number of given nodes [%s]" %
                         (len(initial_conditions), len(connectivity_map)))
 
-    connectivities_over_time = {0: copy_connectivity_map(connectivity_map)}
+    connectivities_over_time = {0: connectivity_map}
 
     t = 1
     while True:
@@ -135,42 +143,52 @@ def evolve(topology, initial_conditions=None, activity_rule=None, timesteps=None
         activities_over_time[t] = {}
         connectivities_over_time[t] = {}
 
-        if activity_rule:
-            added_nodes, removed_nodes = do_activity_rule(t, inp, activities_over_time, connectivity_map,
-                                                          activity_rule, past, perturbation)
+        if update_order is UpdateOrder.ACTIVITIES_FIRST:
+            added_nodes, removed_nodes = evolve_activities(activity_rule, t, inp, activities_over_time,
+                                                           connectivities_over_time[t - 1], past, perturbation)
+            evolve_topology(connectivity_rule, t, activities_over_time[t], connectivities_over_time,
+                            added_nodes, removed_nodes)
 
-            # adjust connectivity map according to node deletions and insertions
-            for node_label in removed_nodes:
-                del connectivity_map[node_label]
+        elif update_order is UpdateOrder.TOPOLOGY_FIRST:
+            # TODO create test (fungal growth)
+            evolve_topology(connectivity_rule, t, activities_over_time[t - 1], connectivities_over_time)
+            # added and removed nodes are ignore in this case
+            evolve_activities(activity_rule, t, inp, activities_over_time, connectivities_over_time[t], past,
+                              perturbation)
 
-            for state, outgoing_links, node_label in added_nodes:
-                connectivity_map[node_label] = {}
-                for target, connection_state in outgoing_links.items():
-                    connectivity_map[target][node_label] = connection_state
+        elif update_order is UpdateOrder.SYNCHRONOUS:
+            # TODO create test
+            evolve_topology(connectivity_rule, t, activities_over_time[t - 1], connectivities_over_time)
+            # added and removed nodes are ignore in this case
+            evolve_activities(activity_rule, t, inp, activities_over_time, connectivities_over_time[t - 1], past,
+                              perturbation)
 
-                activities_over_time[t][node_label] = state
-
-            if added_nodes or removed_nodes:
-                connectivities_over_time[t] = copy_connectivity_map(connectivity_map)
-
-        if connectivity_rule:
-            # TODO we should support the option to have the connectivity rule executed before the activity rule
-            # TODO we need a demo that uses the connectivity rule before the activity rule
-            # the connectivity rule receives any changes made to the network via the activity rule
-            connectivity_map = connectivity_rule(ConnectivityContext(connectivity_map, activities_over_time[t], t))
-            if not connectivity_map:
-                raise Exception("connectivity rule must return a connectivity map")
-            connectivities_over_time[t] = copy_connectivity_map(connectivity_map)
+        else:
+            raise Exception("unsupported update_orderL: %s" % update_order)
 
         t += 1
 
     if was_adjacency_matrix:
         if activity_rule:
-            activities_over_time = _convert_activities_map_to_list(activities_over_time)
+            activities_over_time = convert_activities_map_to_list(activities_over_time)
         if connectivity_rule:
-            connectivities_over_time = _convert_connectivities_map_to_list(connectivities_over_time)
+            connectivities_over_time = convert_connectivities_map_to_list(connectivities_over_time)
 
     return activities_over_time, connectivities_over_time
+
+
+def evolve_activities(activity_rule, t, inp, activities_over_time, connectivity_map, past, perturbation):
+    added_nodes = []
+    removed_nodes = []
+    if activity_rule:
+        added_nodes, removed_nodes = do_activity_rule(t, inp, activities_over_time, connectivity_map,
+                                                      activity_rule, past, perturbation)
+
+        if added_nodes:
+            for state, outgoing_links, node_label in added_nodes:
+                activities_over_time[t][node_label] = state
+
+    return added_nodes, removed_nodes
 
 
 def do_activity_rule(t, inp, activities_over_time, connectivity_map, activity_rule, past, perturbation):
@@ -204,6 +222,29 @@ def do_activity_rule(t, inp, activities_over_time, connectivity_map, activity_ru
     return added_nodes, removed_nodes
 
 
+def evolve_topology(connectivity_rule, t, activities, connectivities_over_time, added_nodes=None, removed_nodes=None):
+    connectivity_map = connectivities_over_time[t - 1]
+    if added_nodes or removed_nodes:
+        connectivity_map = copy_connectivity_map(connectivity_map)
+
+        # adjust connectivity map according to node deletions and insertions
+        for node_label in removed_nodes:
+            del connectivity_map[node_label]
+
+        for state, outgoing_links, node_label in added_nodes:
+            connectivity_map[node_label] = {}
+            for target, connection_state in outgoing_links.items():
+                connectivity_map[target][node_label] = connection_state
+
+    if connectivity_rule:
+        connectivity_map = copy_connectivity_map(connectivity_map)
+        connectivity_map = connectivity_rule(ConnectivityContext(connectivity_map, activities, t))
+        if not connectivity_map:
+            raise Exception("connectivity rule must return a connectivity map")
+
+    connectivities_over_time[t] = connectivity_map
+
+
 def copy_connectivity_map(conn_map):
     new_map = type(conn_map)()
     for k1, v1 in conn_map.items():
@@ -228,7 +269,7 @@ def _deep_copy_value(val):
     return val
 
 
-def _convert_activities_map_to_list(activities_map_over_time):
+def convert_activities_map_to_list(activities_map_over_time):
     activities_over_time = []
     for timestep in sorted(activities_map_over_time):  #TODO do we need to sort?
         activities = activities_map_over_time[timestep]
@@ -239,7 +280,7 @@ def _convert_activities_map_to_list(activities_map_over_time):
     return activities_over_time
 
 
-def _convert_connectivities_map_to_list(connectivities_map_over_time):
+def convert_connectivities_map_to_list(connectivities_map_over_time):
     connectivities_over_time = []
     for timestep in sorted(connectivities_map_over_time):  #TODO do we need to sort?
         connectivities = connectivities_map_over_time[timestep]

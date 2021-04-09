@@ -84,13 +84,45 @@ def _get_neighbourhood_points2d(a, b, r, criteria, rownum):
     return [item for sublist in filtered for item in sublist]  # flatten the list of lists
 
 
-def watts_strogatz_graph(n, k, p):
-    G = nx.watts_strogatz_graph(n, k, p)
-    return nx.adjacency_matrix(G).todense().tolist()
+def watts_strogatz_graph(n, k, p, as_list=True, seed=None):
+    """
+    Returns a Watts-Strogatz small-world graph as an adjacency matrix.
+    If `as_list` is `True`, then a Python list of lists is returned, otherwise a NumPy matrix object is
+    returned. A Python list of lists is addressable with `A[i][j]`, whereas a NumPy matrix is addressable
+    with `A[i, j]`. For large matrices, it is faster to return a NumPy matrix (i.e. `as_list=False`).
+    :param n: the number of nodes
+    :param k: the number of nearest neighbours a node joins to
+    :param p: the probability of re-connecting each edge
+    :param as_list: if True (default), returns a Python list of lists, otherwise returns a NumPy matrix
+    :param seed: integer, random_state, or None (default); a random seed to use for random number generation
+    :return: the adjacency matrix
+    """
+    G = nx.watts_strogatz_graph(n, k, p, seed)
+    a = nx.adjacency_matrix(G).todense()
+    if as_list:
+        a = a.tolist()
+    return a
 
 
-def lattice(dim, periodic=False):
+def lattice(dim, periodic=False, as_list=True, self_loops=False, first_label=0):
+    """
+    Returns a bi-directional n-dimensional lattice (i.e. Euclidean) network as an adjacency matrix.
+    If `as_list` is `True`, then a Python list of lists is returned, otherwise a NumPy matrix object is
+    returned. A Python list of lists is addressable with `A[i][j]`, whereas a NumPy matrix is addressable
+    with `A[i, j]`. For large matrices, it is faster to return a NumPy matrix (i.e. `as_list=False`).
+    :param dim: a triple, representing the number of dimensions of the lattice
+    :param periodic: whether the lattice is periodic (default is False)
+    :param as_list: if True (default), returns a Python list of lists, otherwise returns a NumPy matrix
+    :param self_loops: if True, each node has a connection to itself (default is False)
+    :param first_label: an integer specifying the first node label (default is 0)
+    :return: the adjacency matrix
+    """
     G = nx.grid_graph(dim=dim, periodic=periodic)
-    G = nx.convert_node_labels_to_integers(G, first_label=0)
+    G = nx.convert_node_labels_to_integers(G, first_label=first_label)
     G = G.to_directed()
-    return nx.adjacency_matrix(G).todense().tolist()
+    a = nx.adjacency_matrix(G).todense()
+    if not self_loops:
+        np.fill_diagonal(a, 0)
+    if as_list:
+        a = a.tolist()
+    return a

@@ -4,6 +4,7 @@ Netomaton
 Netomaton is a tool for exploring discrete dynamical systems. This includes many models of computation, such as 
 Cellular Automata, and even Neural Networks. This also includes some continuous dynamical systems, such as ordinary 
 and partial differential equations, since the simulation of such systems involves the discretization of space and time.
+Netomaton is also a tool for exploring Complex Systems.
 
 Underlying all discrete dynamical systems (and discretized continuous dynamical systems) are networks of stateful units
 that obey rules that specify how their states change over time. Netomaton thus considers all dynamical systems as 
@@ -201,6 +202,22 @@ The connectivity map provides a list of all the nodes in the network.
 TODO rename to Topology Rule
 
 - the connectivity rule is optional
+
+## Update Order
+
+In the following, S represents the activities and A represents the topology:
+
+activities-first
+S(t + 1) = G(A(t), S(t))
+A(t + 1) = F(A(t), S(t + 1))
+
+topology-first
+A(t + 1) = F(A(t), S(t))
+S(t + 1) = G(A(t + 1), S(t))
+
+synchronous:
+A(t + 1) = F(A(t), S(t))
+S(t + 1) = G(A(t), S(t))
 
 ## Timesteps and Input
 

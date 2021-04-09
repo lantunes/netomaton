@@ -4,10 +4,9 @@ import netomaton as ntm
 
 if __name__ == '__main__':
     """
-    A significant difference between the Netomaton framework and the NA described by Smith is that in Netomaton the 
-    network links can have state (e.g. weights). In Smith's Restricted NA Game of Life example, they define an 
-    Underlying network that restricts what links can be formed. Alternatively, one can instead begin with a lattice 
-    network, and change the link weights; or, one can add additional links between the already connected nodes.
+    In Smith's Restricted NA Game of Life example, they define an Underlying network that restricts what links can be 
+    formed. Alternatively, one can instead begin with a lattice network, and change the link weights; or, one can add 
+    additional links between the already connected nodes.
     
     Nevertheless, here, the Restricted NA Game of Life example is implemented using an underlying lattice, as 
     described in the paper: Smith, David MD, et al. "Network automata: Coupling structure and function in 
