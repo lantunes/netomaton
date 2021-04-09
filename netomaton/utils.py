@@ -202,9 +202,12 @@ def get_node_degrees(connectivity_map):
     node_in_degrees = {}
     node_out_degrees = {}
     for k, v in connectivity_map.items():
-        node_in_degrees[k] = sum([len(c) for c in v.values()])
+        if k not in node_in_degrees:
+            node_in_degrees[k] = 0
         for k2 in v:
             if k2 not in node_out_degrees:
                 node_out_degrees[k2] = 0
-            node_out_degrees[k2] += 1
+            n = len(v[k2])
+            node_out_degrees[k2] += n
+            node_in_degrees[k] += n
     return node_in_degrees, node_out_degrees

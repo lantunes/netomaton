@@ -15,7 +15,7 @@ if __name__ == '__main__':
     Advances in Complex Systems 14.03 (2011): 317-339.
     """
 
-    R_E = 80000  # resource absorption rate
+    R_E = 80000.0  # resource absorption rate
     timesteps = 100
     width = 200
     height = 200
@@ -24,13 +24,13 @@ if __name__ == '__main__':
     #  and see if the model can solve something like the Traveling salesman problem? The resource sharing tracks
     #  generated would be the path taken
 
-    initial_conditions = ntm.init_simple2d(width, height, val=R_E)
+    initial_conditions = ntm.init_simple2d(width, height, val=R_E, dtype=float)
 
     model = ntm.FungalGrowthModel(R_E, width, height, initial_conditions, seed=20210408)
 
     activities, _ = ntm.evolve(topology=model.topology, initial_conditions=initial_conditions, timesteps=timesteps,
                                activity_rule=model.activity_rule, connectivity_rule=model.connectivity_rule,
-                               update_order=model.update_order)
+                               update_order=model.update_order, copy_connectivity=model.copy_connectivity)
 
     activities_list = ntm.convert_activities_map_to_list(activities)
     ntm.animate(activities_list, shape=(width, height), interval=200, colormap="jet")

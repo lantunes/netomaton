@@ -1,6 +1,5 @@
 import netomaton as ntm
 import numpy as np
-from collections import defaultdict
 
 
 class FungalGrowthModel:
@@ -32,17 +31,17 @@ class FungalGrowthModel:
             np.random.seed(seed)
         self._verbose = verbose
 
-        num_agents = width * height
+        self._num_agents = width * height
 
         underlying_network = ntm.topology.table.lattice(dim=(1, width, height), periodic=True, first_label=0)
         self._links = set()
         for j, v in underlying_network.items():
             for i in v:
                 self._links.add(frozenset((i, j)))
-        self._initial_network = ntm.topology.table.disconnected(num_agents)
+        self._initial_network = ntm.topology.table.disconnected(self._num_agents)
 
         # a boolean matrix (flattened to a vector) representing the availability of resource to an agent
-        self._resource_layer = [0 for i in range(num_agents)]
+        self._resource_layer = [0 for i in range(self._num_agents)]
         # provide a single infinite resource at the same location as the initial agent(s)
         for nz in np.nonzero(initial_conditions)[0]:
             self._resource_layer[nz] = 1
@@ -55,8 +54,8 @@ class FungalGrowthModel:
             print("topology rule - t: %s" % cctx.timestep)
         curr_map = cctx.connectivity_map
         curr_in_degrees, curr_out_degrees = ntm.get_node_degrees(curr_map)
-        new_map = ntm.copy_connectivity_map(curr_map)
-        new_out_degrees = defaultdict(int)
+        new_map = {n: {} for n in range(self._num_agents)}
+        new_out_degrees = {k: v for k, v in curr_out_degrees.items()}
         for i, j in self._links:
             phi_S_i = 1 if cctx.activities[i] > 0 else 0
             phi_S_j = 1 if cctx.activities[j] > 0 else 0
@@ -70,58 +69,50 @@ class FungalGrowthModel:
                 p = 1 / (self._d - (self._degrees(curr_in_degrees, j) + self._degrees(curr_out_degrees, j)))
                 if np.random.random() < p:
                     new_map[i][j] = [{}]
-                    new_out_degrees[j] += 1
+                    self._add_degree(new_out_degrees, j)
 
             elif A_i_j == 0 and A_j_i == 0 and phi_S_i == 1 and phi_S_j == 0:
                 p = 1 / (self._d - (self._degrees(curr_in_degrees, i) + self._degrees(curr_out_degrees, i)))
                 if np.random.random() < p:
                     new_map[j][i] = [{}]
-                    new_out_degrees[i] += 1
+                    self._add_degree(new_out_degrees, i)
 
             elif A_i_j == 0 and A_j_i == 0 and phi_S_i == 1 and phi_S_j == 1:
                 p = 0.5
                 if np.random.random() < p:
                     new_map[j][i] = [{}]
-                    new_out_degrees[i] += 1
+                    self._add_degree(new_out_degrees, i)
                 else:
                     new_map[i][j] = [{}]
-                    new_out_degrees[j] += 1
+                    self._add_degree(new_out_degrees, j)
 
             elif A_i_j == 0 and A_j_i == 1 and phi_S_i == 0 and phi_S_j == 0:
                 new_map[i][j] = [{}]
-                new_out_degrees[j] += 1
             elif A_i_j == 0 and A_j_i == 1 and phi_S_i == 0 and phi_S_j == 1:
                 new_map[i][j] = [{}]
-                new_out_degrees[j] += 1
             elif A_i_j == 0 and A_j_i == 1 and phi_S_i == 1 and phi_S_j == 0:
                 new_map[i][j] = [{}]
-                new_out_degrees[j] += 1
             elif A_i_j == 0 and A_j_i == 1 and phi_S_i == 1 and phi_S_j == 1:
                 new_map[i][j] = [{}]
-                new_out_degrees[j] += 1
 
             elif A_i_j == 1 and A_j_i == 0 and phi_S_i == 0 and phi_S_j == 0:
                 new_map[j][i] = [{}]
-                new_out_degrees[i] += 1
             elif A_i_j == 1 and A_j_i == 0 and phi_S_i == 0 and phi_S_j == 1:
                 new_map[j][i] = [{}]
-                new_out_degrees[i] += 1
             elif A_i_j == 1 and A_j_i == 0 and phi_S_i == 1 and phi_S_j == 0:
                 new_map[j][i] = [{}]
-                new_out_degrees[i] += 1
             elif A_i_j == 1 and A_j_i == 0 and phi_S_i == 1 and phi_S_j == 1:
                 new_map[j][i] = [{}]
-                new_out_degrees[i] += 1
 
         for j, v in new_map.items():
             for i in v:
-                new_map[j][i][0]["weight"] = 1 / self._degrees(new_out_degrees, i)
+                new_map[j][i][0]["weight"] = 1 / new_out_degrees[i]
 
         return new_map
 
     def activity_rule(self, ctx):
         # S_i = sum of neighbourhood activities times corresponding weights + available resources from resource layer
-        neighbour_contribution = 0 if len(ctx.neighbour_labels) > 0 else ctx.current_activity
+        neighbour_contribution = 0. if len(ctx.neighbour_labels) > 0 else ctx.current_activity
         for neighbour in ctx.neighbour_labels:
             neighbour_contribution += ctx.connection_states[neighbour][0]["weight"] * ctx.activities[neighbour]
 
@@ -140,8 +131,18 @@ class FungalGrowthModel:
     def update_order(self):
         return ntm.UpdateOrder.TOPOLOGY_FIRST
 
+    @property
+    def copy_connectivity(self):
+        return False
+
     @staticmethod
     def _degrees(degrees, label):
         if label not in degrees:
             return 0
         return degrees[label]
+
+    @staticmethod
+    def _add_degree(degrees, label):
+        if label not in degrees:
+            degrees[label] = 0
+        degrees[label] += 1

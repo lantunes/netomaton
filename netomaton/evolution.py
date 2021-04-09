@@ -111,7 +111,7 @@ class UpdateOrder(Enum):
 
 # TODO rename "connectivity" everywhere; to "topology" perhaps? as in "topological table"
 def evolve(topology, initial_conditions=None, activity_rule=None, timesteps=None, input=None, connectivity_rule=None,
-           perturbation=None, past_conditions=None, update_order=UpdateOrder.ACTIVITIES_FIRST):
+           perturbation=None, past_conditions=None, update_order=UpdateOrder.ACTIVITIES_FIRST, copy_connectivity=True):
 
     if initial_conditions is None:
         initial_conditions = {}
@@ -147,17 +147,19 @@ def evolve(topology, initial_conditions=None, activity_rule=None, timesteps=None
             added_nodes, removed_nodes = evolve_activities(activity_rule, t, inp, activities_over_time,
                                                            connectivities_over_time[t - 1], past, perturbation)
             evolve_topology(connectivity_rule, t, activities_over_time[t], connectivities_over_time,
-                            added_nodes, removed_nodes)
+                            copy_connectivity, added_nodes, removed_nodes)
 
         elif update_order is UpdateOrder.TOPOLOGY_FIRST:
-            evolve_topology(connectivity_rule, t, activities_over_time[t - 1], connectivities_over_time)
+            evolve_topology(connectivity_rule, t, activities_over_time[t - 1],
+                            connectivities_over_time, copy_connectivity)
             # added and removed nodes are ignore in this case
             evolve_activities(activity_rule, t, inp, activities_over_time, connectivities_over_time[t], past,
                               perturbation)
 
         elif update_order is UpdateOrder.SYNCHRONOUS:
             # TODO create test
-            evolve_topology(connectivity_rule, t, activities_over_time[t - 1], connectivities_over_time)
+            evolve_topology(connectivity_rule, t, activities_over_time[t - 1],
+                            connectivities_over_time, copy_connectivity)
             # added and removed nodes are ignore in this case
             evolve_activities(activity_rule, t, inp, activities_over_time, connectivities_over_time[t - 1], past,
                               perturbation)
@@ -221,7 +223,8 @@ def do_activity_rule(t, inp, activities_over_time, connectivity_map, activity_ru
     return added_nodes, removed_nodes
 
 
-def evolve_topology(connectivity_rule, t, activities, connectivities_over_time, added_nodes=None, removed_nodes=None):
+def evolve_topology(connectivity_rule, t, activities, connectivities_over_time, copy_connectivity,
+                    added_nodes=None, removed_nodes=None):
     connectivity_map = connectivities_over_time[t - 1]
     if added_nodes or removed_nodes:
         connectivity_map = copy_connectivity_map(connectivity_map)
@@ -236,7 +239,8 @@ def evolve_topology(connectivity_rule, t, activities, connectivities_over_time, 
                 connectivity_map[target][node_label] = connection_state
 
     if connectivity_rule:
-        connectivity_map = copy_connectivity_map(connectivity_map)
+        if copy_connectivity:
+            connectivity_map = copy_connectivity_map(connectivity_map)
         connectivity_map = connectivity_rule(ConnectivityContext(connectivity_map, activities, t))
         if not connectivity_map:
             raise Exception("connectivity rule must return a connectivity map")
