@@ -11,6 +11,7 @@ from .utils import *
 from .hopfield_tank_tsp_net import *
 from .substitution_system import *
 from .wolfram_physics_model import *
+from .fungal_growth_model import *
 
 from . import topology
 from . import rules
