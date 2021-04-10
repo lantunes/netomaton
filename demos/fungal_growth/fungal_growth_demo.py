@@ -20,10 +20,6 @@ if __name__ == '__main__':
     width = 200
     height = 200
 
-    # TODO could we define resource availability (i.e. 1) only at certain points (i.e. 0 everywhere else)
-    #  and see if the model can solve something like the Traveling salesman problem? The resource sharing tracks
-    #  generated would be the path taken
-
     initial_conditions = ntm.init_simple2d(width, height, val=R_E, dtype=float)
 
     model = ntm.FungalGrowthModel(R_E, width, height, initial_conditions, seed=20210408)

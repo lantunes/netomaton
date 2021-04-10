@@ -15,13 +15,15 @@ class FungalGrowthModel:
     Smith, David MD, et al. "Network automata: Coupling structure and function in dynamic networks."
     Advances in Complex Systems 14.03 (2011): 317-339.
     """
-    def __init__(self, R_E, width, height, initial_conditions, seed=None, verbose=True):
+    def __init__(self, R_E, width, height, initial_conditions, resource_layer=None, seed=None, verbose=True):
         """
         :param R_E: resource absorption rate
         :param width: an integer representing the width of the grid of agents
         :param height: an integer representing the height of the grid of agents
         :param initial_conditions: a list of integers representing the initial conditions, in terms of the starting
                                    amount of resource for each agent
+        :param resource_layer: a boolean matrix (flattened to a vector) representing the availability of resource
+                               to an agent (default is None)
         :param seed: integer, random_state, or None (default); a random seed to use for random number generation
         :param verbose: whether to print progress statements to the console (default is True)
         """
@@ -41,10 +43,15 @@ class FungalGrowthModel:
         self._initial_network = ntm.topology.table.disconnected(self._num_agents)
 
         # a boolean matrix (flattened to a vector) representing the availability of resource to an agent
-        self._resource_layer = [0 for i in range(self._num_agents)]
-        # provide a single infinite resource at the same location as the initial agent(s)
-        for nz in np.nonzero(initial_conditions)[0]:
-            self._resource_layer[nz] = 1
+        if resource_layer:
+            assert len(resource_layer) == self._num_agents, \
+                "the size of the resource layer must match the number of agents"
+            self._resource_layer = resource_layer
+        else:
+            self._resource_layer = [0 for i in range(self._num_agents)]
+            # provide a single infinite resource at the same location as the initial agent(s)
+            for nz in np.nonzero(initial_conditions)[0]:
+                self._resource_layer[nz] = 1
 
         if self._verbose:
             print("initialization complete")
