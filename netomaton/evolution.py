@@ -12,6 +12,10 @@ class NodeContext(object):
     first node in the neighbourhood, etc. The neighbourhood of a node also contains the node's current activity (i.e.
     the activity as of the last timestep).
     """
+
+    __slots__ = ("node_label", "timestep", "activities", "neighbour_labels", "neighbourhood_activities",
+                 "connection_states", "current_activity", "past_activities", "input", "added_nodes", "removed_nodes")
+
     def __init__(self, node_label, timestep, activities, neighbour_labels, neighbourhood_activities, connection_states,
                  current_activity, past_activities, input):
         """
@@ -58,6 +62,9 @@ class NodeContext(object):
 
 
 class ConnectivityContext(object):
+
+    __slots__ = ("_connectivity_map", "_activities", "_timestep")
+
     def __init__(self, connectivity_map, activities, t):
         self._connectivity_map = connectivity_map
         self._activities = activities
@@ -80,6 +87,9 @@ class PerturbationContext(object):
     """
     The PerturbationContext contains the node label, activity and input for a particular timestep.
     """
+
+    __slots__ = ("_node_label", "_node_activity", "_timestep", "_input")
+
     def __init__(self, node_label, node_activity, timestep, input):
         self._node_label = node_label
         self._node_activity = node_activity
