@@ -154,5 +154,5 @@ class WolframPhysicsModel:
     def to_configurations(self, connectivities_over_time):
         configs = []
         for timestep in connectivities_over_time:
-            configs.append(self.connectivity_map_to_config(connectivities_over_time[timestep]))
+            configs.append(self.connectivity_map_to_config(connectivities_over_time[timestep].to_dict()))
         return configs

@@ -23,4 +23,4 @@ setup(name="netomaton",
       packages=packages,
       keywords=["network automata", "cellular automata", "complexity", "complex systems", "computation", "non-linear dynamics"],
       python_requires='>3.5.2',
-      install_requires=["numpy >= 1.15.4", "matplotlib >= 3.0.2", "networkx == 2.2", "scipy == 1.3.1"])
+      install_requires=["numpy >= 1.15.4", "matplotlib >= 3.0.2", "networkx == 2.2", "scipy == 1.3.1", "msgpack == 1.0.2"])

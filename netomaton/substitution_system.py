@@ -68,6 +68,6 @@ class SubstitutionSystem:
         return self._connectivity_map
 
     def pad(self, activities):
-        activities = [[activities[k][e] for e in sorted(activities[k])] for k in sorted(activities)]
+        activities = [[v for e, v in sorted(activities[k].to_dict().items())] for k in sorted(activities)]
         max_len = np.max([len(a) for a in activities])
         return np.asarray([np.pad(a, (0, max_len - len(a)), 'constant', constant_values=0) for a in activities])

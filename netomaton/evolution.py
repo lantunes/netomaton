@@ -1,7 +1,10 @@
+import collections
+import gc
+from enum import Enum
+
+import msgpack
 import numpy as np
 import scipy.sparse as sparse
-import collections
-from enum import Enum
 
 
 class NodeContext(object):
@@ -121,18 +124,19 @@ class UpdateOrder(Enum):
 
 # TODO rename "connectivity" everywhere; to "topology" perhaps? as in "topological table"
 def evolve(topology, initial_conditions=None, activity_rule=None, timesteps=None, input=None, connectivity_rule=None,
-           perturbation=None, past_conditions=None, update_order=UpdateOrder.ACTIVITIES_FIRST, copy_connectivity=True):
+           perturbation=None, past_conditions=None, update_order=UpdateOrder.ACTIVITIES_FIRST, copy_connectivity=True,
+           compression=False):
 
     if initial_conditions is None:
         initial_conditions = {}
 
     # convert initial_conditions to map, if it isn't already
     if not isinstance(initial_conditions, dict) and isinstance(initial_conditions, (list, np.ndarray)):
-        initial_conditions = {i: v for i, v in enumerate(initial_conditions)}
+        initial_conditions = {i: check_np(v) for i, v in enumerate(initial_conditions)}
 
     # key is the timestep; value is a map of the network activities,
     #   where the key is the node label, and value is the activity
-    activities_over_time = {0: initial_conditions}  #TODO should the first timestep start at 1?
+    activities_over_time = {0: Activities(initial_conditions, compression)}
     input_fn, steps = _get_input_function(timesteps, input)
 
     connectivity_map, was_adjacency_matrix = _get_connectivity_map(topology)
@@ -141,7 +145,10 @@ def evolve(topology, initial_conditions=None, activity_rule=None, timesteps=None
         raise Exception("too few intial conditions specified [%s] for the number of given nodes [%s]" %
                         (len(initial_conditions), len(connectivity_map)))
 
-    connectivities_over_time = {0: connectivity_map}
+    connectivities_over_time = {0: Topology(connectivity_map, compression)}
+
+    prev_activities = initial_conditions
+    prev_connectivities = connectivity_map
 
     t = 1
     while True:
@@ -150,32 +157,36 @@ def evolve(topology, initial_conditions=None, activity_rule=None, timesteps=None
             break
 
         past = _get_past_activities(past_conditions, activities_over_time, t)
-        activities_over_time[t] = {}
-        connectivities_over_time[t] = {}
+        curr_activities = {}
 
         if update_order is UpdateOrder.ACTIVITIES_FIRST:
-            added_nodes, removed_nodes = evolve_activities(activity_rule, t, inp, activities_over_time,
-                                                           connectivities_over_time[t - 1], past, perturbation)
-            evolve_topology(connectivity_rule, t, activities_over_time[t], connectivities_over_time,
-                            copy_connectivity, added_nodes, removed_nodes)
+            added_nodes, removed_nodes = evolve_activities(activity_rule, t, inp, curr_activities, prev_activities,
+                                                           activities_over_time, prev_connectivities, past,
+                                                           perturbation, compression)
+            curr_connectivities = evolve_topology(connectivity_rule, t, curr_activities, prev_connectivities,
+                                                  connectivities_over_time, copy_connectivity, compression,
+                                                  added_nodes, removed_nodes)
 
         elif update_order is UpdateOrder.TOPOLOGY_FIRST:
-            evolve_topology(connectivity_rule, t, activities_over_time[t - 1],
-                            connectivities_over_time, copy_connectivity)
+            curr_connectivities = evolve_topology(connectivity_rule, t, prev_activities, prev_connectivities,
+                                                  connectivities_over_time, copy_connectivity, compression)
             # added and removed nodes are ignore in this case
-            evolve_activities(activity_rule, t, inp, activities_over_time, connectivities_over_time[t], past,
-                              perturbation)
+            evolve_activities(activity_rule, t, inp, curr_activities, prev_activities,
+                              activities_over_time, curr_connectivities, past, perturbation, compression)
 
         elif update_order is UpdateOrder.SYNCHRONOUS:
             # TODO create test
-            evolve_topology(connectivity_rule, t, activities_over_time[t - 1],
-                            connectivities_over_time, copy_connectivity)
+            curr_connectivities = evolve_topology(connectivity_rule, t, prev_activities, prev_connectivities,
+                                                  connectivities_over_time, copy_connectivity, compression)
             # added and removed nodes are ignore in this case
-            evolve_activities(activity_rule, t, inp, activities_over_time, connectivities_over_time[t - 1], past,
-                              perturbation)
+            evolve_activities(activity_rule, t, inp, curr_activities, prev_activities,
+                              activities_over_time, prev_connectivities, past, perturbation, compression)
 
         else:
             raise Exception("unsupported update_order: %s" % update_order)
+
+        prev_activities = curr_activities
+        prev_connectivities = curr_connectivities
 
         t += 1
 
@@ -188,35 +199,37 @@ def evolve(topology, initial_conditions=None, activity_rule=None, timesteps=None
     return activities_over_time, connectivities_over_time
 
 
-def evolve_activities(activity_rule, t, inp, activities_over_time, connectivity_map, past, perturbation):
+def evolve_activities(activity_rule, t, inp, curr_activities, prev_activities, activities_over_time, connectivity_map,
+                      past, perturbation, compression):
     added_nodes = []
     removed_nodes = []
     if activity_rule:
-        added_nodes, removed_nodes = do_activity_rule(t, inp, activities_over_time, connectivity_map,
+        added_nodes, removed_nodes = do_activity_rule(t, inp, curr_activities, prev_activities, connectivity_map,
                                                       activity_rule, past, perturbation)
 
         if added_nodes:
             for state, outgoing_links, node_label in added_nodes:
-                activities_over_time[t][node_label] = state
+                curr_activities[node_label] = state
+
+    activities_over_time[t] = Activities(curr_activities, compression)
 
     return added_nodes, removed_nodes
 
 
-def do_activity_rule(t, inp, activities_over_time, connectivity_map, activity_rule, past, perturbation):
+def do_activity_rule(t, inp, curr_activities, prev_activities, connectivity_map, activity_rule, past, perturbation):
     added_nodes = []
     removed_nodes = []
 
-    last_activities = activities_over_time[t - 1]
-
     for node_label, incoming_connections in connectivity_map.items():
         neighbour_labels = [k for k in incoming_connections]
-        current_activity = last_activities[node_label]
-        neighbourhood_activities = [last_activities[neighbour_label] for neighbour_label in neighbour_labels]
+        current_activity = prev_activities[node_label]
+        neighbourhood_activities = [prev_activities[neighbour_label] for neighbour_label in neighbour_labels]
         node_in = None if inp == "__timestep__" else inp[node_label] if _is_indexable(inp) else inp
-        ctx = NodeContext(node_label, t, last_activities, neighbour_labels, neighbourhood_activities,
+        ctx = NodeContext(node_label, t, prev_activities, neighbour_labels, neighbourhood_activities,
                           incoming_connections, current_activity, past, node_in)
 
         new_activity = activity_rule(ctx)
+        new_activity = check_np(new_activity)
 
         if ctx.added_nodes:
             added_nodes.extend(ctx.added_nodes)
@@ -224,18 +237,18 @@ def do_activity_rule(t, inp, activities_over_time, connectivity_map, activity_ru
             removed_nodes.extend(ctx.removed_nodes)
 
         if node_label not in ctx.removed_nodes:
-            activities_over_time[t][node_label] = new_activity
+            curr_activities[node_label] = new_activity
 
         if perturbation is not None:
-            pctx = PerturbationContext(node_label, activities_over_time[t][node_label], t, node_in)
-            activities_over_time[t][node_label] = perturbation(pctx)
+            pctx = PerturbationContext(node_label, curr_activities[node_label], t, node_in)
+            curr_activities[node_label] = perturbation(pctx)
 
     return added_nodes, removed_nodes
 
 
-def evolve_topology(connectivity_rule, t, activities, connectivities_over_time, copy_connectivity,
-                    added_nodes=None, removed_nodes=None):
-    connectivity_map = connectivities_over_time[t - 1]
+def evolve_topology(connectivity_rule, t, activities, prev_connectivities, connectivities_over_time, copy_connectivity,
+                    compression, added_nodes=None, removed_nodes=None):
+    connectivity_map = prev_connectivities
     if added_nodes or removed_nodes:
         connectivity_map = copy_connectivity_map(connectivity_map)
 
@@ -255,37 +268,19 @@ def evolve_topology(connectivity_rule, t, activities, connectivities_over_time, 
         if not connectivity_map:
             raise Exception("connectivity rule must return a connectivity map")
 
-    connectivities_over_time[t] = connectivity_map
+    connectivities_over_time[t] = Topology(connectivity_map, compression)
+
+    return connectivity_map
 
 
 def copy_connectivity_map(conn_map):
-    new_map = type(conn_map)()
-    for k1, v1 in conn_map.items():
-        new_links = type(v1)()
-        for k2, v2 in v1.items():
-            new_links[k2] = _deep_copy_value(v2)
-        new_map[k1] = new_links
-    return new_map
-
-
-def _deep_copy_value(val):
-    if isinstance(val, (list, tuple)):
-        new_val = []
-        for v in val:
-            new_val.append(_deep_copy_value(v))
-        val = tuple(new_val) if isinstance(val, tuple) else new_val
-    elif isinstance(val, (dict, collections.OrderedDict)):
-        new_val = type(val)()
-        for k, v in val.items():
-            new_val[k] = _deep_copy_value(v)
-        val = new_val
-    return val
+    return _CompressedDict(conn_map, True).to_dict()
 
 
 def convert_activities_map_to_list(activities_map_over_time):
     activities_over_time = []
-    for timestep in sorted(activities_map_over_time):  #TODO do we need to sort?
-        activities = activities_map_over_time[timestep]
+    for i in activities_map_over_time:
+        activities = activities_map_over_time[i].to_dict()
         activities_list = []
         for c in sorted(activities):  #TODO do we need to sort?
             activities_list.append(activities[c])
@@ -295,8 +290,8 @@ def convert_activities_map_to_list(activities_map_over_time):
 
 def convert_connectivities_map_to_list(connectivities_map_over_time):
     connectivities_over_time = []
-    for timestep in sorted(connectivities_map_over_time):  #TODO do we need to sort?
-        connectivities = connectivities_map_over_time[timestep]
+    for i in connectivities_map_over_time:
+        connectivities = connectivities_map_over_time[i].to_dict()
         num_nodes = len(connectivities)
         adjacency_matrix = [[0. for _ in range(num_nodes)] for _ in range(num_nodes)]
         for c in sorted(connectivities):  #TODO do we need to sort?
@@ -349,7 +344,7 @@ def _get_past_activities(past_conditions, activities_over_time, t):
         last_t = t - 1
         for i in range(len(past_conditions)-1, -1, -1):
 
-            curr_past_cond = past_conditions[last_t-1] if last_t < 1 else activities_over_time[last_t-1]
+            curr_past_cond = past_conditions[last_t-1] if last_t < 1 else activities_over_time[last_t-1].to_dict()
             if not isinstance(curr_past_cond, dict) and isinstance(curr_past_cond, (list, np.ndarray)):
                 curr_past_cond = {i: v for i, v in enumerate(curr_past_cond)}
 
@@ -448,3 +443,39 @@ def init_simple2d(rows, cols, val=1, dtype=np.int):
     x = np.zeros((rows, cols), dtype=dtype)
     x[x.shape[0]//2][x.shape[1]//2] = val
     return np.array(x).reshape(rows * cols).tolist()
+
+
+class _CompressedDict:
+    __slots__ = ("_map", "_compression")
+
+    def __init__(self, m, compression):
+        self._compression = compression
+        self._map = self._compress(m) if compression else m
+
+    def to_dict(self):
+        return self._decompress(self._map) if self._compression else self._map
+
+    def _compress(self, d):
+        return msgpack.packb(d)
+
+    def _decompress(self, b):
+        gc.disable()
+        d = msgpack.unpackb(b, strict_map_key=False)
+        gc.enable()
+        return d
+
+
+class Topology(_CompressedDict):
+    def __init__(self, connectivity_map, compression):
+        super().__init__(connectivity_map, compression)
+
+
+class Activities(_CompressedDict):
+    def __init__(self, activities, compression):
+        super().__init__(activities, compression)
+
+
+def check_np(obj):
+    if isinstance(obj, np.generic):
+        return np.asscalar(obj)
+    return obj

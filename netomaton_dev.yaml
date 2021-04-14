@@ -10,3 +10,4 @@ dependencies:
   - networkx=2.5
   - numpy=1.15.4
   - mkdocs=1.1.2
+  - msgpack-python=1.0.2

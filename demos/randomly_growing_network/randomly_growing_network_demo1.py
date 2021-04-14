@@ -17,7 +17,7 @@ if __name__ == "__main__":
         num_nodes = len(cctx.connectivity_map)
         new_label = num_nodes
         cctx.connectivity_map[new_label] = {}
-        connect_to = np.random.choice(list(range(num_nodes)))
+        connect_to = int(np.random.choice(list(range(num_nodes))))
         cctx.connectivity_map[connect_to][new_label] = [{}]
         cctx.connectivity_map[new_label][connect_to] = [{}]
 

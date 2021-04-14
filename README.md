@@ -16,7 +16,7 @@ pip install netomaton
 ```
 
 Requirements for using this library are Python 3.6, numpy 1.15.4,
-matplotlib 3.0.2, and networkx 2.5.
+matplotlib 3.0.2, networkx 2.5, and msgpack 1.0.2.
 
 
 ### What are Network Automata?

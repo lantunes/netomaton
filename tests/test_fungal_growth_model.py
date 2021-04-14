@@ -26,6 +26,7 @@ class TestFungalGrowthModel(RuleTest):
 
         expected = self._convert_from_literal("fungal_growth_model.txt")
 
+        c = {i: t.to_dict() for i, t in c.items()}
         self.assertEqual(expected, c)
 
     def test_fungal_growth_with_resource_layer(self):
@@ -53,4 +54,5 @@ class TestFungalGrowthModel(RuleTest):
 
         expected = self._convert_from_literal("fungal_growth_model.txt")
 
+        c = {i: t.to_dict() for i, t in c.items()}
         self.assertEqual(expected, c)

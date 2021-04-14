@@ -190,6 +190,7 @@ def animate_connectivity_map(connectivity_maps, save=False, interval=50, dpi=80,
 
 def connectivity_map_to_nx(connectivity_map):
     G = nx.MultiDiGraph()
+    connectivity_map = connectivity_map.to_dict()
     for node in connectivity_map:
         G.add_node(node)
         for from_node, connection_state in connectivity_map[node].items():

@@ -185,6 +185,8 @@ The connectivity map provides a list of all the nodes in the network.
    edge (i.e. for multi-edges) and the ID of the hyperedge the edge belongs to
 -- this implies that, in some cases, the edges are stateful as well as nodes
 
+- only Python objects are allowed in the connectivity map; no objects like NumPy numbers are allowed
+
 # Time Evolution
 
 - a node's state is called its activity

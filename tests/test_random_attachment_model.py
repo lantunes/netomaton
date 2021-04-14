@@ -13,7 +13,7 @@ class TestRandomAttachmentModel(RuleTest):
         adjacency_matrix = [[0 for _ in range(N)] for _ in range(N)]
 
         def connectivity_rule(cctx):
-            choices = np.random.choice([n for n in cctx.connectivity_map], size=2, replace=True)
+            choices = [int(i) for i in np.random.choice([n for n in cctx.connectivity_map], size=2, replace=True)]
             cctx.connectivity_map[choices[0]][choices[1]] = [{}]
             cctx.connectivity_map[choices[1]][choices[0]] = [{}]
 

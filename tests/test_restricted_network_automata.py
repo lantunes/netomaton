@@ -48,4 +48,5 @@ class TestRestrictedNetworkAutomata(RuleTest):
         _, connectivities = ntm.evolve(topology=initial_network, connectivity_rule=connectivity_rule, timesteps=6)
 
         expected = self._convert_from_literal("restricted_network_automata.txt")
+        connectivities = {i: t.to_dict() for i, t in connectivities.items()}
         self.assertEqual(expected, connectivities)

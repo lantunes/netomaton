@@ -31,7 +31,7 @@ if __name__ == "__main__":
         cctx.connectivity_map[new_label] = {new_label: [{}]}
         if random.random() < delta:
             # choose 2 nodes at random, without replacement
-            choices = np.random.choice(list(cctx.connectivity_map.keys()), size=2, replace=False)
+            choices = [int(i) for i in np.random.choice(list(cctx.connectivity_map.keys()), size=2, replace=False)]
             cctx.connectivity_map[choices[0]][choices[1]] = [{}]
             cctx.connectivity_map[choices[1]][choices[0]] = [{}]
 
