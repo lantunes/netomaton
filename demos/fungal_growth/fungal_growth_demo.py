@@ -22,6 +22,9 @@ if __name__ == '__main__':
     # for longer timeframes (e.g. 1000 timesteps) and more nodes, set this to True;
     #  it will take a little longer, but the memory footprint will be greatly reduced
     compression = False
+    # if the connectivities over time are not of interest, then set this to False,
+    #  and the connectivities will not be persisted, reducing both the memory and running time footprint
+    persist_connectivities = False
 
     initial_conditions = ntm.init_simple2d(width, height, val=R_E, dtype=float)
 
@@ -30,7 +33,7 @@ if __name__ == '__main__':
     activities, _ = ntm.evolve(topology=model.topology, initial_conditions=initial_conditions, timesteps=timesteps,
                                activity_rule=model.activity_rule, connectivity_rule=model.connectivity_rule,
                                update_order=model.update_order, copy_connectivity=model.copy_connectivity,
-                               compression=compression)
+                               compression=compression, persist_connectivities=persist_connectivities)
 
     activities_list = ntm.convert_activities_map_to_list(activities)
     ntm.animate(activities_list, shape=(width, height), interval=200, colormap="jet")

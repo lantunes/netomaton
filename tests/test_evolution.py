@@ -265,3 +265,33 @@ class TestFunctions(unittest.TestCase):
             [3, 3],
             [4, 4]
         ])
+
+    def test_persist_activities(self):
+        network = [[1]]
+        initial_conditions = {0: 1}
+
+        activities, _ = ntm.evolve(topology=network, initial_conditions=initial_conditions,
+                                   activity_rule=lambda ctx: 1, timesteps=3, persist_activities=True)
+
+        self.assertEqual([[1], [1], [1]], activities)
+
+        activities, _ = ntm.evolve(topology=network, initial_conditions=initial_conditions,
+                                   activity_rule=lambda ctx: 1, timesteps=3, persist_activities=False)
+
+        self.assertEqual([[1]], activities)
+
+    def test_persist_connectivities(self):
+        network = [[1]]
+        initial_conditions = {0: 1}
+
+        _, connectivities = ntm.evolve(topology=network, initial_conditions=initial_conditions,
+                                       connectivity_rule=lambda cctx: {0: {0: [{}]}},
+                                       timesteps=3, persist_connectivities=True)
+
+        self.assertEqual([[[1]], [[1]], [[1]]], connectivities)
+
+        _, connectivities = ntm.evolve(topology=network, initial_conditions=initial_conditions,
+                                       connectivity_rule=lambda cctx: {0: {0: [{}]}},
+                                       timesteps=3, persist_connectivities=False)
+
+        self.assertEqual([[[1]]], connectivities)
