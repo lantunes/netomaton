@@ -24,7 +24,7 @@ class TestFungalGrowthModel(RuleTest):
 
         np.testing.assert_almost_equal(expected, activities_list, decimal=11)
 
-        expected = self._convert_from_literal("fungal_growth_model.txt")
+        expected = self._convert_from_literal("fungal_growth_model_nx.txt")
 
         actual = {i: nx.to_dict_of_dicts(G) for i, G in trajectory.items()}
         self.assertEqual(expected, actual)
@@ -51,7 +51,7 @@ class TestFungalGrowthModel(RuleTest):
 
         np.testing.assert_almost_equal(expected, activities_list, decimal=11)
 
-        expected = self._convert_from_literal("fungal_growth_model.txt")
+        expected = self._convert_from_literal("fungal_growth_model_nx.txt")
 
         actual = {i: nx.to_dict_of_dicts(G) for i, G in trajectory.items()}
         self.assertEqual(expected, actual)
