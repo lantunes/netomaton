@@ -2,6 +2,7 @@ import os
 import unittest
 import ast
 
+import networkx as nx
 import numpy as np
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -60,3 +61,14 @@ class RuleTest(unittest.TestCase):
         with open(os.path.join(THIS_DIR, 'resources', filename), 'r') as content_file:
             content = content_file.read()
             return ast.literal_eval(content)
+
+    def _assert_networks_equal(self, g1, g2):
+        def edge_match(e1, e2):
+            self.assertEqual(e1, e2)
+            return True
+
+        def node_match(n1, n2):
+            self.assertEqual(n1, n2)
+            return True
+
+        self.assertTrue(nx.is_isomorphic(g1, g2, edge_match=edge_match, node_match=node_match))

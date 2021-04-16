@@ -16,3 +16,8 @@ from .fungal_growth_model import *
 from . import topology
 from . import rules
 from . import vis
+
+from .evolution_nx import *
+from .wolfram_physics_model_nx import *
+from .substitution_system_nx import *
+from .fungal_growth_model_nx import *

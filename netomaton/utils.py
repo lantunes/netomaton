@@ -3,6 +3,34 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import matplotlib.collections as mcoll
+try:
+    import cPickle as pickle
+except:
+    import pickle
+
+
+def plot_activities(trajectory, shape=None, slice=-1, title='', colormap='Greys', vmin=None, vmax=None,
+                    node_annotations=None, show_grid=False):
+    activities = []
+    for n in trajectory.values():
+        ac = nx.get_node_attributes(n, "activity")
+        row = []
+        for a in sorted(ac):
+            row.append(ac[a])
+        activities.append(row)
+    plot_grid(activities, shape, slice, title, colormap, vmin, vmax, node_annotations, show_grid)
+
+
+def get_activities_over_time_as_list(trajectory):
+    activities = []
+    for G in trajectory.values():
+        atts = nx.get_node_attributes(G, "activity")
+        activities.append([atts[v] for v in sorted(atts)])
+    return activities
+
+
+def copy_network(network):
+    return pickle.loads(pickle.dumps(network, protocol=pickle.HIGHEST_PROTOCOL))
 
 
 def plot_grid(activities, shape=None, slice=-1, title='', colormap='Greys', vmin=None, vmax=None,
@@ -129,6 +157,29 @@ def plot_network(adjacency_matrix, layout="shell", with_labels=True, node_color=
         nx.draw(G, pos=layout, with_labels=with_labels, node_color=node_color, node_size=node_size)
     else:
         raise Exception("unsupported layout: %s" % layout)
+    plt.show()
+
+
+def animate_network_nx(trajectory, save=False, interval=50, dpi=80, layout="shell",
+                       with_labels=True, node_color="b", node_size=30):
+    fig, ax = plt.subplots()
+
+    def update(G):
+        ax.clear()
+
+        if layout == "shell":
+            nx.draw_shell(G, with_labels=with_labels, node_color=node_color, node_size=node_size)
+        elif layout == "spring":
+            nx.draw_spring(G, with_labels=with_labels, node_color=node_color, node_size=node_size)
+        elif isinstance(layout, dict):
+            nx.draw(G, pos=layout, with_labels=with_labels, node_color=node_color, node_size=node_size)
+        else:
+            raise Exception("unsupported layout: %s" % layout)
+
+    ani = animation.FuncAnimation(fig, update, frames=trajectory, interval=interval,
+                                  save_count=len(trajectory))
+    if save:
+        ani.save('evolved.gif', dpi=dpi, writer="imagemagick")
     plt.show()
 
 
