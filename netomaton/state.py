@@ -54,6 +54,7 @@ class Network:
     def remove_node(self, node_label):
         for i, v in self._network[node_label]["incoming"].items():
             self._decrement_out_degree(i, n=len(v))
+            self._remove_outgoing(i, node_label)
         for j in self._network[node_label]["outgoing"]:
             self._decrement_in_degree(j)
             self._remove_incoming(node_label, j)

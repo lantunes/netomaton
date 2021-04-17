@@ -25,3 +25,4 @@ from .state import *
 from .evolution_n2 import *
 from .fungal_growth_model_n2 import *
 from .wolfram_physics_model_n2 import *
+from .substitution_system_n2 import *

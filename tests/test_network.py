@@ -80,6 +80,17 @@ class TestNetwork(RuleTest):
         self.assertEqual([2], list(network.nodes))
         self.assertEqual([], list(network.edges))
 
+    def test_remove_node_outgoing(self):
+        network = ntm.Network()
+        network.add_edge(0, 1)
+        network.add_edge(1, 0)
+
+        network.remove_node(0)
+        network.remove_node(1)
+
+        self.assertEqual([], list(network.nodes))
+        self.assertEqual([], list(network.edges))
+
     def test_remove_edge(self):
         network = ntm.Network()
         network.add_node(1)
