@@ -35,5 +35,5 @@ if __name__ == '__main__':
                                update_order=model.update_order, copy_network=model.copy_network,
                                compression=compression, persist_network=persist_network)
 
-    activities_list = [list(n.activities.values()) for n in trajectory.values()]
+    activities_list = ntm.get_activities_over_time_as_list(trajectory)
     ntm.animate(activities_list, shape=(width, height), interval=200, colormap="jet")

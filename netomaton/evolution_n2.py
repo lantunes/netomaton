@@ -155,7 +155,9 @@ def evolve_n2(network, initial_conditions=None, activity_rule=None, timesteps=No
 
         t += 1
 
-    return trajectory
+    # since we require Python 3.6, and dicts respect insertion order, we don't sort the trajectory entries by key
+    # (even though the 3.6 language spec doesn't officially support it)
+    return list(trajectory.values())
 
 
 def evolve_activities(activity_rule, t, inp, curr_activities, prev_activities, trajectory, network,

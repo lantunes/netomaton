@@ -41,8 +41,8 @@ class TestRestrictedNetworkAutomata(RuleTest):
                     elif combined_in_degrees == 3 and j in curr_map[i]:
                         pass
                     # a link dies if it exists
-                    else:
-                        if j in curr_map[i]: del new_map[i][j]
+                    elif j in curr_map[i]:
+                        del new_map[i][j]
             return new_map
 
         _, connectivities = ntm.evolve(topology=initial_network, connectivity_rule=connectivity_rule, timesteps=6)

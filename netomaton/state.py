@@ -1,5 +1,6 @@
 import msgpack
 import gc
+import networkx as nx
 
 
 class Network:
@@ -128,16 +129,32 @@ class Network:
     @staticmethod
     def from_networkx(G):
         """
-        creates a Network from the given NetworkX graph.
+        Creates a Network from the given NetworkX graph.
         :param G: a NetworkX graph
         :return: a Network
         """
-        pass  # TODO
+        network = Network()
+        for node in G.nodes(data=True):
+            network.add_node(node[0], **node[1])
+        for edge in G.edges(data=True):
+            network.add_edge(edge[0], edge[1], **edge[2])
+        return network
 
-    @staticmethod
-    def to_networkx():
-        # TODO return a nx.MultiDiGraph
-        pass
+    def to_networkx(self):
+        """
+        Returns this Network as a NetworkX MultiDiGraph.
+        :return: a NetworkX MultiDiGraph
+        """
+        G = nx.MultiDiGraph()
+        for node in self.nodes:
+            atts = {}
+            for key in self._network[node]:
+                if key not in self._new_node():
+                    atts[key] = self._network[node][key]
+            G.add_node(node, **atts)
+        for i, j, data in self.edges:
+            G.add_edge(i, j, **data)
+        return G
 
     def _init_node(self, node_label):
         if node_label not in self._network:

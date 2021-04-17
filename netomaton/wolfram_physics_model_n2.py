@@ -152,6 +152,6 @@ class WolframPhysicsModel_N2:
 
     def to_configurations(self, trajectory):
         configs = []
-        for timestep in trajectory:
-            configs.append(self.network_to_config(trajectory[timestep].network))
+        for state in trajectory:
+            configs.append(self.network_to_config(state.network))
         return configs

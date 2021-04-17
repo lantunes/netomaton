@@ -18,14 +18,14 @@ class TestFungalGrowthModel(RuleTest):
                                    activity_rule=model.activity_rule, topology_rule=model.topology_rule,
                                    update_order=model.update_order, timesteps=timesteps)
 
-        activities_list = [list(n.activities.values()) for n in trajectory.values()]
+        activities_list = ntm.get_activities_over_time_as_list(trajectory)
         expected = self._convert_to_list_of_lists("fungal_growth.ca", dtype=float)
 
         np.testing.assert_almost_equal(expected, activities_list, decimal=11)
 
         expected = self._convert_from_literal("fungal_growth_model_n2.txt")
 
-        actual = {i: s.network.to_dict() for i, s in trajectory.items()}
+        actual = {i: state.network.to_dict() for i, state in enumerate(trajectory)}
         self.assertEqual(expected, actual)
 
     def test_fungal_growth_with_resource_layer(self):
@@ -45,12 +45,12 @@ class TestFungalGrowthModel(RuleTest):
                                    activity_rule=model.activity_rule, topology_rule=model.topology_rule,
                                    update_order=model.update_order, timesteps=timesteps)
 
-        activities_list = [list(n.activities.values()) for n in trajectory.values()]
+        activities_list = ntm.get_activities_over_time_as_list(trajectory)
         expected = self._convert_to_list_of_lists("fungal_growth.ca", dtype=float)
 
         np.testing.assert_almost_equal(expected, activities_list, decimal=11)
 
         expected = self._convert_from_literal("fungal_growth_model_n2.txt")
 
-        actual = {i: s.network.to_dict() for i, s in trajectory.items()}
+        actual = {i: state.network.to_dict() for i, state in enumerate(trajectory)}
         self.assertEqual(expected, actual)

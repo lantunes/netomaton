@@ -37,7 +37,7 @@ class FungalGrowthModel_N2:
 
         underlying_network = ntm.topology.lattice(dim=(1, width, height), periodic=True, first_label=0)
         self._links = set()
-        for i, j in underlying_network.edges:
+        for i, j, _ in underlying_network.edges:
             self._links.add(frozenset((i, j)))
         self._initial_network = ntm.Network(self._num_agents)
 

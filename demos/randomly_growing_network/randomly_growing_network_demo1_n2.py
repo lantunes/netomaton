@@ -27,4 +27,4 @@ if __name__ == "__main__":
                                topology_rule=topology_rule, timesteps=200)
 
     # animate time evolution of the network (NOTE: node self-links are not rendered)
-    ntm.animate_network_n2(trajectory.values(), interval=350, layout="spring", with_labels=False)
+    ntm.animate_network_n2(trajectory, interval=350, layout="spring", with_labels=False)

@@ -1,5 +1,6 @@
 import netomaton as ntm
 from .rule_test import *
+import networkx as nx
 
 
 class TestNetwork(RuleTest):
@@ -296,3 +297,39 @@ class TestNetwork(RuleTest):
             2: {'in': 1, 'out': 2, 'incoming': {1: [{'a': 'b'}]}, 'outgoing': [1, 1]}
         }
         self.assertEqual(expected, d)
+
+    def test_from_networkx(self):
+        G = nx.MultiDiGraph()
+        G.add_node(1, foo="bar", a="b")
+        G.add_node(2)
+        G.add_edge(1, 2, weight=1.0)
+        G.add_edge(2, 3, weight=2.0)
+        G.add_edge(1, 2, weight=3.0)
+
+        network = ntm.Network.from_networkx(G)
+
+        expected = {
+            1: {'foo': 'bar', 'a': 'b', 'in': 0, 'out': 2, 'incoming': {}, 'outgoing': [2, 2]},
+            2: {'in': 2, 'out': 1, 'incoming': {1: [{'weight': 1.0}, {'weight': 3.0}]}, 'outgoing': [3]},
+            3: {'in': 1, 'out': 0, 'incoming': {2: [{'weight': 2.0}]}, 'outgoing': []}
+        }
+        self.assertEqual(expected, network.to_dict())
+
+    def test_to_networkx(self):
+        network = ntm.Network()
+        network.add_node(1, foo="bar", a="b")
+        network.add_node(2)
+        network.add_edge(1, 2, weight=1.0)
+        network.add_edge(2, 3, weight=2.0)
+        network.add_edge(1, 2, weight=3.0)
+
+        G = network.to_networkx()
+
+        expected = nx.MultiDiGraph()
+        expected.add_node(1, foo="bar", a="b")
+        expected.add_node(2)
+        expected.add_edge(1, 2, weight=1.0)
+        expected.add_edge(2, 3, weight=2.0)
+        expected.add_edge(1, 2, weight=3.0)
+
+        self._assert_networks_equal(expected, G)

@@ -14,4 +14,4 @@ if __name__ == '__main__':
 
     trajectory = ntm.evolve_n2(network=model.network, topology_rule=model.topology_rule, timesteps=198)
 
-    show_network(trajectory[197].network)  # TODO if trajectory were a list, we could use -1 instead of 197
+    show_network(trajectory[-1].network)
