@@ -15,7 +15,7 @@ if __name__ == '__main__':
     """
 
     underlying_network = ntm.topology.lattice(dim=(1, 6, 6), periodic=True)
-    initial_network = ntm.topology.disconnected(36)
+    initial_network = ntm.Network(n=36)
 
     # spaceship
     initial_network.add_edge(9, 10)
@@ -54,7 +54,7 @@ if __name__ == '__main__':
                     if curr_network.has_edge(j, i): new_network.remove_edge(j, i)
         return new_network
 
-    trajectory = ntm.evolve_nx(network=initial_network, topology_rule=topology_rule, timesteps=6)
+    trajectory = ntm.evolve_n2(network=initial_network, topology_rule=topology_rule, timesteps=6)
 
     pos = nx.spring_layout(ntm.topology.lattice(dim=(1, 6, 6), periodic=False))
-    ntm.animate_network_nx(trajectory.values(), layout=pos, interval=500)
+    ntm.animate_network_n2(trajectory.values(), layout=pos, interval=500)

@@ -35,9 +35,9 @@ def lattice(dim, periodic=False, self_loops=False, first_label=0):
 
 def disconnected(nodes, to_create=nx.DiGraph):
     """
-    Create a fully disconnected network in the form of a connectivity map.
+    Create a fully disconnected network.
     :param nodes: either an int, containing the number of nodes, or a list, containing the node labels to use
-    :return: a fully disconnected network connectivity map
+    :return: a fully disconnected network
     """
     G = to_create()
     if isinstance(nodes, (list, np.ndarray)):

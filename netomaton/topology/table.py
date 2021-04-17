@@ -1,5 +1,6 @@
 import networkx as nx
 import numpy as np
+import netomaton as ntm
 
 
 def lattice(dim, periodic=False, self_loops=False, first_label=1):
@@ -24,6 +25,26 @@ def lattice(dim, periodic=False, self_loops=False, first_label=1):
             connectivity_map[edge[1]] = {}
         connectivity_map[edge[1]].update({edge[0]: [{}]})
     return connectivity_map
+
+
+def lattice_n2(dim, periodic=False, self_loops=False, first_label=1):
+    """
+    Returns a bi-directional n-dimensional lattice (i.e. Euclidean) network.
+    :param dim: a triple, representing the number of dimensions of the lattice
+    :param periodic: whether the lattice is periodic (default is False)
+    :param self_loops: if True, each node has a connection to itself (default is False)
+    :param first_label: an integer specifying the first node label (default is 1)
+    :return: a connectivity map
+    """
+    G = nx.grid_graph(dim=dim, periodic=periodic)
+    G = nx.convert_node_labels_to_integers(G, first_label=first_label)
+    network = ntm.Network()
+    for edge in G.edges:
+        if edge[0] == edge[1] and not self_loops:
+            continue
+        network.add_edge(edge[1], edge[0])
+        network.add_edge(edge[0], edge[1])
+    return network
 
 
 def disconnected(nodes):

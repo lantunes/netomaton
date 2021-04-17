@@ -2,7 +2,7 @@ import netomaton as ntm
 import numpy as np
 
 
-class FungalGrowthModel_NX:
+class FungalGrowthModel_N2:
     """
     In this model, a network of agents are connected to eachother in a Euclidean lattice. Each agent
     possesses a certain amount of "resource". An agent's resource can change by picking up resource from
@@ -39,7 +39,7 @@ class FungalGrowthModel_NX:
         self._links = set()
         for i, j in underlying_network.edges:
             self._links.add(frozenset((i, j)))
-        self._initial_network = ntm.topology.disconnected(self._num_agents)
+        self._initial_network = ntm.Network(self._num_agents)
 
         # a boolean matrix (flattened to a vector) representing the availability of resource to an agent
         if resource_layer:
@@ -59,7 +59,7 @@ class FungalGrowthModel_NX:
         if self._verbose:
             print("topology rule - t: %s" % ctx.timestep)
         curr_network = ctx.network
-        new_network = ntm.copy_network(curr_network)
+        new_network = curr_network.copy()
         for i, j in self._links:
             phi_S_i = 1 if ctx.activities[i] > 0 else 0
             phi_S_j = 1 if ctx.activities[j] > 0 else 0
@@ -86,8 +86,8 @@ class FungalGrowthModel_NX:
                 else:
                     new_network.add_edge(j, i)
 
-        for i, j in new_network.edges:
-            new_network[i][j]["weight"] = 1 / new_network.out_degree(i)
+        for i, j, _ in new_network.edges:
+            new_network.update_edge(i, j, weight=1/new_network.out_degree(i))
 
         return new_network
 
@@ -110,4 +110,8 @@ class FungalGrowthModel_NX:
 
     @property
     def update_order(self):
-        return ntm.UpdateOrder_NX.TOPOLOGY_FIRST
+        return ntm.UpdateOrder_N2.TOPOLOGY_FIRST
+
+    @property
+    def copy_network(self):
+        return False

@@ -226,3 +226,16 @@ S(t + 1) = G(A(t), S(t))
 ## Initial and Past Conditions
 
 ## Perturbations
+
+## Return Value
+
+The evolve() function returns a Trajectory, which is a list of States occupied by the system over time. A State is
+comprised of the Network and its node Activities.
+
+We maintain this dichotomy of a network and its activities for both conceptual and technical reasons. 
+While it is possible to combine the two, by having the network store the node activities, this is not aligned with
+the existence of separate activity and topology rules. Moreover, having the activities separate from the network allows
+for more control over the performance and memory usage during a simulation. For example, one may not care to keep track
+of the network over time, and thus it becomes possible to carry only a single network through the time evolution of the 
+system when the activities are separate, since a new copy of the network needn't be created every timestep for the sake 
+of storing the new activities only.

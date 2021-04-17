@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import matplotlib.collections as mcoll
+import gc
 try:
     import cPickle as pickle
 except:
@@ -21,6 +22,18 @@ def plot_activities(trajectory, shape=None, slice=-1, title='', colormap='Greys'
     plot_grid(activities, shape, slice, title, colormap, vmin, vmax, node_annotations, show_grid)
 
 
+def plot_activities_n2(trajectory, shape=None, slice=-1, title='', colormap='Greys', vmin=None, vmax=None,
+                       node_annotations=None, show_grid=False):
+    activities = []
+    for network in trajectory.values():
+        ac = network.activities
+        row = []
+        for a in sorted(ac):
+            row.append(ac[a])
+        activities.append(row)
+    plot_grid(activities, shape, slice, title, colormap, vmin, vmax, node_annotations, show_grid)
+
+
 def get_activities_over_time_as_list(trajectory):
     activities = []
     for G in trajectory.values():
@@ -30,7 +43,10 @@ def get_activities_over_time_as_list(trajectory):
 
 
 def copy_network(network):
-    return pickle.loads(pickle.dumps(network, protocol=pickle.HIGHEST_PROTOCOL))
+    gc.disable()
+    network_copy = pickle.loads(pickle.dumps(network, protocol=pickle.HIGHEST_PROTOCOL))
+    gc.enable()
+    return network_copy
 
 
 def plot_grid(activities, shape=None, slice=-1, title='', colormap='Greys', vmin=None, vmax=None,
@@ -209,6 +225,36 @@ def animate_network(adjacency_matrices, save=False, interval=50, dpi=80, layout=
 
     ani = animation.FuncAnimation(fig, update, frames=adjacency_matrices, interval=interval,
                                   save_count=len(adjacency_matrices))
+    if save:
+        ani.save('evolved.gif', dpi=dpi, writer="imagemagick")
+    plt.show()
+
+
+def animate_network_n2(states, save=False, interval=50, dpi=80, layout="shell",
+                       with_labels=True, node_color="b", node_size=30):
+    fig, ax = plt.subplots()
+
+    def update(state):
+        ax.clear()
+
+        network = state.network
+        G = nx.MultiDiGraph()
+        for n in network.nodes:
+            G.add_node(n)
+        for edge in network.edges:
+            G.add_edge(edge[0], edge[1])
+
+        if layout == "shell":
+            nx.draw_shell(G, with_labels=with_labels, node_color=node_color, node_size=node_size)
+        elif layout == "spring":
+            nx.draw_spring(G, with_labels=with_labels, node_color=node_color, node_size=node_size)
+        elif isinstance(layout, dict):
+            nx.draw(G, pos=layout, with_labels=with_labels, node_color=node_color, node_size=node_size)
+        else:
+            raise Exception("unsupported layout: %s" % layout)
+
+    ani = animation.FuncAnimation(fig, update, frames=states, interval=interval,
+                                  save_count=len(states))
     if save:
         ani.save('evolved.gif', dpi=dpi, writer="imagemagick")
     plt.show()
