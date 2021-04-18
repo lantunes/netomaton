@@ -14,20 +14,19 @@ class TestFungalGrowthModel(RuleTest):
 
         model = ntm.FungalGrowthModel(R_E, width, height, initial_conditions, seed=20210408, verbose=False)
 
-        activities, c = ntm.evolve(topology=model.topology, initial_conditions=initial_conditions,
-                                   activity_rule=model.activity_rule, connectivity_rule=model.connectivity_rule,
-                                   update_order=model.update_order, timesteps=timesteps,
-                                   copy_connectivity=model.copy_connectivity)
+        trajectory = ntm.evolve(network=model.network, initial_conditions=initial_conditions,
+                                activity_rule=model.activity_rule, topology_rule=model.topology_rule,
+                                update_order=model.update_order, timesteps=timesteps)
 
-        activities_list = ntm.convert_activities_map_to_list(activities)
+        activities_list = ntm.get_activities_over_time_as_list(trajectory)
         expected = self._convert_to_list_of_lists("fungal_growth.ca", dtype=float)
 
         np.testing.assert_almost_equal(expected, activities_list, decimal=11)
 
         expected = self._convert_from_literal("fungal_growth_model.txt")
 
-        c = {i: t.to_dict() for i, t in c.items()}
-        self.assertEqual(expected, c)
+        actual = {i: state.network.to_dict() for i, state in enumerate(trajectory)}
+        self.assertEqual(expected, actual)
 
     def test_fungal_growth_with_resource_layer(self):
         R_E = 80000.0
@@ -42,17 +41,16 @@ class TestFungalGrowthModel(RuleTest):
         model = ntm.FungalGrowthModel(R_E, width, height, initial_conditions, resource_layer=resource_layer,
                                       seed=20210408, verbose=False)
 
-        activities, c = ntm.evolve(topology=model.topology, initial_conditions=initial_conditions,
-                                   activity_rule=model.activity_rule, connectivity_rule=model.connectivity_rule,
-                                   update_order=model.update_order, timesteps=timesteps,
-                                   copy_connectivity=model.copy_connectivity)
+        trajectory = ntm.evolve(network=model.network, initial_conditions=initial_conditions,
+                                activity_rule=model.activity_rule, topology_rule=model.topology_rule,
+                                update_order=model.update_order, timesteps=timesteps)
 
-        activities_list = ntm.convert_activities_map_to_list(activities)
+        activities_list = ntm.get_activities_over_time_as_list(trajectory)
         expected = self._convert_to_list_of_lists("fungal_growth.ca", dtype=float)
 
         np.testing.assert_almost_equal(expected, activities_list, decimal=11)
 
         expected = self._convert_from_literal("fungal_growth_model.txt")
 
-        c = {i: t.to_dict() for i, t in c.items()}
-        self.assertEqual(expected, c)
+        actual = {i: state.network.to_dict() for i, state in enumerate(trajectory)}
+        self.assertEqual(expected, actual)

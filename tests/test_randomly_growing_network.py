@@ -8,19 +8,20 @@ class TestRandomlyGrowingNetwork(RuleTest):
         np.random.seed(0)
         expected = self._convert_to_list_of_list_of_lists("randomly_growing_network.ca")
 
-        adjacency_matrix = [[1]]  # begin with a single-node network
+        network = ntm.topology.from_adjacency_matrix([[1]])  # begin with a single-node network
 
-        def connectivity_rule(cctx):
-            num_nodes = len(cctx.connectivity_map)
+        def topology_rule(ctx):
+            num_nodes = len(ctx.network.nodes)
             new_label = num_nodes
-            cctx.connectivity_map[new_label] = {}
+            ctx.network.add_node(new_label)
             connect_to = int(np.random.choice(list(range(num_nodes))))
-            cctx.connectivity_map[connect_to][new_label] = [{}]
-            cctx.connectivity_map[new_label][connect_to] = [{}]
+            ctx.network.add_edge(new_label, connect_to)
+            ctx.network.add_edge(connect_to, new_label)
 
-            return cctx.connectivity_map
+            return ctx.network
 
-        _, connectivities = ntm.evolve(initial_conditions=[1], topology=adjacency_matrix,
-                                       connectivity_rule=connectivity_rule, timesteps=25)
+        trajectory = ntm.evolve(initial_conditions=[1], network=network,
+                                topology_rule=topology_rule, timesteps=25)
 
-        np.testing.assert_equal(expected, connectivities)
+        topology = [state.network.to_adjacency_matrix() for state in trajectory]
+        np.testing.assert_equal(expected, topology)

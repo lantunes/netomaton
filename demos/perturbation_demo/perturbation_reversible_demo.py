@@ -4,7 +4,7 @@ import numpy as np
 
 if __name__ == '__main__':
 
-    adjacency_matrix = ntm.topology.adjacency.cellular_automaton(n=200)
+    network = ntm.topology.cellular_automaton(n=200)
 
     initial_conditions = np.random.randint(0, 2, 200)
 
@@ -14,7 +14,7 @@ if __name__ == '__main__':
             return 1
         return rule(ctx)
 
-    activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=100,
-                               activity_rule=ntm.ReversibleRule(perturbed_rule), past_conditions=[initial_conditions])
+    trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network, timesteps=100,
+                            activity_rule=ntm.ReversibleRule(perturbed_rule), past_conditions=[initial_conditions])
 
-    ntm.plot_grid(activities)
+    ntm.plot_activities(trajectory)

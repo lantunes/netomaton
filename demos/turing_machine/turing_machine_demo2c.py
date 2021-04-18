@@ -36,10 +36,11 @@ if __name__ == "__main__":
 
     initial_conditions = [CELL[t] for t in tape]
 
-    activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=tm.adjacency_matrix,
-                               activity_rule=tm.activity_rule, timesteps=58)
+    trajectory = ntm.evolve(initial_conditions=initial_conditions, network=tm.network,
+                            activity_rule=tm.activity_rule, timesteps=58)
 
-    ntm.plot_grid(activities, node_annotations=tm.head_activities(activities), show_grid=True)
+    activities = ntm.get_activities_over_time_as_list(trajectory)
+    ntm.plot_grid(activities, node_annotations=tm.head_activities(trajectory), show_grid=True)
 
     # The following is a longer evolution, to show that ECA Rule 110 is emulated;
     #  it will start when the plot rendered above is closed.
@@ -51,10 +52,11 @@ if __name__ == "__main__":
     tm = TapeCentricTuringMachine(n=len(tape), rule_table=rule_table,
                                   initial_head_state=HEAD['up'], initial_head_position=52)
 
-    activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=tm.adjacency_matrix,
-                               activity_rule=tm.activity_rule, timesteps=5000)
+    trajectory = ntm.evolve(initial_conditions=initial_conditions, network=tm.network,
+                            activity_rule=tm.activity_rule, timesteps=5000)
 
-    head_activities = tm.head_activities(activities)
+    head_activities = tm.head_activities(trajectory)
+    activities = ntm.get_activities_over_time_as_list(trajectory)
 
     # we'll only keep the steps where the head has moved further to the right than ever before...
     compressed_activities = []

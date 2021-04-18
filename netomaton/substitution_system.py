@@ -1,11 +1,12 @@
 import numpy as np
+from .state import Network
 
 
 class SubstitutionSystem:
     def __init__(self, rules, n):
         self._rules = rules
         self._neighbourhood_size = self._get_neighbourhood_size(rules)
-        self._connectivity_map = self._init_connectivity_map(n)
+        self._network = self._init_network(n)
         self._last_node_index = n - 1
         self._num_nodes_added = 0
         self._last_timestep = 0
@@ -17,17 +18,16 @@ class SubstitutionSystem:
                 raise Exception("all keys in the rule map must be the same length")
         return neighbourhood_size
 
-    def _init_connectivity_map(self, n):
+    def _init_network(self, n):
         # since we require Python 3.6, and dicts respect insertion order, we're using a plain dict here
         # (even though the 3.6 language spec doesn't officially support it)
-        connectivity_map = {}
+        network = Network()
         for i in range(n):
-            node_map = {i: [{}]}
+            network.add_edge(i, i)
             for j in range(1, self._neighbourhood_size):
                 if (i + j) < n:
-                    node_map[i + j] = [{}]
-            connectivity_map[i] = node_map
-        return connectivity_map
+                    network.add_edge(i + j, i)
+        return network
 
     def activity_rule(self, ctx):
         ctx.remove_node(ctx.node_label)
@@ -46,7 +46,7 @@ class SubstitutionSystem:
             self._num_nodes_added += 1
             outgoing_links = {}
             for j in range(0, min(self._num_nodes_added, self._neighbourhood_size)):
-                outgoing_links[new_node_label - j] = [{}]
+                outgoing_links[new_node_label - j] = {}
             ctx.add_node(int(state), outgoing_links, new_node_label)
 
         # we return None here, since the graph has been re-written through the context, and the newly added node(s)
@@ -64,10 +64,11 @@ class SubstitutionSystem:
         return state
 
     @property
-    def connectivity_map(self):
-        return self._connectivity_map
+    def network(self):
+        return self._network
 
-    def pad(self, activities):
-        activities = [[v for e, v in sorted(activities[k].to_dict().items())] for k in sorted(activities)]
+    def pad(self, trajectory):
+        activities = {t: s.activities for t, s in enumerate(trajectory)}
+        activities = [[v for e, v in sorted(activities[k].items())] for k in sorted(activities)]
         max_len = np.max([len(a) for a in activities])
         return np.asarray([np.pad(a, (0, max_len - len(a)), 'constant', constant_values=0) for a in activities])

@@ -84,7 +84,8 @@ if __name__ == "__main__":
 
     initial_conditions = [CELL[t] for t in tape]
 
-    activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=tm.adjacency_matrix,
-                               activity_rule=tm.activity_rule, timesteps=61)
+    trajectory = ntm.evolve(initial_conditions=initial_conditions, network=tm.network,
+                            activity_rule=tm.activity_rule, timesteps=61)
 
-    ntm.plot_grid(activities, node_annotations=tm.head_activities(activities), show_grid=True)
+    activities = ntm.get_activities_over_time_as_list(trajectory)
+    ntm.plot_grid(activities, node_annotations=tm.head_activities(trajectory), show_grid=True)

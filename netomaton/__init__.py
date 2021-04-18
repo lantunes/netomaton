@@ -12,13 +12,8 @@ from .hopfield_tank_tsp_net import *
 from .substitution_system import *
 from .wolfram_physics_model import *
 from .fungal_growth_model import *
+from .state import *
 
 from . import topology
 from . import rules
 from . import vis
-
-from .state import *
-from .evolution_n2 import *
-from .fungal_growth_model_n2 import *
-from .wolfram_physics_model_n2 import *
-from .substitution_system_n2 import *

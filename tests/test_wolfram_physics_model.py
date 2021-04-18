@@ -1,4 +1,4 @@
-from netomaton import evolve, WolframPhysicsModel
+from netomaton import evolve, WolframPhysicsModel, Network
 from .rule_test import *
 
 
@@ -9,11 +9,9 @@ class TestWolframPhysicsModel(RuleTest):
         rules = {"in": [("x", "y")], "out": [("x", "y"), ("y", "z")]}
         model = WolframPhysicsModel(config, rules)
 
-        self.assertEqual({
-            1: {
-                1: [{"label": "1", "unary": True}]
-            }
-        }, model.connectivity_map)
+        expected_network = Network()
+        expected_network.add_edge(1, 1, label="1", unary=True)
+        self.assertEqual(expected_network, model.network)
         self.assertEqual(1, model.last_node)
         self.assertEqual(rules, model.rules)
 
@@ -22,11 +20,10 @@ class TestWolframPhysicsModel(RuleTest):
         rules = {"in": [("x", "y")], "out": [("x", "y"), ("y", "z")]}
         model = WolframPhysicsModel(config, rules)
 
-        self.assertEqual({
-            1: {
-                1: [{"label": "1", "unary": True}, {"label": "2", "unary": True}]
-            }
-        }, model.connectivity_map)
+        expected_network = Network()
+        expected_network.add_edge(1, 1, label="1", unary=True)
+        expected_network.add_edge(1, 1, label="2", unary=True)
+        self.assertEqual(expected_network, model.network)
         self.assertEqual(1, model.last_node)
         self.assertEqual(rules, model.rules)
 
@@ -35,12 +32,9 @@ class TestWolframPhysicsModel(RuleTest):
         rules = {"in": [("x", "y")], "out": [("x", "y"), ("y", "z")]}
         model = WolframPhysicsModel(config, rules)
 
-        self.assertEqual({
-            1: {},
-            2: {
-                1: [{"label": "1"}]
-            }
-        }, model.connectivity_map)
+        expected_network = Network()
+        expected_network.add_edge(1, 2, label="1")
+        self.assertEqual(expected_network, model.network)
         self.assertEqual(2, model.last_node)
         self.assertEqual(rules, model.rules)
 
@@ -49,14 +43,10 @@ class TestWolframPhysicsModel(RuleTest):
         rules = {"in": [("x", "y")], "out": [("x", "y"), ("y", "z")]}
         model = WolframPhysicsModel(config, rules)
 
-        self.assertEqual({
-            1: {
-                1: [{"label": "1", "unary": True}]
-            },
-            2: {
-                1: [{"label": "2"}]
-            }
-        }, model.connectivity_map)
+        expected_network = Network()
+        expected_network.add_edge(1, 1, label="1", unary=True)
+        expected_network.add_edge(1, 2, label="2")
+        self.assertEqual(expected_network, model.network)
         self.assertEqual(2, model.last_node)
         self.assertEqual(rules, model.rules)
 
@@ -65,21 +55,10 @@ class TestWolframPhysicsModel(RuleTest):
         rules = {"in": [("x", "y")], "out": [("x", "y"), ("y", "z")]}
         model = WolframPhysicsModel(config, rules)
 
-        self.assertEqual({
-            1: {
-                1: [{
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 0
-                    }
-                }, {
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 1
-                    }
-                }]
-            }
-        }, model.connectivity_map)
+        expected_network = Network()
+        expected_network.add_edge(1, 1, label="1", hyperedge_index=0)
+        expected_network.add_edge(1, 1, label="1", hyperedge_index=1)
+        self.assertEqual(expected_network, model.network)
         self.assertEqual(1, model.last_node)
         self.assertEqual(rules, model.rules)
 
@@ -88,28 +67,15 @@ class TestWolframPhysicsModel(RuleTest):
         rules = {"in": [("x", "y")], "out": [("x", "y"), ("y", "z")]}
         model = WolframPhysicsModel(config, rules)
 
-        self.assertEqual({
-            1: {
-                1: [{
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 0
-                    }
-                }, {
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 1
-                    }
-                }]
-            },
-            2: {
-                1: [{"label": "2"}, {"label": "3"}, {"label": "4"}],
-                3: [{"label": "6"}]
-            },
-            3: {
-                2: [{"label": "5"}]
-            }
-        }, model.connectivity_map)
+        expected_network = Network()
+        expected_network.add_edge(1, 1, label="1", hyperedge_index=0)
+        expected_network.add_edge(1, 1, label="1", hyperedge_index=1)
+        expected_network.add_edge(1, 2, label="2")
+        expected_network.add_edge(1, 2, label="3")
+        expected_network.add_edge(1, 2, label="4")
+        expected_network.add_edge(3, 2, label="6")
+        expected_network.add_edge(2, 3, label="5")
+        self.assertEqual(expected_network, model.network)
         self.assertEqual(3, model.last_node)
         self.assertEqual(rules, model.rules)
 
@@ -118,25 +84,10 @@ class TestWolframPhysicsModel(RuleTest):
         rules = {"in": [("x", "y")], "out": [("x", "y"), ("y", "z")]}
         model = WolframPhysicsModel(config, rules)
 
-        self.assertEqual({
-            1: {},
-            2: {
-                1: [{
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 0
-                    }
-                }]
-            },
-            3: {
-                2: [{
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 1
-                    }
-                }]
-            }
-        }, model.connectivity_map)
+        expected_network = Network()
+        expected_network.add_edge(1, 2, label="1", hyperedge_index=0)
+        expected_network.add_edge(2, 3, label="1", hyperedge_index=1)
+        self.assertEqual(expected_network, model.network)
         self.assertEqual(3, model.last_node)
         self.assertEqual(rules, model.rules)
 
@@ -145,56 +96,15 @@ class TestWolframPhysicsModel(RuleTest):
         rules = {"in": [("x", "y")], "out": [("x", "y"), ("y", "z")]}
         model = WolframPhysicsModel(config, rules)
 
-        self.assertEqual({
-            1: {
-                1: [{
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 3
-                    }
-                }, {
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 6
-                    }
-                }],
-                2: [{
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 2
-                    }
-                }],
-                3: [{
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 0
-                    }
-                }],
-                4: [{
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 5
-                    }
-                }]
-            },
-            2: {
-                1: [{
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 1
-                    }
-                }]
-            },
-            3: {},
-            4: {
-                1: [{
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 4
-                    }
-                }]
-            }
-        }, model.connectivity_map)
+        expected_network = Network()
+        expected_network.add_edge(3, 1, label="1", hyperedge_index=0)
+        expected_network.add_edge(1, 2, label="1", hyperedge_index=1)
+        expected_network.add_edge(2, 1, label="1", hyperedge_index=2)
+        expected_network.add_edge(1, 1, label="1", hyperedge_index=3)
+        expected_network.add_edge(1, 4, label="1", hyperedge_index=4)
+        expected_network.add_edge(4, 1, label="1", hyperedge_index=5)
+        expected_network.add_edge(1, 1, label="1", hyperedge_index=6)
+        self.assertEqual(expected_network, model.network)
         self.assertEqual(4, model.last_node)
         self.assertEqual(rules, model.rules)
 
@@ -203,51 +113,14 @@ class TestWolframPhysicsModel(RuleTest):
         rules = {"in": [("x", "y")], "out": [("x", "y"), ("y", "z")]}
         model = WolframPhysicsModel(config, rules)
 
-        self.assertEqual({
-            1: {
-                1: [{
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 0
-                    }
-                }, {
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 1
-                    }
-                }]
-            },
-            2: {
-                1: [{
-                    "label": "2",
-                    "hyperedge": {
-                        "index": 0
-                    }
-                }]
-            },
-            3: {
-                2: [{
-                    "label": "2",
-                    "hyperedge": {
-                        "index": 1
-                    }
-                }]
-            },
-            4: {
-                3: [{
-                    "label": "3",
-                    "hyperedge": {
-                        "index": 0
-                    }
-                }],
-                4: [{
-                    "label": "3",
-                    "hyperedge": {
-                        "index": 1
-                    }
-                }]
-            }
-        }, model.connectivity_map)
+        expected_network = Network()
+        expected_network.add_edge(1, 1, label="1", hyperedge_index=0)
+        expected_network.add_edge(1, 1, label="1", hyperedge_index=1)
+        expected_network.add_edge(1, 2, label="2", hyperedge_index=0)
+        expected_network.add_edge(2, 3, label="2", hyperedge_index=1)
+        expected_network.add_edge(3, 4, label="3", hyperedge_index=0)
+        expected_network.add_edge(4, 4, label="3", hyperedge_index=1)
+        self.assertEqual(expected_network, model.network)
         self.assertEqual(4, model.last_node)
         self.assertEqual(rules, model.rules)
 
@@ -256,299 +129,116 @@ class TestWolframPhysicsModel(RuleTest):
         rules = {"in": [("x", "y")], "out": [("x", "y"), ("y", "z")]}
         model = WolframPhysicsModel(config, rules)
 
-        self.assertEqual({
-            1: {
-                1: [{
-                    "label": "3",
-                    "hyperedge": {
-                        "index": 1
-                    }
-                }],
-                2: [{
-                    "label": "3",
-                    "hyperedge": {
-                        "index": 0
-                    }
-                }]
-            },
-            2: {},
-            3: {
-                1: [{
-                    "label": "2",
-                    "hyperedge": {
-                        "index": 0
-                    }
-                }],
-                2: [{
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 0
-                    }
-                }],
-                3: [{
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 1
-                    }
-                }, {
-                    "label": "2",
-                    "hyperedge": {
-                        "index": 1
-                    }
-                }]
-            }
-        }, model.connectivity_map)
+        expected_network = Network()
+        expected_network.add_edge(2, 3, label="1", hyperedge_index=0)
+        expected_network.add_edge(3, 3, label="1", hyperedge_index=1)
+        expected_network.add_edge(1, 3, label="2", hyperedge_index=0)
+        expected_network.add_edge(3, 3, label="2", hyperedge_index=1)
+        expected_network.add_edge(2, 1, label="3", hyperedge_index=0)
+        expected_network.add_edge(1, 1, label="3", hyperedge_index=1)
+        self.assertEqual(expected_network, model.network)
         self.assertEqual(3, model.last_node)
         self.assertEqual(rules, model.rules)
 
-    def test_connectivity_map_to_config(self):
+    def test_network_to_config(self):
         config = [(1,)]
-        self.assertEqual(config, WolframPhysicsModel.connectivity_map_to_config({
-            1: {
-                1: [{"label": "1", "unary": True}]
-            }
-        }))
+        network = Network()
+        network.add_edge(1, 1, label="1", unary=True)
+        self.assertEqual(config, WolframPhysicsModel.network_to_config(network))
 
-    def test_connectivity_map_to_config2(self):
+    def test_network_to_config2(self):
         config = [(1, 2)]
-        self.assertEqual(config, WolframPhysicsModel.connectivity_map_to_config({
-            1: {},
-            2: {
-                1: [{"label": "1"}]
-            }
-        }))
+        network = Network()
+        network.add_edge(1, 2, label="1")
+        self.assertEqual(config, WolframPhysicsModel.network_to_config(network))
 
-    def test_connectivity_map_to_config3(self):
+    def test_network_to_config3(self):
         config = [(1,), (1, 2)]
-        self.assertEqual(config, WolframPhysicsModel.connectivity_map_to_config({
-            1: {
-                1: [{"label": "1", "unary": True}]
-            },
-            2: {
-                1: [{"label": "2"}]
-            }
-        }))
+        network = Network()
+        network.add_edge(1, 1, label="1", unary=True)
+        network.add_edge(1, 2, label="2")
+        self.assertEqual(config, WolframPhysicsModel.network_to_config(network))
 
-    def test_connectivity_map_to_config4(self):
+    def test_network_to_config4(self):
         config = [(1,), (1,)]
-        self.assertEqual(config, WolframPhysicsModel.connectivity_map_to_config({
-            1: {
-                1: [{"label": "1", "unary": True}, {"label": "2", "unary": True}]
-            }
-        }))
+        network = Network()
+        network.add_edge(1, 1, label="1", unary=True)
+        network.add_edge(1, 1, label="2", unary=True)
+        self.assertEqual(config, WolframPhysicsModel.network_to_config(network))
 
-    def test_connectivity_map_to_config5(self):
+    def test_network_to_config5(self):
         config = [(1, 1, 1)]
-        self.assertEqual(config, WolframPhysicsModel.connectivity_map_to_config({
-            1: {
-                1: [{
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 0
-                    }
-                }, {
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 1
-                    }
-                }]
-            }
-        }))
+        network = Network()
+        network.add_edge(1, 1, label="1", hyperedge_index=0)
+        network.add_edge(1, 1, label="1", hyperedge_index=1)
+        self.assertEqual(config, WolframPhysicsModel.network_to_config(network))
 
-    def test_connectivity_map_to_config6(self):
+    def test_network_to_config6(self):
         config = [(1, 1, 1), (1, 2), (1, 2), (1, 2), (3, 2), (2, 3)]
-        self.assertEqual(config, WolframPhysicsModel.connectivity_map_to_config({
-            1: {
-                1: [{
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 0
-                    }
-                }, {
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 1
-                    }
-                }]
-            },
-            2: {
-                1: [{"label": "2"}, {"label": "3"}, {"label": "4"}],
-                3: [{"label": "5"}]
-            },
-            3: {
-                2: [{"label": "6"}]
-            }
-        }))
+        network = Network()
+        network.add_edge(1, 1, label="1", hyperedge_index=0)
+        network.add_edge(1, 1, label="1", hyperedge_index=1)
+        network.add_edge(1, 2, label="2")
+        network.add_edge(1, 2, label="3")
+        network.add_edge(1, 2, label="4")
+        network.add_edge(3, 2, label="5")
+        network.add_edge(2, 3, label="6")
+        self.assertEqual(config, WolframPhysicsModel.network_to_config(network))
 
-    def test_connectivity_map_to_config7(self):
+    def test_network_to_config7(self):
         config = [(1, 2, 3)]
-        self.assertEqual(config, WolframPhysicsModel.connectivity_map_to_config({
-            1: {},
-            2: {
-                1: [{
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 0
-                    }
-                }]
-            },
-            3: {
-                2: [{
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 1
-                    }
-                }]
-            }
-        }))
+        network = Network()
+        network.add_edge(1, 2, label="1", hyperedge_index=0)
+        network.add_edge(2, 3, label="1", hyperedge_index=1)
+        self.assertEqual(config, WolframPhysicsModel.network_to_config(network))
 
-    def test_connectivity_map_to_config8(self):
+    def test_network_to_config8(self):
         config = [(3, 1, 4, 2)]
-        self.assertEqual(config, WolframPhysicsModel.connectivity_map_to_config({
-            1: {
-                3: [{
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 0
-                    }
-                }]
-            },
-            2: {
-                4: [{
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 2
-                    }
-                }]
-            },
-            3: {},
-            4: {
-                1: [{
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 1
-                    }
-                }]
-            }
-        }))
+        network = Network()
+        network.add_edge(3, 1, label="1", hyperedge_index=0)
+        network.add_edge(4, 2, label="1", hyperedge_index=2)
+        network.add_edge(1, 4, label="1", hyperedge_index=1)
+        self.assertEqual(config, WolframPhysicsModel.network_to_config(network))
 
-    def test_connectivity_map_to_config9(self):
+    def test_network_to_config9(self):
         config = [(3, 1, 2, 1, 1, 4, 1, 1)]
-        self.assertEqual(config, WolframPhysicsModel.connectivity_map_to_config({
-            1: {
-                1: [{
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 3
-                    }
-                }, {
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 6
-                    }
-                }],
-                2: [{
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 2
-                    }
-                }],
-                3: [{
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 0
-                    }
-                }],
-                4: [{
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 5
-                    }
-                }]
-            },
-            2: {
-                1: [{
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 1
-                    }
-                }]
-            },
-            3: {},
-            4: {
-                1: [{
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 4
-                    }
-                }]
-            }
-        }))
+        network = Network()
+        network.add_edge(1, 1, label="1", hyperedge_index=3)
+        network.add_edge(1, 1, label="1", hyperedge_index=6)
+        network.add_edge(2, 1, label="1", hyperedge_index=2)
+        network.add_edge(3, 1, label="1", hyperedge_index=0)
+        network.add_edge(4, 1, label="1", hyperedge_index=5)
+        network.add_edge(1, 2, label="1", hyperedge_index=1)
+        network.add_edge(1, 4, label="1", hyperedge_index=4)
+        self.assertEqual(config, WolframPhysicsModel.network_to_config(network))
 
-    def test_connectivity_map_to_config10(self):
+    def test_network_to_config10(self):
         config = [(1, 1, 1), (1, 2, 3), (3, 4, 4)]
-        self.assertEqual(config, WolframPhysicsModel.connectivity_map_to_config({
-            1: {
-                1: [{
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 0
-                    }
-                }, {
-                    "label": "1",
-                    "hyperedge": {
-                        "index": 1
-                    }
-                }]
-            },
-            2: {
-                1: [{
-                    "label": "2",
-                    "hyperedge": {
-                        "index": 0
-                    }
-                }]
-            },
-            3: {
-                2: [{
-                    "label": "2",
-                    "hyperedge": {
-                        "index": 1
-                    }
-                }]
-            },
-            4: {
-                3: [{
-                    "label": "3",
-                    "hyperedge": {
-                        "index": 0
-                    }
-                }],
-                4: [{
-                    "label": "3",
-                    "hyperedge": {
-                        "index": 1
-                    }
-                }]
-            }
-        }))
+        network = Network()
+        network.add_edge(1, 1, label="1", hyperedge_index=0)
+        network.add_edge(1, 1, label="1", hyperedge_index=1)
+        network.add_edge(1, 2, label="2", hyperedge_index=0)
+        network.add_edge(2, 3, label="2", hyperedge_index=1)
+        network.add_edge(3, 4, label="3", hyperedge_index=0)
+        network.add_edge(4, 4, label="3", hyperedge_index=1)
+        self.assertEqual(config, WolframPhysicsModel.network_to_config(network))
 
     def test_config_interconversion(self):
         expected = [(1, 1, 3), (1, 3, 2), (1, 2, 4), (2, 4, 1)]
-        connectivity_map = WolframPhysicsModel(expected, {}).connectivity_map
-        actual = WolframPhysicsModel.connectivity_map_to_config(connectivity_map)
+        network = WolframPhysicsModel(expected, {}).network
+        actual = WolframPhysicsModel.network_to_config(network)
         self.assertEqual(actual, expected)
 
     def test_config_interconversion2(self):
         expected = [(4, 2), (2, 3), (5, 1), (1, 2)]
-        connectivity_map = WolframPhysicsModel(expected, {}).connectivity_map
-        actual = WolframPhysicsModel.connectivity_map_to_config(connectivity_map)
+        network =  WolframPhysicsModel(expected, {}).network
+        actual = WolframPhysicsModel.network_to_config(network)
         self.assertEqual(actual, expected)
 
     def test_config_interconversion3(self):
         expected = [(1, 1, 1), (1, 2), (1, 2), (1, 2), (2, 3), (3, 2)]
-        connectivity_map = WolframPhysicsModel(expected, {}).connectivity_map
-        actual = WolframPhysicsModel.connectivity_map_to_config(connectivity_map)
+        network =  WolframPhysicsModel(expected, {}).network
+        actual = WolframPhysicsModel.network_to_config(network)
         self.assertEqual(actual, expected)
 
     def test_wm148(self):
@@ -836,9 +526,8 @@ class TestWolframPhysicsModel(RuleTest):
     @staticmethod
     def _evolve_wolfram_physics_model(config, rules, timesteps):
         model = WolframPhysicsModel(config, rules)
-        _, connectivities = evolve(topology=model.connectivity_map, connectivity_rule=model.connectivity_rule,
-                                   timesteps=timesteps)
-        return model.to_configurations(connectivities)
+        trajectory = evolve(network=model.network, topology_rule=model.topology_rule, timesteps=timesteps)
+        return model.to_configurations(trajectory)
 
     @staticmethod
     def _assert_configurations_over_time_equal(actual, expected):

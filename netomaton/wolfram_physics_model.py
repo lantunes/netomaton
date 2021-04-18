@@ -1,17 +1,19 @@
+from .state import Network
+
 
 class WolframPhysicsModel:
     def __init__(self, configuration, rules):
-        self.connectivity_map, self.last_node = self._init_connectivity_and_conditions(configuration)
+        self.network, self.last_node = self._init_network_and_conditions(configuration)
         self.rules = rules
 
     @staticmethod
-    def _init_connectivity_and_conditions(config):
+    def _init_network_and_conditions(config):
         """
-        The Connectivity Map for the Wolfram Physics Model is comprised of connection states that are 2-tuples:
-        (m, h), where "m" is the connection multiplicity (i.e. how copies of this edge are present) and "h" is the
-        hyperedge label for the hyperedge this connection belongs to.
+        The network for the Wolfram Physics Model is comprised of connection states that consist of a "label",
+        that indicates the relation label, and optionally a "hyperedge_index", if the pair of nodes belong to a
+        hyperedge, and a "unary" flag, to indicate a unary connection.
         """
-        conn_map = {}
+        network = Network()
         last_node = 0
         for c, relation in enumerate(config):
             prev = None
@@ -19,40 +21,37 @@ class WolframPhysicsModel:
             is_hyperedge = len(relation) > 2
             next_edge_num = 0
             for node in relation:
-                if node not in conn_map:
-                    conn_map[node] = {}
                 if prev is not None:
-                    if prev not in conn_map[node]:
-                        conn_map[node][prev] = []
                     prev_state = {"label": edge_label}
                     if is_hyperedge:
-                        prev_state["hyperedge"] = {"index": next_edge_num}
-                    conn_map[node][prev].append(prev_state)
+                        prev_state["hyperedge_index"] = next_edge_num
+                    network.add_edge(prev, node, **prev_state)
                     next_edge_num += 1
                 prev = node
                 if node > last_node:
                     last_node = node
             if len(relation) == 1:
                 n = relation[0]
-                if n not in conn_map[n]:
-                    conn_map[n][n] = []
-                conn_map[n][n].append({"label": edge_label, "unary": True})
-        return conn_map, last_node
+                network.add_edge(n, n, label=edge_label, unary=True)
+        return network, last_node
 
     @staticmethod
-    def connectivity_map_to_config(conn_map):
+    def network_to_config(network):
         edges = {}
         hyperedges = {}
-        for to_node in conn_map:
-            for from_node, connections in conn_map[to_node].items():
-                for connection in connections:
+        for to_node in network.nodes:
+            in_edges = network.in_edges(to_node)
+            for i in in_edges:
+                from_node = i
+                # connection = in_edges[i]
+                for connection in in_edges[i]:
                     edge_label = connection["label"]
                     if "unary" in connection:
                         edges[edge_label] = (from_node,)
-                    elif "hyperedge" in connection:
+                    elif "hyperedge_index" in connection:
                         if edge_label not in hyperedges:
                             hyperedges[edge_label] = []
-                        hyperedges[edge_label].append(((from_node, to_node), connection["hyperedge"]["index"]))
+                        hyperedges[edge_label].append(((from_node, to_node), connection["hyperedge_index"]))
                     else:
                         edges[edge_label] = (from_node, to_node)
 
@@ -75,8 +74,8 @@ class WolframPhysicsModel:
 
         return config
 
-    def connectivity_rule(self, cctx):
-        relations = self.connectivity_map_to_config(cctx.connectivity_map)
+    def topology_rule(self, cctx):
+        relations = self.network_to_config(cctx.network)
 
         matched_relations = []
         unmatched_relations = []
@@ -126,9 +125,9 @@ class WolframPhysicsModel:
                     new_edge.append(bindings[symbol])
                 new_config.append(tuple(new_edge))
 
-        self.connectivity_map, self.last_node = self._init_connectivity_and_conditions(new_config)
+        self.network, self.last_node = self._init_network_and_conditions(new_config)
 
-        return self.connectivity_map
+        return self.network
 
     def _matches(self, rule, relation, symbol_bindings):
         if len(rule) != len(relation):
@@ -151,8 +150,8 @@ class WolframPhysicsModel:
 
         return True
 
-    def to_configurations(self, connectivities_over_time):
+    def to_configurations(self, trajectory):
         configs = []
-        for timestep in connectivities_over_time:
-            configs.append(self.connectivity_map_to_config(connectivities_over_time[timestep].to_dict()))
+        for state in trajectory:
+            configs.append(self.network_to_config(state.network))
         return configs

@@ -19,13 +19,11 @@ if __name__ == "__main__":
 
     subn_system = ntm.SubstitutionSystem(rules, len(initial_conditions))
 
-    activities, connectivities = ntm.evolve(initial_conditions=initial_conditions,
-                                            topology=subn_system.connectivity_map,
-                                            activity_rule=subn_system.activity_rule, timesteps=timesteps)
+    trajectory = ntm.evolve(initial_conditions=initial_conditions, network=subn_system.network,
+                            activity_rule=subn_system.activity_rule, timesteps=timesteps)
 
-    padded = subn_system.pad(activities)
+    padded = subn_system.pad(trajectory)
 
     ntm.plot_grid(padded, show_grid=True)
 
-    nx = ntm.connectivity_map_to_nx(connectivities[timesteps-1])
-    ntm.vis.show_network(nx)
+    ntm.vis.show_network(trajectory[timesteps-1].network)

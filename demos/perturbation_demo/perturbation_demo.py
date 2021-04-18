@@ -3,7 +3,7 @@ import numpy as np
 
 
 if __name__ == '__main__':
-    adjacency_matrix = ntm.topology.adjacency.cellular_automaton(n=200)
+    network = ntm.topology.cellular_automaton(n=200)
     initial_conditions = [0] * 100 + [1] + [0] * 99
 
     noise_amount = 0.02
@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
         return result
 
-    activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=100,
-                               activity_rule=algebraic_rule_30, perturbation=perturbation)
+    trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network, timesteps=100,
+                            activity_rule=algebraic_rule_30, perturbation=perturbation)
 
-    ntm.plot_grid(activities)
+    ntm.plot_activities(trajectory)

@@ -10,7 +10,7 @@ class TestPerturbation(RuleTest):
         np.random.seed(10)
         expected = self._convert_to_list_of_lists("perturbation.ca", dtype=float)
 
-        adjacency_matrix = ntm.topology.adjacency.cellular_automaton(n=200)
+        network = ntm.topology.cellular_automaton(n=200)
         initial_conditions = [0] * 100 + [1] + [0] * 99
 
         noise_amount = 0.02
@@ -32,16 +32,17 @@ class TestPerturbation(RuleTest):
 
             return result
 
-        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=100,
-                                   activity_rule=algebraic_rule_30, perturbation=perturbation)
+        trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network, timesteps=100,
+                                activity_rule=algebraic_rule_30, perturbation=perturbation)
 
+        activities = ntm.get_activities_over_time_as_list(trajectory)
         np.testing.assert_equal(expected, activities)
 
     def test_perturbation_reversible(self):
         np.random.seed(0)
         expected = self._convert_to_list_of_lists("perturbation_reversible.ca")
 
-        adjacency_matrix = ntm.topology.adjacency.cellular_automaton(n=200)
+        network = ntm.topology.cellular_automaton(n=200)
 
         initial_conditions = np.random.randint(0, 2, 200)
 
@@ -51,17 +52,18 @@ class TestPerturbation(RuleTest):
                 return 1
             return rule(ctx)
 
-        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=100,
-                                   activity_rule=ntm.ReversibleRule(perturbed_rule),
-                                   past_conditions=[initial_conditions])
+        trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network, timesteps=100,
+                                activity_rule=ntm.ReversibleRule(perturbed_rule),
+                                past_conditions=[initial_conditions])
 
+        activities = ntm.get_activities_over_time_as_list(trajectory)
         np.testing.assert_equal(expected, activities)
 
     def test_perturbation_eca(self):
         np.random.seed(0)
         expected = self._convert_to_list_of_lists("perturbation_eca.ca")
 
-        adjacency_matrix = ntm.topology.adjacency.cellular_automaton(n=200)
+        network = ntm.topology.cellular_automaton(n=200)
         initial_conditions = [0] * 100 + [1] + [0] * 99
 
         def perturb(pctx):
@@ -72,8 +74,9 @@ class TestPerturbation(RuleTest):
                 return np.random.randint(2)
             return pctx.node_activity
 
-        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=100,
-                                   activity_rule=ntm.rules.nks_ca_rule(30),
-                                   perturbation=perturb)
+        trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network, timesteps=100,
+                                activity_rule=ntm.rules.nks_ca_rule(30),
+                                perturbation=perturb)
 
+        activities = ntm.get_activities_over_time_as_list(trajectory)
         np.testing.assert_equal(expected, activities)

@@ -10,24 +10,25 @@ at each timestep. The degree distribution for such a network is P(k)=2^-k, where
 if __name__ == "__main__":
 
     N = 200
-    adjacency_matrix = [[0 for _ in range(N)] for _ in range(N)]  # begin with a fully disconnected network of size N
+    network = ntm.topology.disconnected(N)
 
-    def connectivity_rule(cctx):
-        choices = [int(i) for i in np.random.choice([n for n in cctx.connectivity_map], size=2, replace=True)]
-        cctx.connectivity_map[choices[0]][choices[1]] = [{}]
-        cctx.connectivity_map[choices[1]][choices[0]] = [{}]
+    def topology_rule(ctx):
+        choices = [int(i) for i in np.random.choice([n for n in ctx.network.nodes], size=2, replace=True)]
+        ctx.network.add_edge(choices[1], choices[0])
+        ctx.network.add_edge(choices[0], choices[1])
 
-        return cctx.connectivity_map
+        return ctx.network
 
-    _, connectivities = ntm.evolve(initial_conditions=[1]*N, topology=adjacency_matrix,
-                                   connectivity_rule=connectivity_rule, timesteps=N)
+    trajectory = ntm.evolve(initial_conditions=[1]*N, network=network,
+                            topology_rule=topology_rule, timesteps=N)
 
     # plot degree distribution
     degree_counts = {}
-    for row in connectivities[-1]:
+    last_network = trajectory[-1].network
+    for node in last_network.nodes:
         # because links are bidirectional, we can simply count the outgoing links
         # subtract 1 to adjust for the self-link
-        degree = np.count_nonzero(row) - 1
+        degree = last_network.out_degree(node) - 1
         if degree not in degree_counts:
             degree_counts[degree] = 0
         degree_counts[degree] += 1
@@ -47,4 +48,4 @@ if __name__ == "__main__":
     plt.show()
 
     # NOTE: node self-links are not rendered
-    ntm.animate_network(connectivities, interval=350, with_labels=False)
+    ntm.animate_network(trajectory, interval=350, with_labels=False)

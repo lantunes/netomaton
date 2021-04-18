@@ -11,7 +11,7 @@ if __name__ == "__main__":
     }
 
     # a Pushdown Automaton can be thought of as a Network Automaton with a single node
-    adjacency_matrix = [[1]]
+    network = ntm.topology.from_adjacency_matrix([[1]])
 
     # the Pushdown Automaton starts off in the q0 state
     initial_conditions = [states['q0']]
@@ -42,8 +42,9 @@ if __name__ == "__main__":
             raise Exception("input rejected")
 
     try:
-        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                   input=events, activity_rule=pda_rule)
+        trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
+                                input=events, activity_rule=pda_rule)
+        activities = ntm.get_activities_over_time_as_list(trajectory)
         print("'%s' accepted (final state: %s)" % (events.strip(), activities[-1][0]))
     except Exception:
         print("'%s' rejected!" % events.strip())

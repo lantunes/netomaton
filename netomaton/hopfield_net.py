@@ -1,4 +1,5 @@
 from .asynchronous_rule import *
+from .topology import from_adjacency_matrix
 import numpy as np
 
 
@@ -28,6 +29,7 @@ class HopfieldNet:
                         self._adjacency_matrix[i, j] = 0
                     else:
                         self._adjacency_matrix[i, j] += p[i]*p[j]
+        self._network = from_adjacency_matrix(self._adjacency_matrix)
 
     def _rule(self, ctx):
         """
@@ -45,6 +47,10 @@ class HopfieldNet:
     @property
     def activity_rule(self):
         return self._activity_rule
+
+    @property
+    def network(self):
+        return self._network
 
     @property
     def adjacency_matrix(self):

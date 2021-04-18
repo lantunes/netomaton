@@ -13,7 +13,7 @@ class TestContinuousTimeModels(RuleTest):
         nu = .07  # the value of viscosity
         dt = dx * nu  # the amount of time each timestep covers
 
-        adjacency_matrix = ntm.topology.adjacency.cellular_automaton(nx)
+        network = ntm.topology.cellular_automaton(nx)
 
         # Sawtooth initial conditions
         initial_conditions = [4., 4.06283185, 4.12566371, 4.18849556, 4.25132741,
@@ -45,9 +45,10 @@ class TestContinuousTimeModels(RuleTest):
             un_i_p1 = ctx.activity_of(right_label)
             return un_i - un_i * dt / dx * (un_i - un_i_m1) + nu * dt / dx ** 2 * (un_i_p1 - 2 * un_i + un_i_m1)
 
-        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+        trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
                                    activity_rule=activity_rule, timesteps=nt)
 
+        activities = ntm.get_activities_over_time_as_list(trajectory)
         np.testing.assert_equal(expected, activities)
 
     def test_diffusion(self):
@@ -60,7 +61,7 @@ class TestContinuousTimeModels(RuleTest):
         sigma = .2  # Courant number
         dt = sigma * dx ** 2 / nu  # the amount of time each timestep covers
 
-        adjacency_matrix = ntm.topology.adjacency.cellular_automaton(nx)
+        network = ntm.topology.cellular_automaton(nx)
 
         initial_conditions = [1.] * 10 + [2.] * 11 + [1.] * 20
 
@@ -72,9 +73,10 @@ class TestContinuousTimeModels(RuleTest):
             un_i_p1 = ctx.activity_of(right_label)
             return un_i + nu * dt / dx ** 2 * (un_i_p1 - 2 * un_i + un_i_m1)
 
-        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+        trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
                                    activity_rule=activity_rule, timesteps=nt)
 
+        activities = ntm.get_activities_over_time_as_list(trajectory)
         np.testing.assert_equal(expected, activities)
 
     def test_linear_convection(self):
@@ -86,7 +88,7 @@ class TestContinuousTimeModels(RuleTest):
         dx = 2 / (nx - 1)  # the distance between any pair of adjacent points
         k = 1  # wavespeed of 1
 
-        adjacency_matrix = ntm.topology.adjacency.cellular_automaton(nx)
+        network = ntm.topology.cellular_automaton(nx)
 
         initial_conditions = [1.] * 10 + [2.] * 11 + [1.] * 20
 
@@ -97,9 +99,10 @@ class TestContinuousTimeModels(RuleTest):
             un_i_m1 = ctx.activity_of(left_label)
             return un_i - k * dt / dx * (un_i - un_i_m1)
 
-        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+        trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
                                    activity_rule=activity_rule, timesteps=nt)
 
+        activities = ntm.get_activities_over_time_as_list(trajectory)
         np.testing.assert_equal(expected, activities)
 
     def test_nonlinear_convection(self):
@@ -110,7 +113,7 @@ class TestContinuousTimeModels(RuleTest):
         dt = .025  # the amount of time each timestep covers
         dx = 2 / (nx - 1)  # the distance between any pair of adjacent points
 
-        adjacency_matrix = ntm.topology.adjacency.cellular_automaton(nx)
+        network = ntm.topology.cellular_automaton(nx)
 
         initial_conditions = [1.] * 10 + [2.] * 11 + [1.] * 20
 
@@ -121,9 +124,10 @@ class TestContinuousTimeModels(RuleTest):
             un_i_m1 = ctx.activity_of(left_label)
             return un_i - un_i * dt / dx * (un_i - un_i_m1)
 
-        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+        trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
                                    activity_rule=activity_rule, timesteps=nt)
 
+        activities = ntm.get_activities_over_time_as_list(trajectory)
         np.testing.assert_equal(expected, activities)
 
     def test_simple_diffusion(self):
@@ -132,7 +136,7 @@ class TestContinuousTimeModels(RuleTest):
         space = np.linspace(25, -25, 120)
         initial_conditions = [np.exp(-x ** 2) for x in space]
 
-        adjacency_matrix = ntm.topology.adjacency.cellular_automaton(120)
+        network = ntm.topology.cellular_automaton(120)
 
         a = 0.25
         dt = .5
@@ -145,9 +149,10 @@ class TestContinuousTimeModels(RuleTest):
             right = ctx.neighbourhood_activities[2]
             return current + F * (right - 2 * current + left)
 
-        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+        trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
                                    activity_rule=activity_rule, timesteps=75)
 
+        activities = ntm.get_activities_over_time_as_list(trajectory)
         np.testing.assert_equal(expected, activities)
 
     def test_wave_equation(self):
@@ -161,7 +166,7 @@ class TestContinuousTimeModels(RuleTest):
         space = np.linspace(20, -20, nx)
         initial_conditions = [np.exp(-x ** 2) for x in space]
 
-        adjacency_matrix = ntm.topology.adjacency.cellular_automaton(nx)
+        network = ntm.topology.cellular_automaton(nx)
 
         def activity_rule(ctx):
             un_i = ctx.current_activity
@@ -173,7 +178,8 @@ class TestContinuousTimeModels(RuleTest):
             un_m1_i = ctx.past_activity_of(ctx.node_label)
             return ((dt ** 2 * (un_i_p1 - 2 * un_i + un_i_m1)) / dx ** 2) + (2 * un_i - un_m1_i)
 
-        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+        trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
                                    activity_rule=activity_rule, timesteps=nt, past_conditions=[initial_conditions])
 
+        activities = ntm.get_activities_over_time_as_list(trajectory)
         np.testing.assert_equal(expected, activities)

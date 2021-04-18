@@ -5,8 +5,8 @@ from .rule_test import *
 class TestRestrictedNetworkAutomata(RuleTest):
 
     def test_rna_gol(self):
-        underlying_network = ntm.topology.adjacency.lattice(dim=(1, 6, 6), periodic=True)
-        initial_network = ntm.topology.table.disconnected(36)
+        underlying_network = ntm.topology.lattice(dim=(1, 6, 6), periodic=True)
+        initial_network = ntm.Network(n=36)
 
         # spaceship
         initial_network[9][10] = [{}]
@@ -24,29 +24,31 @@ class TestRestrictedNetworkAutomata(RuleTest):
         initial_network[7][8] = [{}]
         initial_network[8][7] = [{}]
 
-        def connectivity_rule(cctx):
-            curr_map = cctx.connectivity_map
-            new_map = ntm.copy_connectivity_map(curr_map)
-            for i in range(len(underlying_network)):
-                in_degree_i = sum([len(c) for c in curr_map[i].values()])
-                for j in range(len(underlying_network)):
-                    if i == j: continue
-                    in_degree_j = sum([len(c) for c in curr_map[j].values()])
+        def topology_rule(ctx):
+            curr_network = ctx.network
+            new_network = ctx.network.copy()
+            for i in underlying_network.nodes:
+                in_degree_i = curr_network.in_degree(i)
+                for j in underlying_network.nodes:
+                    if i == j:
+                        continue
+                    in_degree_j = curr_network.in_degree(j)
                     combined_in_degrees = in_degree_i + in_degree_j
                     # a non-existent link will be “born” if the combined degrees of the
                     #   two nodes between which it might exist is 2
-                    if combined_in_degrees == 2 and j not in curr_map[i] and underlying_network[i][j] == 1:
-                        new_map[i][j] = [{}]
+                    if combined_in_degrees == 2 and not curr_network.has_edge(j, i) and underlying_network.has_edge(j,
+                                                                                                                    i):
+                        new_network.add_edge(j, i)
                     # a link will survive if the combined degree of the two nodes it connects is 3
-                    elif combined_in_degrees == 3 and j in curr_map[i]:
+                    elif combined_in_degrees == 3 and curr_network.has_edge(j, i):
                         pass
                     # a link dies if it exists
-                    elif j in curr_map[i]:
-                        del new_map[i][j]
-            return new_map
+                    elif curr_network.has_edge(j, i):
+                        new_network.remove_edge(j, i)
+            return new_network
 
-        _, connectivities = ntm.evolve(topology=initial_network, connectivity_rule=connectivity_rule, timesteps=6)
+        trajectory = ntm.evolve(network=initial_network, topology_rule=topology_rule, timesteps=6)
 
+        topology = [state.network.to_dict() for state in trajectory]
         expected = self._convert_from_literal("restricted_network_automata.txt")
-        connectivities = {i: t.to_dict() for i, t in connectivities.items()}
-        self.assertEqual(expected, connectivities)
+        self.assertEqual(expected, topology)

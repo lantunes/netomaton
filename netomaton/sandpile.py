@@ -1,12 +1,12 @@
 import numpy as np
 
-from .topology.adjacency import cellular_automaton2d
+from .topology import cellular_automaton2d
 
 
 class Sandpile:
     def __init__(self, rows, cols, is_closed_boundary=True):
         self._K = 4  # this value is hard-coded because the neighbourhood type, "von Neumann", is fixed
-        self._adjacency_matrix = cellular_automaton2d(rows=rows, cols=cols, neighbourhood="von Neumann")
+        self._network = cellular_automaton2d(rows=rows, cols=cols, neighbourhood="von Neumann")
         self._boundary_indices = self._get_boundary_indices((rows, cols))
         self._is_closed_boundary = is_closed_boundary
 
@@ -33,5 +33,5 @@ class Sandpile:
         return new_activity
 
     @property
-    def adjacency_matrix(self):
-        return self._adjacency_matrix
+    def network(self):
+        return self._network

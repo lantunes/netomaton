@@ -1,10 +1,8 @@
 import collections
-import gc
 from enum import Enum
+from .state import State
 
-import msgpack
 import numpy as np
-import scipy.sparse as sparse
 
 
 class NodeContext(object):
@@ -64,26 +62,14 @@ class NodeContext(object):
         return self.past_activities[past_activity_index][node_label]
 
 
-class ConnectivityContext(object):
+class TopologyContext(object):
 
-    __slots__ = ("_connectivity_map", "_activities", "_timestep")
+    __slots__ = ("network", "activities", "timestep")
 
-    def __init__(self, connectivity_map, activities, t):
-        self._connectivity_map = connectivity_map
-        self._activities = activities
-        self._timestep = t
-
-    @property
-    def connectivity_map(self):
-        return self._connectivity_map
-
-    @property
-    def activities(self):
-        return self._activities
-
-    @property
-    def timestep(self):
-        return self._timestep
+    def __init__(self, network, activities, t):
+        self.network = network
+        self.activities = activities
+        self.timestep = t
 
 
 class PerturbationContext(object):
@@ -91,29 +77,13 @@ class PerturbationContext(object):
     The PerturbationContext contains the node label, activity and input for a particular timestep.
     """
 
-    __slots__ = ("_node_label", "_node_activity", "_timestep", "_input")
+    __slots__ = ("node_label", "node_activity", "timestep", "input")
 
     def __init__(self, node_label, node_activity, timestep, input):
-        self._node_label = node_label
-        self._node_activity = node_activity
-        self._timestep = timestep
-        self._input = input
-
-    @property
-    def node_label(self):
-        return self._node_label
-
-    @property
-    def node_activity(self):
-        return self._node_activity
-
-    @property
-    def timestep(self):
-        return self._timestep
-
-    @property
-    def input(self):
-        return self._input
+        self.node_label = node_label
+        self.node_activity = node_activity
+        self.timestep = timestep
+        self.input = input
 
 
 class UpdateOrder(Enum):
@@ -122,10 +92,9 @@ class UpdateOrder(Enum):
     SYNCHRONOUS = 3
 
 
-# TODO rename "connectivity" everywhere; to "topology" perhaps? as in "topological table"
-def evolve(topology, initial_conditions=None, activity_rule=None, timesteps=None, input=None, connectivity_rule=None,
-           perturbation=None, past_conditions=None, update_order=UpdateOrder.ACTIVITIES_FIRST, copy_connectivity=True,
-           compression=False, persist_activities=True, persist_connectivities=True):
+def evolve(network, initial_conditions=None, activity_rule=None, timesteps=None, input=None, topology_rule=None,
+           perturbation=None, past_conditions=None, update_order=UpdateOrder.ACTIVITIES_FIRST, copy_network=True,
+           compression=False, persist_activities=True, persist_network=True):
 
     if initial_conditions is None:
         initial_conditions = {}
@@ -134,21 +103,17 @@ def evolve(topology, initial_conditions=None, activity_rule=None, timesteps=None
     if not isinstance(initial_conditions, dict) and isinstance(initial_conditions, (list, np.ndarray)):
         initial_conditions = {i: check_np(v) for i, v in enumerate(initial_conditions)}
 
-    # key is the timestep; value is a map of the network activities,
-    #   where the key is the node label, and value is the activity
-    activities_over_time = {0: Activities(initial_conditions, compression)}
     input_fn, steps = _get_input_function(timesteps, input)
 
-    connectivity_map, was_adjacency_matrix = _get_connectivity_map(topology)
-
-    if len(initial_conditions) != len(connectivity_map) and activity_rule:
+    if len(initial_conditions) != len(network) and activity_rule:
         raise Exception("too few intial conditions specified [%s] for the number of given nodes [%s]" %
-                        (len(initial_conditions), len(connectivity_map)))
+                        (len(initial_conditions), len(network)))
 
-    connectivities_over_time = {0: Topology(connectivity_map, compression)}
+    # key is the timestep
+    trajectory = {0: State(activities=initial_conditions, network=network, compression=compression)}
 
     prev_activities = initial_conditions
-    prev_connectivities = connectivity_map
+    prev_network = network
 
     t = 1
     while True:
@@ -156,59 +121,51 @@ def evolve(topology, initial_conditions=None, activity_rule=None, timesteps=None
         if inp is None:
             break
 
-        past = _get_past_activities(past_conditions, activities_over_time, t)
+        past = _get_past_activities(past_conditions, trajectory, t)
         curr_activities = {}
+        trajectory[t] = State(compression=compression)
 
         if update_order is UpdateOrder.ACTIVITIES_FIRST:
             added_nodes, removed_nodes = evolve_activities(activity_rule, t, inp, curr_activities, prev_activities,
-                                                           activities_over_time, prev_connectivities, past,
-                                                           perturbation, compression, persist_activities)
-            curr_connectivities = evolve_topology(connectivity_rule, t, curr_activities, prev_connectivities,
-                                                  connectivities_over_time, copy_connectivity, compression,
-                                                  persist_connectivities, added_nodes, removed_nodes)
+                                                           trajectory, prev_network, past,
+                                                           perturbation, persist_activities)
+            curr_network = evolve_topology(topology_rule, t, curr_activities, prev_network,
+                                           trajectory, copy_network, persist_network, added_nodes, removed_nodes)
 
         elif update_order is UpdateOrder.TOPOLOGY_FIRST:
-            curr_connectivities = evolve_topology(connectivity_rule, t, prev_activities, prev_connectivities,
-                                                  connectivities_over_time, copy_connectivity,
-                                                  compression, persist_connectivities)
+            curr_network = evolve_topology(topology_rule, t, prev_activities, prev_network,
+                                           trajectory, copy_network, persist_network)
             # added and removed nodes are ignore in this case
             evolve_activities(activity_rule, t, inp, curr_activities, prev_activities,
-                              activities_over_time, curr_connectivities, past, perturbation,
-                              compression, persist_activities)
+                              trajectory, curr_network, past, perturbation, persist_activities)
 
         elif update_order is UpdateOrder.SYNCHRONOUS:
             # TODO create test
-            curr_connectivities = evolve_topology(connectivity_rule, t, prev_activities, prev_connectivities,
-                                                  connectivities_over_time, copy_connectivity,
-                                                  compression, persist_connectivities)
+            curr_network = evolve_topology(topology_rule, t, prev_activities, prev_network,
+                                           trajectory, copy_network, persist_network)
             # added and removed nodes are ignore in this case
             evolve_activities(activity_rule, t, inp, curr_activities, prev_activities,
-                              activities_over_time, prev_connectivities, past, perturbation,
-                              compression, persist_activities)
+                              trajectory, prev_network, past, perturbation, persist_activities)
 
         else:
             raise Exception("unsupported update_order: %s" % update_order)
 
         prev_activities = curr_activities
-        prev_connectivities = curr_connectivities
+        prev_network = curr_network
 
         t += 1
 
-    if was_adjacency_matrix:
-        if activity_rule:
-            activities_over_time = convert_activities_map_to_list(activities_over_time)
-        if connectivity_rule:
-            connectivities_over_time = convert_connectivities_map_to_list(connectivities_over_time)
-
-    return activities_over_time, connectivities_over_time
+    # since we require Python 3.6, and dicts respect insertion order, we don't sort the trajectory entries by key
+    # (even though the 3.6 language spec doesn't officially support it)
+    return list(trajectory.values())
 
 
-def evolve_activities(activity_rule, t, inp, curr_activities, prev_activities, activities_over_time, connectivity_map,
-                      past, perturbation, compression, persist_activities):
+def evolve_activities(activity_rule, t, inp, curr_activities, prev_activities, trajectory, network,
+                      past, perturbation, persist_activities):
     added_nodes = []
     removed_nodes = []
     if activity_rule:
-        added_nodes, removed_nodes = do_activity_rule(t, inp, curr_activities, prev_activities, connectivity_map,
+        added_nodes, removed_nodes = do_activity_rule(t, inp, curr_activities, prev_activities, network,
                                                       activity_rule, past, perturbation)
 
         if added_nodes:
@@ -216,17 +173,18 @@ def evolve_activities(activity_rule, t, inp, curr_activities, prev_activities, a
                 curr_activities[node_label] = state
 
     if persist_activities:
-        activities_over_time[t] = Activities(curr_activities, compression)
+        trajectory[t].activities = curr_activities
 
     return added_nodes, removed_nodes
 
 
-def do_activity_rule(t, inp, curr_activities, prev_activities, connectivity_map, activity_rule, past, perturbation):
+def do_activity_rule(t, inp, curr_activities, prev_activities, network, activity_rule, past, perturbation):
     added_nodes = []
     removed_nodes = []
 
-    for node_label, incoming_connections in connectivity_map.items():
-        neighbour_labels = [k for k in incoming_connections]
+    for node_label in network.nodes:
+        incoming_connections = network.in_edges(node_label)
+        neighbour_labels = [i for i in incoming_connections]
         current_activity = prev_activities[node_label]
         neighbourhood_activities = [prev_activities[neighbour_label] for neighbour_label in neighbour_labels]
         node_in = None if inp == "__timestep__" else inp[node_label] if _is_indexable(inp) else inp
@@ -251,106 +209,41 @@ def do_activity_rule(t, inp, curr_activities, prev_activities, connectivity_map,
     return added_nodes, removed_nodes
 
 
-def evolve_topology(connectivity_rule, t, activities, prev_connectivities, connectivities_over_time, copy_connectivity,
-                    compression, persist_connectivities, added_nodes=None, removed_nodes=None):
-    connectivity_map = prev_connectivities
+def evolve_topology(topology_rule, t, activities, prev_network, trajectory, copy_network,
+                    persist_network, added_nodes=None, removed_nodes=None):
+    network = prev_network
     if added_nodes or removed_nodes:
-        connectivity_map = copy_connectivity_map(connectivity_map)
+        network = network.copy()
 
         # adjust connectivity map according to node deletions and insertions
         for node_label in removed_nodes:
-            del connectivity_map[node_label]
+            network.remove_node(node_label)
 
-        for state, outgoing_links, node_label in added_nodes:
-            connectivity_map[node_label] = {}
+        for activity, outgoing_links, node_label in added_nodes:
+            network.add_node(node_label, activity=activity)
             for target, connection_state in outgoing_links.items():
-                connectivity_map[target][node_label] = connection_state
+                network.add_edge(node_label, target, **connection_state)
 
-    if connectivity_rule:
-        if copy_connectivity:
-            connectivity_map = copy_connectivity_map(connectivity_map)
-        connectivity_map = connectivity_rule(ConnectivityContext(connectivity_map, activities, t))
-        if not connectivity_map:
-            raise Exception("connectivity rule must return a connectivity map")
+    if topology_rule:
+        if copy_network:
+            network = network.copy()
+        network = topology_rule(TopologyContext(network, activities, t))
+        if not network:
+            raise Exception("topology rule must return a network")
 
-    if persist_connectivities:
-        connectivities_over_time[t] = Topology(connectivity_map, compression)
+    if persist_network:
+        trajectory[t].network = network
 
-    return connectivity_map
-
-
-def copy_connectivity_map(conn_map):
-    return _CompressedDict(conn_map, True).to_dict()
+    return network
 
 
-def convert_activities_map_to_list(activities_map_over_time):
-    activities_over_time = []
-    for i in activities_map_over_time:
-        activities = activities_map_over_time[i].to_dict()
-        activities_list = []
-        for c in sorted(activities):  #TODO do we need to sort?
-            activities_list.append(activities[c])
-        activities_over_time.append(activities_list)
-    return activities_over_time
-
-
-def convert_connectivities_map_to_list(connectivities_map_over_time):
-    connectivities_over_time = []
-    for i in connectivities_map_over_time:
-        connectivities = connectivities_map_over_time[i].to_dict()
-        num_nodes = len(connectivities)
-        adjacency_matrix = [[0. for _ in range(num_nodes)] for _ in range(num_nodes)]
-        for c in sorted(connectivities):  #TODO do we need to sort?
-            for n in sorted(connectivities[c]):  #TODO do we need to sort?
-                adjacency_matrix[n][c] = connectivities[c][n]["weight"] if "weight" in connectivities[c][n] else 1.0
-        connectivities_over_time.append(adjacency_matrix)
-    return connectivities_over_time
-
-
-def _get_connectivity_map(topology):
-    """
-    :param topology: the topology specifying the underlying network
-    :return: a connectivity map and whether or not an adjacency matrix was provided
-    """
-    if isinstance(topology, (list, np.ndarray)):
-        # assume we have an adjacency matrix
-        return _convert_adjacency_matrix_to_connectivity_map(topology), True
-    elif isinstance(topology, dict):
-        # assume we have a connectivity map
-        return topology, False
-    raise Exception("only an adjancency matrix and connectivity map are supported as network representations")
-
-
-def _convert_adjacency_matrix_to_connectivity_map(adjacency_matrix):
-    # since we require Python 3.6, and dicts respect insertion order, we're using a plain dict here
-    # (even though the 3.6 language spec doesn't officially support it)
-    connectivity_map = {}
-
-    num_nodes = len(adjacency_matrix[0])
-    adjacencies_sparse = sparse.csc_matrix(adjacency_matrix)
-    nonzero_index_map = {}
-    weight_map = {}
-    for c in range(num_nodes):
-        sparse_col = adjacencies_sparse.getcol(c)
-        nonzero_index_map[c] = sparse_col.nonzero()[0].tolist()
-        weight_map[c] = sparse_col.data.tolist()
-
-    for n in range(num_nodes):
-        connectivity_map[n] = {}
-        nonzero_indices = nonzero_index_map[n]
-        for i, neighbour_index in enumerate(nonzero_indices):
-            connectivity_map[n][neighbour_index] = [{"weight": weight_map[n][i]}]
-
-    return connectivity_map
-
-
-def _get_past_activities(past_conditions, activities_over_time, t):
+def _get_past_activities(past_conditions, trajectory, t):
     if past_conditions and len(past_conditions) > 0:
         past_activities = [None]*len(past_conditions)
         last_t = t - 1
         for i in range(len(past_conditions)-1, -1, -1):
 
-            curr_past_cond = past_conditions[last_t-1] if last_t < 1 else activities_over_time[last_t-1].to_dict()
+            curr_past_cond = past_conditions[last_t-1] if last_t < 1 else trajectory[last_t-1].activities
             if not isinstance(curr_past_cond, dict) and isinstance(curr_past_cond, (list, np.ndarray)):
                 curr_past_cond = {i: v for i, v in enumerate(curr_past_cond)}
 
@@ -449,36 +342,6 @@ def init_simple2d(rows, cols, val=1, dtype=np.int):
     x = np.zeros((rows, cols), dtype=dtype)
     x[x.shape[0]//2][x.shape[1]//2] = val
     return np.array(x).reshape(rows * cols).tolist()
-
-
-class _CompressedDict:
-    __slots__ = ("_map", "_compression")
-
-    def __init__(self, m, compression):
-        self._compression = compression
-        self._map = self._compress(m) if compression else m
-
-    def to_dict(self):
-        return self._decompress(self._map) if self._compression else self._map
-
-    def _compress(self, d):
-        return msgpack.packb(d)
-
-    def _decompress(self, b):
-        gc.disable()
-        d = msgpack.unpackb(b, strict_map_key=False)
-        gc.enable()
-        return d
-
-
-class Topology(_CompressedDict):
-    def __init__(self, connectivity_map, compression):
-        super().__init__(connectivity_map, compression)
-
-
-class Activities(_CompressedDict):
-    def __init__(self, activities, compression):
-        super().__init__(activities, compression)
 
 
 def check_np(obj):

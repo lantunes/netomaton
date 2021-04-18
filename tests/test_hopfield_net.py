@@ -85,7 +85,8 @@ class TestHopfieldNet(RuleTest):
 
         initial_conditions = half_two
 
-        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=hopfield_net.adjacency_matrix,
-                                   timesteps=hopfield_net.num_nodes * 7, activity_rule=hopfield_net.activity_rule)
+        trajectory = ntm.evolve(initial_conditions=initial_conditions, network=hopfield_net.network,
+                                timesteps=hopfield_net.num_nodes * 7, activity_rule=hopfield_net.activity_rule)
 
+        activities = ntm.get_activities_over_time_as_list(trajectory)
         np.testing.assert_equal(expected_activities, activities)

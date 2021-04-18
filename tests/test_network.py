@@ -333,3 +333,69 @@ class TestNetwork(RuleTest):
         expected.add_edge(1, 2, weight=3.0)
 
         self._assert_networks_equal(expected, G)
+
+    def test_to_adjacency_matrix(self):
+        network = ntm.Network()
+        network.add_edge(1, 2)
+        network.add_edge(2, 3)
+        network.add_edge(1, 2)
+        network.add_edge(3, 2)
+        network.add_edge(1, 1)
+
+        M = network.to_adjacency_matrix()
+
+        self.assertEqual([
+            [1, 2, 0],
+            [0, 0, 1],
+            [0, 1, 0]
+        ], M)
+
+    def test_to_adjacency_matrix_nodelist(self):
+        network = ntm.Network()
+        network.add_edge(1, 2)
+        network.add_edge(2, 3)
+        network.add_edge(1, 2)
+        network.add_edge(3, 2)
+        network.add_edge(1, 1)
+
+        M = network.to_adjacency_matrix(nodelist=[3, 2, 1])
+
+        self.assertEqual([
+            [0, 1, 0],
+            [1, 0, 0],
+            [0, 2, 1],
+        ], M)
+
+    def test_to_adjacency_matrix_sum_multiedges(self):
+        network = ntm.Network()
+        network.add_edge(1, 2)
+        network.add_edge(2, 3)
+        network.add_edge(1, 2)
+        network.add_edge(3, 2)
+        network.add_edge(1, 1)
+        network.add_edge(1, 1)
+
+        M = network.to_adjacency_matrix(sum_multiedges=False)
+
+        self.assertEqual([
+            [1, 1, 0],
+            [0, 0, 1],
+            [0, 1, 0],
+        ], M)
+
+    def test_to_adjacency_matrix_weight(self):
+        network = ntm.Network()
+        network.add_edge(1, 2, weight=2.0)
+        network.add_edge(2, 3, weight=2.0)
+        network.add_edge(1, 2, weight=2.0)
+        network.add_edge(3, 2, weight=2.0)
+        network.add_edge(1, 1, weight=2.0)
+        network.add_edge(1, 1, weight=2.0)
+
+        M = network.to_adjacency_matrix(sum_multiedges=False)
+
+        self.assertEqual([
+            [2.0, 2.0, 0.0],
+            [0.0, 0.0, 2.0],
+            [0.0, 2.0, 0.0],
+        ], M)

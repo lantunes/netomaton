@@ -20,9 +20,9 @@ class TestTuringMachine(RuleTest):
         }
         tm = HeadCentricTuringMachine(tape=[0] * 21, rule_table=rule_table,
                                       initial_head_state=HEAD['up'], initial_head_position=3, max_timesteps=61)
-        activities, _ = ntm.evolve(initial_conditions=tm.initial_conditions, topology=tm.adjacency_matrix,
+        trajectory = ntm.evolve(initial_conditions=tm.initial_conditions, network=tm.network,
                                    activity_rule=tm.activity_rule, input=tm.input_function)
-        tape_history, head_activities = tm.activities_for_plotting(activities)
+        tape_history, head_activities = tm.activities_for_plotting(trajectory)
 
         expected_activities = [[(1, 3)], [(2, 4)], [(2, 3)], [(1, 2)], [(2, 3)], [(1, 2)], [(1, 3)], [(1, 4)],
                                [(1, 5)], [(2, 6)], [(2, 5)], [(1, 4)], [(2, 5)], [(1, 4)], [(1, 5)], [(1, 6)],
@@ -32,6 +32,7 @@ class TestTuringMachine(RuleTest):
                                [(1, 13)], [(2, 14)], [(2, 13)], [(1, 12)], [(2, 13)], [(1, 12)], [(1, 13)], [(1, 14)],
                                [(1, 15)], [(2, 16)], [(2, 15)], [(1, 14)], [(2, 15)], [(1, 14)], [(1, 15)], [(1, 16)],
                                [(1, 17)], [(2, 18)], [(2, 17)], [(1, 16)], [(2, 17)]]
+        activities = ntm.get_activities_over_time_as_list(trajectory)
         np.testing.assert_equal(expected_activities, activities)
         expected_tape_history = self._convert_to_list_of_lists("turing_machine1-tape.ca")
         np.testing.assert_equal(expected_tape_history, tape_history)
@@ -110,14 +111,15 @@ class TestTuringMachine(RuleTest):
         tm = HeadCentricTuringMachine(tape=[CELL[t] for t in tape], rule_table=rule_table,
                                       initial_head_state=HEAD['q0'], initial_head_position=2,
                                       terminating_state=HEAD['q6'], max_timesteps=50)
-        activities, _ = ntm.evolve(initial_conditions=tm.initial_conditions, topology=tm.adjacency_matrix,
+        trajectory = ntm.evolve(initial_conditions=tm.initial_conditions, network=tm.network,
                                    activity_rule=tm.activity_rule, input=tm.input_function)
-        tape_history, head_activities = tm.activities_for_plotting(activities)
+        tape_history, head_activities = tm.activities_for_plotting(trajectory)
 
         expected_activities = [[(0, 2)], [(1, 3)], [(1, 4)], [(2, 5)], [(2, 6)], [(3, 5)], [(3, 4)], [(3, 3)], [(3, 2)],
                                [(0, 3)], [(1, 4)], [(1, 5)], [(2, 6)], [(2, 7)], [(3, 6)], [(3, 5)], [(3, 4)], [(3, 3)],
                                [(0, 4)], [(4, 3)], [(4, 2)], [(4, 1)], [(5, 2)], [(5, 3)], [(5, 4)], [(5, 5)], [(5, 6)],
                                [(5, 7)], [(5, 8)], [(6, 8)]]
+        activities = ntm.get_activities_over_time_as_list(trajectory)
         np.testing.assert_equal(expected_activities, activities)
         expected_tape_history = self._convert_to_list_of_lists("turing_machine1b-tape.ca")
         np.testing.assert_equal(expected_tape_history, tape_history)
@@ -146,9 +148,9 @@ class TestTuringMachine(RuleTest):
         tape = "bbbbbbaeaaaaaaa"
         tm = HeadCentricTuringMachine(tape=[CELL[t] for t in tape], rule_table=rule_table,
                                       initial_head_state=HEAD['up'], initial_head_position=8, max_timesteps=58)
-        activities, _ = ntm.evolve(initial_conditions=tm.initial_conditions, topology=tm.adjacency_matrix,
+        trajectory = ntm.evolve(initial_conditions=tm.initial_conditions, network=tm.network,
                                    activity_rule=tm.activity_rule, input=tm.input_function)
-        tape_history, head_activities = tm.activities_for_plotting(activities)
+        tape_history, head_activities = tm.activities_for_plotting(trajectory)
 
         expected_activities = [[(1, 8)], [(1, 7)], [(2, 6)], [(1, 5)], [(1, 6)], [(2, 7)], [(2, 8)], [(1, 9)], [(1, 8)],
                                [(1, 7)], [(2, 6)], [(2, 5)], [(1, 4)], [(1, 5)], [(2, 6)], [(1, 7)], [(2, 8)], [(1, 9)],
@@ -157,6 +159,7 @@ class TestTuringMachine(RuleTest):
                                [(1, 8)], [(1, 7)], [(2, 6)], [(1, 5)], [(2, 4)], [(2, 3)], [(1, 2)], [(1, 3)], [(2, 4)],
                                [(1, 5)], [(2, 6)], [(2, 7)], [(2, 8)], [(1, 9)], [(1, 10)], [(1, 11)], [(1, 12)],
                                [(1, 11)], [(1, 10)], [(1, 9)], [(1, 8)], [(1, 7)]]
+        activities = ntm.get_activities_over_time_as_list(trajectory)
         np.testing.assert_equal(expected_activities, activities)
         expected_tape_history = self._convert_to_list_of_lists("turing_machine1c-tape.ca")
         np.testing.assert_equal(expected_tape_history, tape_history)
@@ -179,11 +182,12 @@ class TestTuringMachine(RuleTest):
         tm = TapeCentricTuringMachine(n=21, rule_table=rule_table,
                                       initial_head_state=HEAD['up'], initial_head_position=3)
         initial_conditions = [0] * 21
-        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=tm.adjacency_matrix,
+        trajectory = ntm.evolve(initial_conditions=initial_conditions, network=tm.network,
                                    activity_rule=tm.activity_rule, timesteps=61)
-        head_activities = tm.head_activities(activities)
+        head_activities = tm.head_activities(trajectory)
 
         expected_activities = self._convert_to_list_of_lists("turing_machine2.ca")
+        activities = ntm.get_activities_over_time_as_list(trajectory)
         np.testing.assert_equal(expected_activities, activities)
         expected_head_activities = self._convert_to_list_of_lists("turing_machine2-head.ca", strings=True)
         np.testing.assert_equal(expected_head_activities, head_activities)
@@ -260,11 +264,12 @@ class TestTuringMachine(RuleTest):
         tm = TapeCentricTuringMachine(n=len(tape), rule_table=rule_table,
                                       initial_head_state=HEAD['q0'], initial_head_position=2)
         initial_conditions = [CELL[t] for t in tape]
-        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=tm.adjacency_matrix,
+        trajectory = ntm.evolve(initial_conditions=initial_conditions, network=tm.network,
                                    activity_rule=tm.activity_rule, timesteps=61)
-        head_activities = tm.head_activities(activities)
+        head_activities = tm.head_activities(trajectory)
 
         expected_activities = self._convert_to_list_of_lists("turing_machine2b.ca")
+        activities = ntm.get_activities_over_time_as_list(trajectory)
         np.testing.assert_equal(expected_activities, activities)
         expected_head_activities = self._convert_to_list_of_lists("turing_machine2b-head.ca", strings=True)
         np.testing.assert_equal(expected_head_activities, head_activities)
@@ -292,11 +297,12 @@ class TestTuringMachine(RuleTest):
         tm = TapeCentricTuringMachine(n=len(tape), rule_table=rule_table,
                                       initial_head_state=HEAD['up'], initial_head_position=8)
         initial_conditions = [CELL[t] for t in tape]
-        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=tm.adjacency_matrix,
+        trajectory = ntm.evolve(initial_conditions=initial_conditions, network=tm.network,
                                    activity_rule=tm.activity_rule, timesteps=58)
-        head_activities = tm.head_activities(activities)
+        head_activities = tm.head_activities(trajectory)
 
         expected_activities = self._convert_to_list_of_lists("turing_machine2c.ca")
+        activities = ntm.get_activities_over_time_as_list(trajectory)
         np.testing.assert_equal(expected_activities, activities)
         expected_head_activities = self._convert_to_list_of_lists("turing_machine2c-head.ca", strings=True)
         np.testing.assert_equal(expected_head_activities, head_activities)

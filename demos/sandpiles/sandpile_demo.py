@@ -14,7 +14,7 @@ if __name__ == '__main__':
             return pctx.node_activity + 1
         return pctx.node_activity
 
-    activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=sandpile.adjacency_matrix,
-                               activity_rule=sandpile.activity_rule, perturbation=perturb, timesteps=110)
+    trajectory = ntm.evolve(initial_conditions=initial_conditions, network=sandpile.network,
+                            activity_rule=sandpile.activity_rule, perturbation=perturb, timesteps=110)
 
-    ntm.animate(activities, shape=(60, 60), interval=150)
+    ntm.animate_activities(trajectory, shape=(60, 60), interval=150)

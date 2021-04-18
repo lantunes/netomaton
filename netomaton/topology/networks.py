@@ -65,7 +65,5 @@ def watts_strogatz_graph(n, k, p, seed=None):
     :return: as Network
     """
     G = nx.watts_strogatz_graph(n, k, p, seed)
-    network = ntm.Network()
-    for i, j in G.edges:
-        network.add_edge(i, j)
-    return network
+    adjacency = nx.adjacency_matrix(G).todense().tolist()
+    return from_adjacency_matrix(adjacency)

@@ -35,9 +35,11 @@ if __name__ == "__main__":
 
             initial_conditions = [-0.022 + np.random.uniform(-0.1 * 0.02, 0.1 * 0.02) for _ in range(len(adjacency_matrix))]
 
-            activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                       activity_rule=tsp_net.activity_rule, timesteps=timesteps)
+            trajectory = ntm.evolve(initial_conditions=initial_conditions,
+                                    network=ntm.topology.from_adjacency_matrix(adjacency_matrix),
+                                    activity_rule=tsp_net.activity_rule, timesteps=timesteps)
 
+            activities = ntm.get_activities_over_time_as_list(trajectory)
             permutation_matrix = tsp_net.get_permutation_matrix(activities)
 
             try:

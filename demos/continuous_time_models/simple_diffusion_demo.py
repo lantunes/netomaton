@@ -17,7 +17,7 @@ if __name__ == "__main__":
     space = np.linspace(25, -25, 120)
     initial_conditions = [np.exp(-x ** 2) for x in space]
 
-    adjacency_matrix = ntm.topology.adjacency.cellular_automaton(120)
+    network = ntm.topology.cellular_automaton(120)
 
     a = 0.25
     dt = .5
@@ -32,7 +32,7 @@ if __name__ == "__main__":
         return current + F * (right - 2 * current + left)
 
 
-    activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
+    trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
                                activity_rule=activity_rule, timesteps=75)
 
-    ntm.plot_grid(activities)
+    ntm.plot_activities(trajectory)

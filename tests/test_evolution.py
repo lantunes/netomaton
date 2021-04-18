@@ -5,63 +5,14 @@ import netomaton as ntm
 
 class TestFunctions(unittest.TestCase):
 
-    def test_copy_connectivity_map(self):
-        conn_map = {
-            1: {
-                3: [{
-                        "hyperedge": {
-                            "label": "1",
-                            "index": 2
-                        }
-                    }]
-            },
-            2: {
-                1: [{
-                        "weight": 1.0,
-                        "unary": False,
-                        "hyperedge": {
-                            "label": "1",
-                            "index": 0
-                        }
-                    },
-                    {
-                        "weight": 1.0,
-                    },
-                    {
-                        "hyperedge": {
-                            "label": "1",
-                            "index": 3
-                        }
-                    }]
-            },
-            3: {
-                2: [{
-                        "hyperedge": {
-                            "label": "1",
-                            "index": 1
-                        }
-                    }],
-                4: [{}, {}]
-            },
-            4: {
-                5: [{}]
-            },
-            5: {}
-        }
-
-        conn_map_copy = ntm.copy_connectivity_map(conn_map)
-
-        self.assertEqual(conn_map, conn_map_copy)
-
-        conn_map[3][4][0]["weight"] = 1.0
-        self.assertNotEqual(conn_map, conn_map_copy)
-
     def test_neighbourhood(self):
-        adjacency_matrix = [[1., .9, 0., 0., 1.],
-                       [1., 1., 1., 0., 0.],
-                       [0., 1., 1., 1., 0.],
-                       [0., 0., 1., 1., 1.],
-                       [1., 0., 0., 1., .8]]
+        network = ntm.topology.from_adjacency_matrix([
+           [1.0, 0.9, 0.0, 0.0, 1.0],
+           [1.0, 1.0, 1.0, 0.0, 0.0],
+           [0.0, 1.0, 1.0, 1.0, 0.0],
+           [0.0, 0.0, 1.0, 1.0, 1.0],
+           [1.0, 0.0, 0.0, 1.0, 0.8]
+        ])
 
         initial_conditions = [2., 3., 4., 5., 6.]
 
@@ -93,7 +44,7 @@ class TestFunctions(unittest.TestCase):
                 np.testing.assert_equal({0: [{'weight': 1.0}], 3: [{'weight': 1.0}], 4: [{'weight': .8}]},
                                         ctx.connection_states)
 
-        ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=2,
+        ntm.evolve(initial_conditions=initial_conditions, network=network, timesteps=2,
                    activity_rule=evaluate_neighbourhoods)
 
     def test_init_simple_1(self):
@@ -191,10 +142,10 @@ class TestFunctions(unittest.TestCase):
         self.assertEqual(arr, [0, 0, 0, 0, 1, 0])
 
     def test_past_activities_single_past(self):
-        adjacency_matrix = [
+        network = ntm.topology.from_adjacency_matrix([
             [1, 1],
             [1, 1]
-        ]
+        ])
 
         initial_conditions = [1, 1]
 
@@ -213,9 +164,10 @@ class TestFunctions(unittest.TestCase):
                 self.assertEqual(p, [{0: 2, 1: 2}])
             return ctx.current_activity + 1
 
-        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                   activity_rule=activity_rule, timesteps=4, past_conditions=past_conditions)
+        trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
+                                activity_rule=activity_rule, timesteps=4, past_conditions=past_conditions)
 
+        activities = ntm.get_activities_over_time_as_list(trajectory)
         np.testing.assert_equal(activities, [
             [1, 1],
             [2, 2],
@@ -224,10 +176,10 @@ class TestFunctions(unittest.TestCase):
         ])
 
     def test_past_activities_multiple_past(self):
-        adjacency_matrix = [
+        network = ntm.topology.from_adjacency_matrix([
             [1, 1],
             [1, 1]
-        ]
+        ])
 
         initial_conditions = [1, 1]
 
@@ -256,9 +208,10 @@ class TestFunctions(unittest.TestCase):
                 ])
             return ctx.current_activity + 1
 
-        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                   activity_rule=activity_rule, timesteps=4, past_conditions=past_conditions)
+        trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
+                                activity_rule=activity_rule, timesteps=4, past_conditions=past_conditions)
 
+        activities = ntm.get_activities_over_time_as_list(trajectory)
         np.testing.assert_equal(activities, [
             [1, 1],
             [2, 2],
@@ -266,32 +219,44 @@ class TestFunctions(unittest.TestCase):
             [4, 4]
         ])
 
-    def test_persist_activities(self):
-        network = [[1]]
+    def test_persist_activities_true(self):
+        network = ntm.topology.from_adjacency_matrix([[1]])
         initial_conditions = {0: 1}
 
-        activities, _ = ntm.evolve(topology=network, initial_conditions=initial_conditions,
-                                   activity_rule=lambda ctx: 1, timesteps=3, persist_activities=True)
+        trajectory = ntm.evolve(network=network, initial_conditions=initial_conditions,
+                                activity_rule=lambda ctx: 1, timesteps=3, persist_activities=True)
 
+        activities = ntm.get_activities_over_time_as_list(trajectory)
         self.assertEqual([[1], [1], [1]], activities)
 
-        activities, _ = ntm.evolve(topology=network, initial_conditions=initial_conditions,
-                                   activity_rule=lambda ctx: 1, timesteps=3, persist_activities=False)
-
-        self.assertEqual([[1]], activities)
-
-    def test_persist_connectivities(self):
-        network = [[1]]
+    def test_persist_activities_false(self):
+        network = ntm.topology.from_adjacency_matrix([[1]])
         initial_conditions = {0: 1}
 
-        _, connectivities = ntm.evolve(topology=network, initial_conditions=initial_conditions,
-                                       connectivity_rule=lambda cctx: {0: {0: [{}]}},
-                                       timesteps=3, persist_connectivities=True)
+        trajectory = ntm.evolve(network=network, initial_conditions=initial_conditions,
+                                activity_rule=lambda ctx: 1, timesteps=3, persist_activities=False)
 
-        self.assertEqual([[[1]], [[1]], [[1]]], connectivities)
+        activities = ntm.get_activities_over_time_as_list(trajectory)
+        self.assertEqual([[1]], activities)
 
-        _, connectivities = ntm.evolve(topology=network, initial_conditions=initial_conditions,
-                                       connectivity_rule=lambda cctx: {0: {0: [{}]}},
-                                       timesteps=3, persist_connectivities=False)
+    def test_persist_network_true(self):
+        network = ntm.topology.from_adjacency_matrix([[1]])
+        initial_conditions = {0: 1}
 
-        self.assertEqual([[[1]]], connectivities)
+        trajectory = ntm.evolve(network=network, initial_conditions=initial_conditions,
+                                topology_rule=lambda ctx: ctx.network,
+                                timesteps=3, persist_network=True)
+
+        topology = [state.network.to_adjacency_matrix() for state in trajectory if state.network]
+        self.assertEqual([[[1]], [[1]], [[1]]], topology)
+
+    def test_persist_network_false(self):
+        network = ntm.topology.from_adjacency_matrix([[1]])
+        initial_conditions = {0: 1}
+
+        trajectory = ntm.evolve(network=network, initial_conditions=initial_conditions,
+                                topology_rule=lambda ctx: ctx.network,
+                                timesteps=3, persist_network=False)
+
+        topology = [state.network.to_adjacency_matrix() for state in trajectory if state.network]
+        self.assertEqual([[[1]]], topology)

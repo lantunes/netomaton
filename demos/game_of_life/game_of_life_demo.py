@@ -3,7 +3,7 @@ import netomaton as ntm
 
 if __name__ == '__main__':
 
-    adjacency_matrix = ntm.topology.adjacency.cellular_automaton2d(rows=60, cols=60, r=1, neighbourhood='Moore')
+    network = ntm.topology.cellular_automaton2d(rows=60, cols=60, r=1, neighbourhood='Moore')
 
     initial_conditions = ntm.init_simple2d(60, 60)
 
@@ -30,7 +30,7 @@ if __name__ == '__main__':
     initial_conditions[2416] = 1
     initial_conditions[2417] = 1
 
-    activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=60,
-                               activity_rule=ntm.rules.game_of_life_rule)
+    trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network, timesteps=60,
+                            activity_rule=ntm.rules.game_of_life_rule)
 
-    ntm.animate(activities, shape=(60, 60))
+    ntm.animate_activities(trajectory, shape=(60, 60))

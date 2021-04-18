@@ -16,8 +16,10 @@ class TestSandpile(RuleTest):
                 return pctx.node_activity + 1
             return pctx.node_activity
 
-        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=sandpile.adjacency_matrix,
-                                   activity_rule=sandpile.activity_rule, perturbation=perturb, timesteps=110)
+        trajectory = ntm.evolve(initial_conditions=initial_conditions, network=sandpile.network,
+                                activity_rule=sandpile.activity_rule, perturbation=perturb, timesteps=110)
+
+        activities = ntm.get_activities_over_time_as_list(trajectory)
 
         expected = self._convert_to_list_of_lists("sandpile.ca")
         np.testing.assert_equal(expected, activities)

@@ -4,7 +4,7 @@ import numpy as np
 
 if __name__ == '__main__':
 
-    adjacency_matrix = ntm.topology.adjacency.cellular_automaton(n=200)
+    network = ntm.topology.cellular_automaton(n=200)
     initial_conditions = [0] * 100 + [1] + [0] * 99
 
     def perturb(pctx):
@@ -15,7 +15,7 @@ if __name__ == '__main__':
             return np.random.randint(2)
         return pctx.node_activity
 
-    activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=100,
-                               activity_rule=ntm.rules.nks_ca_rule(30), perturbation=perturb)
+    trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network, timesteps=100,
+                            activity_rule=ntm.rules.nks_ca_rule(30), perturbation=perturb)
 
-    ntm.plot_grid(activities)
+    ntm.plot_activities(trajectory)

@@ -19,7 +19,7 @@ if __name__ == "__main__":
     space = np.linspace(20, -20, nx)
     initial_conditions = [np.exp(-x ** 2) for x in space]
 
-    adjacency_matrix = ntm.topology.adjacency.cellular_automaton(nx)
+    network = ntm.topology.cellular_automaton(nx)
 
 
     def activity_rule(ctx):
@@ -33,9 +33,9 @@ if __name__ == "__main__":
         return ((dt ** 2 * (un_i_p1 - 2 * un_i + un_i_m1)) / dx ** 2) + (2 * un_i - un_m1_i)
 
 
-    activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                               activity_rule=activity_rule, timesteps=nt, past_conditions=[initial_conditions])
+    trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
+                            activity_rule=activity_rule, timesteps=nt, past_conditions=[initial_conditions])
 
-    ntm.plot_grid(activities)
+    ntm.plot_activities(trajectory)
 
-    ntm.animate_plot1D(np.linspace(0, 2, nx), activities)
+    ntm.animate_plot1D(np.linspace(0, 2, nx), trajectory)

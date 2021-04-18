@@ -23,29 +23,30 @@ if __name__ == "__main__":
     # probability of attaching two nodes
     delta = 1.0
 
-    adjacency_matrix = [[1.0]]  # begin with a single-node network
+    network = ntm.topology.from_adjacency_matrix([[1]])  # begin with a single-node network
 
-    def connectivity_rule(cctx):
-        num_nodes = len(cctx.connectivity_map)
+    def topology_rule(ctx):
+        num_nodes = len(ctx.network.nodes)
         new_label = num_nodes
-        cctx.connectivity_map[new_label] = {new_label: [{}]}
+        ctx.network.add_edge(new_label, new_label)
         if random.random() < delta:
             # choose 2 nodes at random, without replacement
-            choices = [int(i) for i in np.random.choice(list(cctx.connectivity_map.keys()), size=2, replace=False)]
-            cctx.connectivity_map[choices[0]][choices[1]] = [{}]
-            cctx.connectivity_map[choices[1]][choices[0]] = [{}]
+            choices = [int(i) for i in np.random.choice(list(ctx.network.nodes), size=2, replace=False)]
+            ctx.network.add_edge(choices[1], choices[0])
+            ctx.network.add_edge(choices[0], choices[1])
 
-        return cctx.connectivity_map
+        return ctx.network
 
-    _, connectivities = ntm.evolve(initial_conditions=[1], topology=adjacency_matrix,
-                                   connectivity_rule=connectivity_rule, timesteps=200)
+    trajectory = ntm.evolve(initial_conditions=[1], network=network,
+                            topology_rule=topology_rule, timesteps=200)
 
     # plot degree distribution
     degree_counts = {}
-    for row in connectivities[-1]:
+    last_network = trajectory[-1].network
+    for node in last_network.nodes:
         # because links are bidirectional, we can simply count the outgoing links
         # subtract 1 to adjust for the self-link
-        degree = np.count_nonzero(row) - 1
+        degree = last_network.out_degree(node) - 1
         if degree not in degree_counts:
             degree_counts[degree] = 0
         degree_counts[degree] += 1
@@ -65,4 +66,4 @@ if __name__ == "__main__":
     plt.show()
 
     # animate time evolution of the network (NOTE: node self-links are not rendered)
-    ntm.animate_network(connectivities, interval=350, layout="spring", with_labels=False)
+    ntm.animate_network(trajectory, interval=350, layout="spring", with_labels=False)

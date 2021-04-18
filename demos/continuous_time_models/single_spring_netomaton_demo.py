@@ -24,7 +24,7 @@ if __name__ == "__main__":
     v[n+1] = v[n] + Δt*(−6x[n])
     """
 
-    adjacency_matrix = [[1]]
+    network = ntm.topology.from_adjacency_matrix([[1]])
 
     dt = 0.025000
 
@@ -38,10 +38,11 @@ if __name__ == "__main__":
 
     initial_conditions = [(-2.00000, 0.00000)]
 
-    activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                               activity_rule=activity_rule, timesteps=1000)
+    trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
+                            activity_rule=activity_rule, timesteps=1000)
 
     # plot the position and velocity as a function of time
+    activities = ntm.get_activities_over_time_as_list(trajectory)
     positions = [a[0][0] for a in activities]
     velocities = [a[0][1] for a in activities]
     fig, ax1 = plt.subplots()

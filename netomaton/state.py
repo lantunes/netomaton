@@ -156,6 +156,32 @@ class Network:
             G.add_edge(i, j, **data)
         return G
 
+    def to_adjacency_matrix(self, nodelist=None, sum_multiedges=True, weight="weight"):
+        """
+        Returns this Network as an adjacency matrix. A connection is represented by a int greater than zero, and zero
+        means no connection is present.
+        :param nodelist: defines the node order in the adjacency matrix; if no nodelist is provided, then the order
+                         is determined by Network.nodes. (default is None)
+        :param sum_multiedges : whether the presence of a connection should be indicated by summing the number of
+                                edges in the connection (default is True)
+        :param weight : a string or None indicating which edge attribute contains the edge weight. If an edge does
+                        not contain the attribute, then 1 is used. (default is 'weight')
+        :return: an adjacency matrix representing this Network
+        """
+        num_nodes = len(self._network)
+        M = [[0]*num_nodes for _ in range(num_nodes)]
+        if not nodelist:
+            nodelist = list(self.nodes)
+        for n1, n2, atts in self.edges:
+            w = atts[weight] if weight in atts else 1
+            i = nodelist.index(n1)
+            j = nodelist.index(n2)
+            if sum_multiedges:
+                M[i][j] += w
+            else:
+                M[i][j] = w
+        return M
+
     def _init_node(self, node_label):
         if node_label not in self._network:
             self._network[node_label] = self._new_node()

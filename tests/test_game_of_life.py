@@ -5,7 +5,7 @@ from .rule_test import *
 class TestGameOfLifeRule(RuleTest):
 
     def test_gol(self):
-        adjacency_matrix = ntm.topology.adjacency.cellular_automaton2d(rows=60, cols=60, r=1, neighbourhood='Moore')
+        network = ntm.topology.cellular_automaton2d(rows=60, cols=60, r=1, neighbourhood='Moore')
         expected = self._convert_to_list_of_lists("game_of_life.ca")
 
         initial_conditions = ntm.init_simple2d(60, 60)
@@ -33,7 +33,8 @@ class TestGameOfLifeRule(RuleTest):
         initial_conditions[2416] = 1
         initial_conditions[2417] = 1
 
-        activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix, timesteps=60,
-                                   activity_rule=ntm.rules.game_of_life_rule)
+        trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network, timesteps=60,
+                                activity_rule=ntm.rules.game_of_life_rule)
 
+        activities = ntm.get_activities_over_time_as_list(trajectory)
         np.testing.assert_equal(expected, activities)

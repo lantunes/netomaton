@@ -11,20 +11,20 @@ See: Jackson, M. O. (2010). Social and economic networks. Princeton university p
 
 if __name__ == "__main__":
 
-    adjacency_matrix = [[1.0]]  # begin with a single-node network
+    network = ntm.topology.from_adjacency_matrix([[1]])  # begin with a single-node network
 
-    def connectivity_rule(cctx):
-        num_nodes = len(cctx.connectivity_map)
+    def topology_rule(ctx):
+        num_nodes = len(ctx.network.nodes)
         new_label = num_nodes
-        cctx.connectivity_map[new_label] = {}
+        ctx.network.add_node(new_label)
         connect_to = int(np.random.choice(list(range(num_nodes))))
-        cctx.connectivity_map[connect_to][new_label] = [{}]
-        cctx.connectivity_map[new_label][connect_to] = [{}]
+        ctx.network.add_edge(new_label, connect_to)
+        ctx.network.add_edge(connect_to, new_label)
 
-        return cctx.connectivity_map
+        return ctx.network
 
-    _, connectivities = ntm.evolve(initial_conditions=[1], topology=adjacency_matrix,
-                                   connectivity_rule=connectivity_rule, timesteps=200)
+    trajectory = ntm.evolve(initial_conditions=[1], network=network,
+                            topology_rule=topology_rule, timesteps=200)
 
     # animate time evolution of the network (NOTE: node self-links are not rendered)
-    ntm.animate_network(connectivities, interval=350, layout="spring", with_labels=False)
+    ntm.animate_network(trajectory, interval=350, layout="spring", with_labels=False)

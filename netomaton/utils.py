@@ -3,15 +3,24 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import matplotlib.collections as mcoll
+from .state import State
 try:
     import cPickle as pickle
 except:
     import pickle
 
 
-def plot_activities(trajectory, shape=None, slice=-1, title='', colormap='Greys', vmin=None, vmax=None,
+def plot_activities(trajectory_or_activities, shape=None, slice=-1, title='', colormap='Greys', vmin=None, vmax=None,
                     node_annotations=None, show_grid=False):
-    activities = get_activities_over_time_as_list(trajectory)
+    if len(trajectory_or_activities) is 0:
+        raise Exception("there are no activities")
+    if isinstance(trajectory_or_activities[0], State):
+        # trajectory_or_activities is a trajectory, convert it to an activities list
+        activities = get_activities_over_time_as_list(trajectory_or_activities)
+    else:
+        activities = trajectory_or_activities
+    if shape is not None:
+        activities = _reshape_for_animation(activities, shape)
     plot_grid(activities, shape, slice, title, colormap, vmin, vmax, node_annotations, show_grid)
 
 
@@ -20,9 +29,10 @@ def get_activities_over_time_as_list(trajectory):
     for state in trajectory:
         ac = state.activities
         row = []
-        for a in sorted(ac):
-            row.append(ac[a])
-        activities.append(row)
+        if ac:
+            for a in sorted(ac):
+                row.append(ac[a])
+            activities.append(row)
     return activities
 
 
@@ -62,8 +72,15 @@ def plot_grid_multiple(ca_list, shape=None, slice=-1, titles=None, colormap='Gre
     plt.show()
 
 
-def animate(activities, title='', shape=None, save=False, interval=50, colormap='Greys', vmin=None, vmax=None,
-            show_grid=False, show_margin=True, scale=0.6, dpi=80):
+def animate_activities(trajectory_or_activities, title='', shape=None, save=False, interval=50, colormap='Greys',
+                       vmin=None, vmax=None, show_grid=False, show_margin=True, scale=0.6, dpi=80):
+    if len(trajectory_or_activities) is 0:
+        raise Exception("there are no activities")
+    if isinstance(trajectory_or_activities[0], State):
+        # trajectory_or_activities is a trajectory, convert it to an activities list
+        activities = get_activities_over_time_as_list(trajectory_or_activities)
+    else:
+        activities = trajectory_or_activities
     if shape is not None:
         activities = _reshape_for_animation(activities, shape)
     cmap = plt.get_cmap(colormap)
@@ -105,6 +122,9 @@ def animate(activities, title='', shape=None, save=False, interval=50, colormap=
 
 
 def animate_plot1D(x, y, save=False, interval=50, dpi=80):
+    if isinstance(y[0], State):
+        # y is a trajectory, convert it to an activities list
+        y = get_activities_over_time_as_list(y)
     fig1 = plt.figure()
     line, = plt.plot(x, y[0])
     def update_line(activity):
@@ -133,15 +153,8 @@ def _reshape_for_animation(activities, shape):
         raise Exception("shape must be a tuple of length 1 or 2")
 
 
-def plot_network(adjacency_matrix, layout="shell", with_labels=True, node_color="#1f78b4", node_size=300):
-    G = nx.MultiDiGraph()
-    for n, _ in enumerate(adjacency_matrix):
-        G.add_node(n)
-    for row_index, row in enumerate(adjacency_matrix):
-        for node_index, val in enumerate(row):
-            if val != 0.:
-                G.add_edge(row_index, node_index)
-
+def plot_network(network, layout="shell", with_labels=True, node_color="#1f78b4", node_size=300):
+    G = network.to_networkx()
     if layout == "shell":
         nx.draw_shell(G, with_labels=with_labels, node_color=node_color, node_size=node_size)
     elif layout == "spring":
@@ -153,39 +166,8 @@ def plot_network(adjacency_matrix, layout="shell", with_labels=True, node_color=
     plt.show()
 
 
-def animate_network(adjacency_matrices, save=False, interval=50, dpi=80, layout="shell",
+def animate_network(trajectory, save=False, interval=50, dpi=80, layout="shell",
                     with_labels=True, node_color="b", node_size=30):
-    fig, ax = plt.subplots()
-
-    def update(adjacency_matrix):
-        ax.clear()
-
-        G = nx.MultiDiGraph()
-        for n, _ in enumerate(adjacency_matrix):
-            G.add_node(n)
-        for row_index, row in enumerate(adjacency_matrix):
-            for node_index, val in enumerate(row):
-                if val != 0.:
-                    G.add_edge(row_index, node_index)
-
-        if layout == "shell":
-            nx.draw_shell(G, with_labels=with_labels, node_color=node_color, node_size=node_size)
-        elif layout == "spring":
-            nx.draw_spring(G, with_labels=with_labels, node_color=node_color, node_size=node_size)
-        elif isinstance(layout, dict):
-            nx.draw(G, pos=layout, with_labels=with_labels, node_color=node_color, node_size=node_size)
-        else:
-            raise Exception("unsupported layout: %s" % layout)
-
-    ani = animation.FuncAnimation(fig, update, frames=adjacency_matrices, interval=interval,
-                                  save_count=len(adjacency_matrices))
-    if save:
-        ani.save('evolved.gif', dpi=dpi, writer="imagemagick")
-    plt.show()
-
-
-def animate_network_n2(states, save=False, interval=50, dpi=80, layout="shell",
-                       with_labels=True, node_color="b", node_size=30):
     fig, ax = plt.subplots()
 
     def update(state):
@@ -207,59 +189,8 @@ def animate_network_n2(states, save=False, interval=50, dpi=80, layout="shell",
         else:
             raise Exception("unsupported layout: %s" % layout)
 
-    ani = animation.FuncAnimation(fig, update, frames=states, interval=interval,
-                                  save_count=len(states))
+    ani = animation.FuncAnimation(fig, update, frames=trajectory, interval=interval,
+                                  save_count=len(trajectory))
     if save:
         ani.save('evolved.gif', dpi=dpi, writer="imagemagick")
     plt.show()
-
-
-def animate_connectivity_map(connectivity_maps, save=False, interval=50, dpi=80, layout="shell",
-                    with_labels=True, node_color="b", node_size=30):
-    fig, ax = plt.subplots()
-
-    def update(connectivity_map):
-        ax.clear()
-
-        G = connectivity_map_to_nx(connectivity_map)
-
-        if layout == "shell":
-            nx.draw_shell(G, with_labels=with_labels, node_color=node_color, node_size=node_size)
-        elif layout == "spring":
-            nx.draw_spring(G, with_labels=with_labels, node_color=node_color, node_size=node_size)
-        elif isinstance(layout, dict):
-            nx.draw(G, pos=layout, with_labels=with_labels, node_color=node_color, node_size=node_size)
-        else:
-            raise Exception("unsupported layout: %s" % layout)
-
-    ani = animation.FuncAnimation(fig, update, frames=connectivity_maps.values(), interval=interval,
-                                  save_count=len(connectivity_maps))
-    if save:
-        ani.save('evolved.gif', dpi=dpi, writer="imagemagick")
-    plt.show()
-
-
-def connectivity_map_to_nx(connectivity_map):
-    G = nx.MultiDiGraph()
-    connectivity_map = connectivity_map.to_dict()
-    for node in connectivity_map:
-        G.add_node(node)
-        for from_node, connection_state in connectivity_map[node].items():
-            for _ in connection_state:
-                G.add_edge(from_node, node)
-    return G
-
-
-def get_node_degrees(connectivity_map):
-    node_in_degrees = {}
-    node_out_degrees = {}
-    for k, v in connectivity_map.items():
-        if k not in node_in_degrees:
-            node_in_degrees[k] = 0
-        for k2 in v:
-            if k2 not in node_out_degrees:
-                node_out_degrees[k2] = 0
-            n = len(v[k2])
-            node_out_degrees[k2] += n
-            node_in_degrees[k] += n
-    return node_in_degrees, node_out_degrees

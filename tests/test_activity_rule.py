@@ -1,4 +1,4 @@
-from netomaton.topology import adjacency
+from netomaton import topology, utils
 import netomaton.rules as rules
 from netomaton import NodeContext, evolve
 from .rule_test import *
@@ -161,34 +161,35 @@ class TestRules(RuleTest):
     def _evolve_nks_ca(expected, rule):
         rows, size = expected.shape
         initial_conditions = np.array(expected[0]).flatten()
-        adjacency_matrix = adjacency.cellular_automaton(n=size, r=1)
-        activities, adjacencies = evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                         activity_rule=rules.nks_ca_rule(rule), timesteps=rows)
-        return activities
+        network = topology.cellular_automaton(n=size, r=1)
+        trajectory = evolve(initial_conditions=initial_conditions, network=network,
+                            activity_rule=rules.nks_ca_rule(rule), timesteps=rows)
+        return utils.get_activities_over_time_as_list(trajectory)
 
     @staticmethod
     def _evolve_binary_ca(expected, r, rule):
         rows, size = expected.shape
         initial_conditions = np.array(expected[0]).flatten()
-        adjacency_matrix = adjacency.cellular_automaton(n=size, r=r)
-        activities, adjacencies = evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                         activity_rule=rules.binary_ca_rule(rule), timesteps=rows)
-        return activities
+        network = topology.cellular_automaton(n=size, r=r)
+        trajectory = evolve(initial_conditions=initial_conditions, network=network,
+                            activity_rule=rules.binary_ca_rule(rule), timesteps=rows)
+        return utils.get_activities_over_time_as_list(trajectory)
 
     @staticmethod
     def _evolve_totalistic_ca(expected, k, rule):
         rows, size = expected.shape
         initial_conditions = np.array(expected[0]).flatten()
-        adjacency_matrix = adjacency.cellular_automaton(n=size, r=1)
-        activities, adjacencies = evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                         activity_rule=rules.totalistic_ca(k, rule), timesteps=rows)
-        return activities
+        network = topology.cellular_automaton(n=size, r=1)
+        trajectory = evolve(initial_conditions=initial_conditions, network=network,
+                            activity_rule=rules.totalistic_ca(k, rule), timesteps=rows)
+        return utils.get_activities_over_time_as_list(trajectory)
 
     @staticmethod
     def _evolve_totalistic_ca2d(expected, rule, neighbourhood):
         steps, rows, size = expected.shape
         initial_conditions = np.array(expected[0]).reshape(rows * size).flatten()
-        adjacency_matrix = adjacency.cellular_automaton2d(rows=rows, cols=size, r=1, neighbourhood=neighbourhood)
-        activities, adjacencies = evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                                         activity_rule=rules.totalistic_ca(k=2, rule=rule), timesteps=steps)
+        network = topology.cellular_automaton2d(rows=rows, cols=size, r=1, neighbourhood=neighbourhood)
+        trajectory = evolve(initial_conditions=initial_conditions, network=network,
+                            activity_rule=rules.totalistic_ca(k=2, rule=rule), timesteps=steps)
+        activities = utils.get_activities_over_time_as_list(trajectory)
         return np.array(activities).reshape((steps, rows, size))

@@ -14,7 +14,7 @@ if __name__ == "__main__":
     nu = .07  # the value of viscosity
     dt = dx * nu  # the amount of time each timestep covers
 
-    adjacency_matrix = ntm.topology.adjacency.cellular_automaton(nx)
+    network = ntm.topology.cellular_automaton(nx)
 
     # Sawtooth initial conditions
     initial_conditions = [4., 4.06283185, 4.12566371, 4.18849556, 4.25132741,
@@ -48,9 +48,9 @@ if __name__ == "__main__":
         return un_i - un_i * dt / dx * (un_i - un_i_m1) + nu * dt / dx ** 2 * (un_i_p1 - 2 * un_i + un_i_m1)
 
 
-    activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                               activity_rule=activity_rule, timesteps=nt)
+    trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
+                            activity_rule=activity_rule, timesteps=nt)
 
-    ntm.plot_grid(activities)
+    ntm.plot_activities(trajectory)
 
-    ntm.animate_plot1D(np.linspace(0, 2, nx), activities)
+    ntm.animate_plot1D(np.linspace(0, 2, nx), trajectory)

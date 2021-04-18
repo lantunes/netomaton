@@ -14,7 +14,7 @@ if __name__ == "__main__":
     dx = 2 / (nx - 1)  # the distance between any pair of adjacent points
     k = 1  # wavespeed of 1
 
-    adjacency_matrix = ntm.topology.adjacency.cellular_automaton(nx)
+    network = ntm.topology.cellular_automaton(nx)
 
     initial_conditions = [1.] * 10 + [2.] * 11 + [1.] * 20
 
@@ -27,9 +27,9 @@ if __name__ == "__main__":
         return un_i - k * dt / dx * (un_i - un_i_m1)
 
 
-    activities, _ = ntm.evolve(initial_conditions=initial_conditions, topology=adjacency_matrix,
-                               activity_rule=activity_rule, timesteps=nt)
+    trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
+                            activity_rule=activity_rule, timesteps=nt)
 
-    ntm.plot_grid(activities)
+    ntm.plot_activities(trajectory)
 
-    ntm.animate_plot1D(np.linspace(0, 2, nx), activities)
+    ntm.animate_plot1D(np.linspace(0, 2, nx), trajectory)
