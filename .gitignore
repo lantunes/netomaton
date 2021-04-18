@@ -23,3 +23,5 @@ out/
 /*.egg-info
 
 .cache/
+
+/doc/_build/

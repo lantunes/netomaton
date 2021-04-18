@@ -1,5 +1,0 @@
-site_name: Netomaton
-nav:
-    - Home: index.md
-    - About: about.md
-theme: readthedocs

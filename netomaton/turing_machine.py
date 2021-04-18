@@ -1,3 +1,5 @@
+from abc import abstractmethod
+
 from .topology import cellular_automaton, from_adjacency_matrix
 from .utils import get_activities_over_time_as_list
 
@@ -7,10 +9,11 @@ class TuringMachine:
     STAY = 1
     RIGHT = 2
 
-    @property
+    @abstractmethod
     def network(self):
         pass
 
+    @abstractmethod
     def activity_rule(self, ctx):
         pass
 

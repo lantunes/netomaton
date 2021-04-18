@@ -9,5 +9,8 @@ dependencies:
   - matplotlib=3.0.2
   - networkx=2.5
   - numpy=1.15.4
-  - mkdocs=1.1.2
+  - sphinx=3.5.4
   - msgpack-python=1.0.2
+  - pip
+  - pip:
+      - sphinx-rtd-theme
