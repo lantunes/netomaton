@@ -103,7 +103,7 @@ def evolve(network, initial_conditions=None, activity_rule=None, timesteps=None,
     if not isinstance(initial_conditions, dict) and isinstance(initial_conditions, (list, np.ndarray)):
         initial_conditions = {i: check_np(v) for i, v in enumerate(initial_conditions)}
 
-    input_fn, steps = _get_input_function(timesteps, input)
+    input_fn = _get_input_function(timesteps, input)
 
     if len(initial_conditions) != len(network) and activity_rule:
         raise Exception("too few intial conditions specified [%s] for the number of given nodes [%s]" %
@@ -117,7 +117,7 @@ def evolve(network, initial_conditions=None, activity_rule=None, timesteps=None,
 
     t = 1
     while True:
-        inp = input_fn(t)
+        inp = input_fn(t, prev_activities, prev_network)
         if inp is None:
             break
 
@@ -259,11 +259,11 @@ def _get_input_function(timesteps=None, input=None):
 
     if input is not None:
         if callable(input):
-            return input, 1
+            return input
         else:
-            return _ListInputFunction(input), len(input)+1
+            return _ListInputFunction(input)
 
-    return _TimestepInputFunction(timesteps), timesteps
+    return _TimestepInputFunction(timesteps)
 
 
 def _is_indexable(obj):
@@ -274,7 +274,7 @@ class _TimestepInputFunction:
     def __init__(self, num_steps):
         self._num_steps = num_steps
 
-    def __call__(self, t):
+    def __call__(self, t, activities, network):
         if t == self._num_steps:
             return None
         return "__timestep__"
@@ -284,7 +284,7 @@ class _ListInputFunction:
     def __init__(self, input_list):
         self._input_list = input_list
 
-    def __call__(self, t):
+    def __call__(self, t, activities, network):
         if (t-1) >= len(self._input_list):
             return None
         return self._input_list[t-1]

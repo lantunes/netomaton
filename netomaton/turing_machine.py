@@ -109,7 +109,7 @@ class HeadCentricTuringMachine(TuringMachine):
         else:
             raise Exception("unsupported direction: %s" % direction)
 
-    def input_function(self, t):
+    def input_function(self, t, a, n):
         if self._max_timesteps is not None and len(self._tape_history) == self._max_timesteps:
             return None
 
