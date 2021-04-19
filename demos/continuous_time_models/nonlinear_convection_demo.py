@@ -18,14 +18,12 @@ if __name__ == "__main__":
 
     initial_conditions = [1.]*10 + [2.]*11 + [1.]*20
 
-
     def activity_rule(ctx):
         un_i = ctx.current_activity
         # the space derivative is handled using the Backward Difference, i.e. the value of the neighbour to the left
         left_label = (ctx.node_label - 1) % nx
         un_i_m1 = ctx.activity_of(left_label)
         return un_i - un_i * dt / dx * (un_i - un_i_m1)
-
 
     trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
                             activity_rule=activity_rule, timesteps=nt)

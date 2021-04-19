@@ -21,7 +21,6 @@ if __name__ == "__main__":
 
     network = ntm.topology.cellular_automaton(nx)
 
-
     def activity_rule(ctx):
         un_i = ctx.current_activity
         left_label = (ctx.node_label - 1) % nx
@@ -31,7 +30,6 @@ if __name__ == "__main__":
         # the activity not at the previous timestep, but the timestep before that
         un_m1_i = ctx.past_activity_of(ctx.node_label)
         return ((dt ** 2 * (un_i_p1 - 2 * un_i + un_i_m1)) / dx ** 2) + (2 * un_i - un_m1_i)
-
 
     trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
                             activity_rule=activity_rule, timesteps=nt, past_conditions=[initial_conditions])

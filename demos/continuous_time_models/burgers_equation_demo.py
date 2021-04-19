@@ -38,7 +38,6 @@ if __name__ == "__main__":
                           3.37168147, 3.43451332, 3.49734518, 3.56017703, 3.62300888,
                           3.68584073, 3.74867259, 3.81150444, 3.87433629, 3.93716815, 4.]
 
-
     def activity_rule(ctx):
         un_i = ctx.current_activity
         left_label = (ctx.node_label - 1) % nx
@@ -46,7 +45,6 @@ if __name__ == "__main__":
         right_label = (ctx.node_label + 1) % nx
         un_i_p1 = ctx.activity_of(right_label)
         return un_i - un_i * dt / dx * (un_i - un_i_m1) + nu * dt / dx ** 2 * (un_i_p1 - 2 * un_i + un_i_m1)
-
 
     trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
                             activity_rule=activity_rule, timesteps=nt)

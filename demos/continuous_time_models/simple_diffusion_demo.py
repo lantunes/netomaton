@@ -24,13 +24,11 @@ if __name__ == "__main__":
     dx = .5
     F = a * dt / dx ** 2
 
-
     def activity_rule(ctx):
         current = ctx.current_activity
         left = ctx.neighbourhood_activities[0]
         right = ctx.neighbourhood_activities[2]
         return current + F * (right - 2 * current + left)
-
 
     trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
                                activity_rule=activity_rule, timesteps=75)

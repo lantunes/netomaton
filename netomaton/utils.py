@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import matplotlib.collections as mcoll
+import collections
 from .state import State
 try:
     import cPickle as pickle
@@ -193,4 +194,178 @@ def animate_network(trajectory, save=False, interval=50, dpi=80, layout="shell",
                                   save_count=len(trajectory))
     if save:
         ani.save('evolved.gif', dpi=dpi, writer="imagemagick")
+    plt.show()
+
+
+def plot1D(x, y, color=None, label=None, xlabel=None, ylabel=None, xlim=None, ylim=None, twinx=False,
+           legend=None, tight_layout=None, title=None):
+    """
+    Creates a 1D plot of the given x and y values.
+
+    :param x: A list representing the values of the x-axis.
+
+    :param y: A list representing the values of the y-axis. If the values of this list are also lists, then each will
+              be plotted as a separate series on the y-axis.
+
+    :param color: A string, representing the color of the series, or a list of colors, representing the color of each
+                   series to be plotted. The number of colors must match the number of series. The color values must
+                   be recognizable by Matplotlib.
+
+    :param label: A string or number, or a list of strings or numbers, representing the labels of each series to be
+                  plotted. The number of labels must match the number of series.
+
+    :param xlabel: A string representing the label of the x-axis.
+
+    :param ylabel: A string, or list of at most two strings, representing the label(s) of the y-axis.
+
+    :param xlim: A 2-tuple of numbers, representing the limits of the x-axis.
+
+    :param ylim: A 2-tuple of numbers, or a list of at most two 2-tuples of numbers, representing the
+                 limits of the y-axis.
+
+    :param twinx: If True, the provided y series will be plotted on two separate y-axes, and there must
+                  be at least two series of y values provided. If there are more than two series of y values,
+                  then each series will be plotted on alternating y-axes. (Default is False)
+
+    :param legend: A dict, or a list of at most two dicts, representing the arguments to the legend
+                   function of Matplotlib.
+
+    :param tight_layout: A dict representing the arguments to the tight_layout function of Matplotlib.
+
+    :param title: The plot title.
+    """
+    axes = []
+    fig, ax1 = plt.subplots()
+    axes.append(ax1)
+    if twinx:
+        axes.append(ax1.twinx())
+        if len(y) < 2:
+            raise Exception("there must be at least two series of y values provided")
+        for _y in y:
+            if not isinstance(_y, (list, np.ndarray)):
+                raise Exception("an item in y must be a list representing a y series")
+
+    current_axis_idx = 0
+    # assume that the first value type in y is representative of all the value types in y
+    is_multiseries = isinstance(y[0], (list, np.ndarray))
+
+    def _get_item(items, i):
+        if isinstance(items, str):
+            return items
+        if isinstance(items, collections.Sequence):
+            return items[i]
+        return items
+
+    if not is_multiseries:
+        y = [y]
+
+    for i, y_series in enumerate(y):
+        current_axis = axes[current_axis_idx % len(axes)]
+        plot_args = {}
+        if label:
+            plot_args["label"] = _get_item(label, i)
+        if color:
+            plot_args["color"] = _get_item(color, i)
+        current_axis.plot(x, y_series, **plot_args)
+        if xlabel:
+            current_axis.set_xlabel(xlabel)
+        if ylabel:
+            ylabel_args = {}
+            if color:
+                ylabel_args["color"] = _get_item(color, i)
+            current_axis.set_ylabel(_get_item(ylabel, i % 2), **ylabel_args)
+        if xlim:
+            current_axis.set_xlim(xlim)
+        if ylim:
+            current_axis.set_ylim(_get_item(ylim, i % 2))
+        if legend:
+            current_axis.legend(**legend)
+
+        current_axis_idx += 1
+
+    if tight_layout:
+        plt.tight_layout(**tight_layout)
+
+    if title:
+        plt.title(title)
+
+    plt.show()
+
+
+def poincare_plot(activities, timesteps, xlabel=None, ylabel=None, xlim=None, ylim=None, title=None):
+    """
+    Create a Poincaré plot.
+
+    :param activities: A list of activities. If the values of this list are also lists, then each will
+                       be plotted as a separate series.
+
+    :param timesteps: The number of timesteps in the trajectory to consider, starting from the end.
+
+    :param xlabel: A string representing the label of the x-axis.
+
+    :param ylabel: A string representing the label of the y-axis.
+
+    :param xlim: A 2-tuple of numbers, representing the limits of the x-axis.
+
+    :param ylim: A 2-tuple of numbers, or a list of at most two 2-tuples of numbers, representing the
+                 limits of the y-axis.
+
+    :param title: The plot title.
+    """
+    cm = plt.get_cmap('gist_rainbow')
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    # assume that the first value type in y is representative of all the value types in y
+    is_multiseries = isinstance(activities[0], (list, np.ndarray))
+    if is_multiseries:
+        ax.set_prop_cycle(color=[cm(1. * i / len(activities)) for i in range(len(activities))])
+    else:
+        activities = [activities]
+    for a in activities:
+        x = []
+        y = []
+        for t in range(timesteps - 1):
+            x.append(a[-timesteps:][t])
+            y.append(a[-timesteps:][t + 1])
+        plt.scatter(x, y, s=1)
+    if xlim:
+        plt.xlim(xlim)
+    if ylim:
+        plt.ylim(ylim)
+    if xlabel:
+        plt.xlabel(xlabel)
+    if ylabel:
+        plt.ylabel(ylabel)
+    if title:
+        plt.title(title)
+    plt.show()
+
+
+def bifurcation_plot(x, trajectories, timesteps, xlabel=None, ylabel=None, title=None):
+    """
+    Create a bifurcation plot.
+
+    :param x: A list representing the values of the x-axis.
+
+    :param trajectories: A list of lists. Each inner list is a sequence of activities representing a trajectory.
+
+    :param timesteps: The number of timesteps in the trajectory to consider, starting from the end.
+
+    :param xlabel: A string representing the label of the x-axis.
+
+    :param ylabel: A string representing the label of the y-axis.
+
+    :param title: The plot title.
+    """
+    y = []
+    for t in trajectories:
+        y.append(np.unique(t[-timesteps:]))
+    for x_e, y_e in zip(x, y):
+        plt.scatter([x_e] * len(y_e), y_e, color="b", s=1)
+    if xlabel:
+        plt.xlabel(xlabel)
+    if ylabel:
+        plt.ylabel(ylabel)
+    if title:
+        plt.title(title)
     plt.show()
