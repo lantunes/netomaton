@@ -7,14 +7,13 @@ from .rule_test import *
 class TestLogisticMap(RuleTest):
 
     def test_logistic_map(self):
-        a = 2.5
         timesteps = 20
 
-        network = ntm.topology.from_adjacency_matrix([[1]])
+        network = ntm.topology.from_adjacency_matrix([[2.5]])
         initial_conditions = [0.5]
 
         def activity_rule(ctx):
-            return a * ctx.current_activity * (1 - ctx.current_activity)
+            return ctx.edge_data(ctx.node_label, "weight") * ctx.current_activity * (1 - ctx.current_activity)
 
         trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
                                 activity_rule=activity_rule, timesteps=timesteps)

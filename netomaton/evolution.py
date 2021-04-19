@@ -61,6 +61,9 @@ class NodeContext(object):
         """
         return self.past_activities[past_activity_index][node_label]
 
+    def edge_data(self, neigbour_label, attr, index=0):
+        return self.connection_states[neigbour_label][index][attr]
+
 
 class TopologyContext(object):
 

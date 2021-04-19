@@ -9,6 +9,7 @@ class Network:
     def __init__(self, n=0):
         """
         Constructs a fully disconnected Network with n nodes.
+
         :param n: the number of nodes
         """
         self._network = {i: self._new_node() for i in range(n)}
@@ -17,9 +18,13 @@ class Network:
         """
         Add an edge from i to j. If i and j do not exist, create them.
         An additional edge will be added if an edge from i to j already exists.
+
         :param i:
+
         :param j:
+
         :param attr:
+
         :return:
         """
         self._init_node(i)
@@ -34,8 +39,11 @@ class Network:
     def add_node(self, node_label, **attr):
         """
         Add a node. If the node already exists
+
         :param node_label:
+
         :param attr:
+
         :return:
         """
         self._init_node(node_label)
@@ -64,7 +72,9 @@ class Network:
     def remove_edge(self, i, j):
         """
         Removes all instances of an edge from i to j.
+
         :param i: the originating node of the edge
+
         :param j: the target destination node of the edge
         """
         n = len(self._network[j]["incoming"][i])
@@ -111,6 +121,7 @@ class Network:
     def compress(self):
         """
         Compresses the Network into a binary format.
+
         :return: packed bytes
         """
         return _Compressor.compress(self._network)
@@ -119,7 +130,9 @@ class Network:
     def decompress(packed):
         """
         Decompresses a compressed Network.
+
         :param packed: packed bytes
+
         :return: a Network
         """
         n = Network()
@@ -130,7 +143,9 @@ class Network:
     def from_networkx(G):
         """
         Creates a Network from the given NetworkX graph.
+
         :param G: a NetworkX graph
+
         :return: a Network
         """
         network = Network()
@@ -143,6 +158,7 @@ class Network:
     def to_networkx(self):
         """
         Returns this Network as a NetworkX MultiDiGraph.
+
         :return: a NetworkX MultiDiGraph
         """
         G = nx.MultiDiGraph()
@@ -160,12 +176,16 @@ class Network:
         """
         Returns this Network as an adjacency matrix. A connection is represented by a int greater than zero, and zero
         means no connection is present.
+
         :param nodelist: defines the node order in the adjacency matrix; if no nodelist is provided, then the order
                          is determined by Network.nodes. (default is None)
+
         :param sum_multiedges : whether the presence of a connection should be indicated by summing the number of
                                 edges in the connection (default is True)
+
         :param weight : a string or None indicating which edge attribute contains the edge weight. If an edge does
                         not contain the attribute, then 1 is used. (default is 'weight')
+
         :return: an adjacency matrix representing this Network
         """
         num_nodes = len(self._network)
@@ -231,6 +251,7 @@ class State:
         """
 
         :param activities: a dict from node label to activity
+
         :param network: a Network
         """
         self._compression = compression
@@ -268,7 +289,9 @@ class _Compressor:
     def compress(obj):
         """
         Compresses the given object into a binary format.
+
         :param network: an object
+
         :return: packed bytes
         """
         return msgpack.packb(obj)
@@ -277,7 +300,9 @@ class _Compressor:
     def decompress(packed):
         """
         Decompresses a compressed object.
+
         :param packed: packed bytes
+
         :return: a decompressed object
         """
         gc.disable()

@@ -15,10 +15,24 @@ netomaton.evolution
    :members:
    :undoc-members:
 
+netomaton.rules
+---------------
+
+.. automodule:: netomaton.rules.activity_rule
+   :members:
+   :undoc-members:
+
 netomaton.topology
 ------------------
 
 .. automodule:: netomaton.topology.networks
+   :members:
+   :undoc-members:
+
+netomaton.state
+---------------
+
+.. automodule:: netomaton.state
    :members:
    :undoc-members:
 

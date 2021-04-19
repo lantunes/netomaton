@@ -5,9 +5,13 @@ def cellular_automaton(n, r=1, boundary="periodic"):
     """
     Creates the adjacency matrix for a 1D cellular automaton, with the given number of cells and neighbourhood
     radius.
+
     :param n: the number of cells in this automaton
+
     :param r: the neighbourhood radius
+
     :param boundary: the boundary condition
+
     :return: an adjacency matrix describing this cellular automaton
     """
     if n < 3:
@@ -30,11 +34,17 @@ def cellular_automaton2d(rows, cols, r=1, neighbourhood='Moore', boundary="perio
     """
     Creates the adjacency matrix for a 2D cellular automaton, with the given number of rows, columns, neighbourhood
     radius, and neighbourhood type.
+
     :param rows: the number of rows in the 2D automaton
+
     :param cols: the number of columns in the 2D automaton
+
     :param r: the neighbourhood radius; the neighbourhood dimensions will be 2r+1 x 2r+1
+
     :param neighbourhood: the neighbourhood type; valid values are 'Moore', 'von Neumann', and 'Hex'
+
     :param boundary: the boundary condition
+
     :return: an adjacency matrix describing this cellular automaton
     """
     n = rows * cols
