@@ -1,4 +1,5 @@
 import networkx as nx
+import math
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
@@ -369,3 +370,89 @@ def bifurcation_plot(x, trajectories, timesteps, xlabel=None, ylabel=None, title
     if title:
         plt.title(title)
     plt.show()
+
+
+def plot_degree_distribution(network, xlabel="Node degree", ylabel_freq="Frequency", ylabel_prob="Probability",
+                             in_degree=False, out_degree=False,
+                             equation=None, equation_x=0.51, equation_y=0.76, equation_text="", equation_color="r",
+                             color="r", title=None):
+    """
+    Create a node degree distribution plot for the given network.
+
+    :param network: A Netomaton Network instance.
+
+    :param xlabel: The x-axis label.
+
+    :param ylabel_freq: The frequency y-axis label.
+
+    :param ylabel_prob: The probability y-axis label.
+
+    :param in_degree: If True, the in-degree will be used. (default is False)
+
+    :param out_degree: If True, the out-degree will be used. (default is False)
+
+    :param equation: A callable that computes the degree distribution, given a node degree.
+
+    :param equation_x: The equation's x coordinate.
+
+    :param equation_y: The equation's y coordinate.
+
+    :param equation_text: The equation to display.
+
+    :param equation_color: The equation text's color. It must be a valid Matplotlib color.
+
+    :param color: The color to use for the plot. It must be a valid Matplotlib color.
+
+    :param title: The plot's title.
+    """
+    degree_counts = {}
+    for node in network.nodes:
+        if in_degree:
+            degree = network.in_degree(node)
+        elif out_degree:
+            degree = network.out_degree(node)
+        else:
+            degree = network.degree(node)
+
+        if degree not in degree_counts:
+            degree_counts[degree] = 0
+        degree_counts[degree] += 1
+
+    x = [i for i in range(1, max(degree_counts) + 1)]
+    height = [degree_counts[i] if i in degree_counts else 0 for i in x]
+    plt.bar(x, height)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel_freq)
+
+    if equation:
+        y = [equation(k) for k in x]
+        plt.twinx()
+        plt.plot(x, y, color=color)
+        plt.ylabel(ylabel_prob)
+        plt.text(equation_x, equation_y, equation_text, transform=plt.gca().transAxes, color=equation_color)
+
+    if title:
+        plt.title(title)
+
+    plt.show()
+
+
+def ncr(n, r):
+    """
+    Returns the number of ways to choose r items from n items without repetition and without order.
+
+    :param n: A non-negative integer.
+
+    :param r: A non-negative integer.
+
+    :return: An integer representing the number of ways to choose r items from n items without repetition
+             and without order.
+    """
+    if not isinstance(n, int) or n < 0:
+        raise Exception("n must be a non-negative int")
+    if not isinstance(r, int) or r < 0:
+        raise Exception("r must be a non-negative int")
+    if n < r:
+        return 0
+    f = math.factorial
+    return f(n) // f(r) // f(n-r)
