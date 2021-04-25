@@ -18,8 +18,8 @@ if __name__ == '__main__':
 
     t = ntm.Turtle()
     ntm.plot_L_system(state=trajectory[-1], turtle=t, bindings={
-        "1": (t.forward, 1),
-        "0": (t.forward, 1),
+        "1": t.forward,
+        "0": t.forward,
         "[": [t.push, (t.rotate, -45)],
         "]": [t.pop, (t.rotate, 45)]
     })

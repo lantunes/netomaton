@@ -18,7 +18,7 @@ if __name__ == '__main__':
 
     t = ntm.Turtle(start_orientation=25)
     ntm.animate_L_system(state=trajectory[-1], turtle=t, bindings={
-        "F": (t.forward, 1),
+        "F": t.forward,
         "X": [],
         "+": (t.rotate, -25),
         "-": (t.rotate, 25),

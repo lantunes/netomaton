@@ -16,7 +16,7 @@ if __name__ == '__main__':
 
     t = ntm.Turtle(start_orientation=90)
     ntm.plot_L_system(state=trajectory[-1], turtle=t, bindings={
-        "F": (t.forward, 1),
+        "F": t.forward,
         "+": (t.rotate, -90),
         "-": (t.rotate, 90)
     })

@@ -21,11 +21,11 @@ class Turtle:
         self.trajectory = []
         self._stack = []
 
-    def forward(self, distance):
+    def forward(self, distance=1):
         """
         Move the Turtle forward, from the current orientation, by the given amount.
 
-        :param distance: the amount by which to move the Turtle
+        :param distance: the amount by which to move the Turtle (default is 1)
         """
         angle = math.radians(self.orientation)
         new_x = math.sin(angle) * distance + self.x
