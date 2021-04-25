@@ -14,8 +14,6 @@ class Turtle:
         :param start_y: the starting y-coordinate (optional, default is 0)
 
         :param start_orientation: the starting orientation in degrees (optional, default is 0)
-
-        :param marker: the Matplotlib symbol for the marker (optional, default is no marker)
         """
         self.x = start_x
         self.y = start_y
