@@ -173,7 +173,7 @@ def evolve_activities(activity_rule, t, inp, curr_activities, prev_activities, t
 
         if added_nodes:
             for state, outgoing_links, node_label in added_nodes:
-                curr_activities[node_label] = state
+                curr_activities[node_label] = check_np(state)
 
     if persist_activities:
         trajectory[t].activities = curr_activities
@@ -223,7 +223,7 @@ def evolve_topology(topology_rule, t, activities, prev_network, trajectory, copy
             network.remove_node(node_label)
 
         for activity, outgoing_links, node_label in added_nodes:
-            network.add_node(node_label, activity=activity)
+            network.add_node(node_label, activity=check_np(activity))
             for target, connection_state in outgoing_links.items():
                 network.add_edge(node_label, target, **connection_state)
 

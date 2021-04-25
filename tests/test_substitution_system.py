@@ -83,14 +83,13 @@ class TestSubstitutionSystem(RuleTest):
         np.testing.assert_equal(expected, actual)
 
     def test_algae(self):
-        system = ntm.SubstitutionSystem(n=1, rules={
+        system = ntm.SubstitutionSystem(rules={
             "A": "AB",
             "B": "A"
-        })
+        }, axiom="A")
 
-        initial_conditions = ["A"]
-
-        trajectory = ntm.evolve(network=system.network, initial_conditions=initial_conditions,
+        trajectory = ntm.evolve(network=system.network,
+                                initial_conditions=system.initial_conditions,
                                 activity_rule=system.activity_rule, timesteps=8)
 
         expected = [
@@ -106,14 +105,13 @@ class TestSubstitutionSystem(RuleTest):
         self.assertEqual(expected, system.to_string(trajectory))
 
     def test_fractal_tree(self):
-        system = ntm.SubstitutionSystem(n=1, rules={
+        system = ntm.SubstitutionSystem(rules={
             "1": "11",
             "0": "1[0]0"
-        }, constants=["[", "]"])
+        }, constants=["[", "]"], axiom="0")
 
-        initial_conditions = ["0"]
-
-        trajectory = ntm.evolve(network=system.network, initial_conditions=initial_conditions,
+        trajectory = ntm.evolve(network=system.network,
+                                initial_conditions=system.initial_conditions,
                                 activity_rule=system.activity_rule, timesteps=4)
 
         expected = [
@@ -125,13 +123,12 @@ class TestSubstitutionSystem(RuleTest):
         self.assertEqual(expected, system.to_string(trajectory))
 
     def test_koch_curve(self):
-        system = ntm.SubstitutionSystem(n=1, rules={
+        system = ntm.SubstitutionSystem(rules={
             "F": "F+F-F-F+F"
-        }, constants=["+", "-"])
+        }, constants=["+", "-"], axiom="F")
 
-        initial_conditions = ["F"]
-
-        trajectory = ntm.evolve(network=system.network, initial_conditions=initial_conditions,
+        trajectory = ntm.evolve(network=system.network,
+                                initial_conditions=system.initial_conditions,
                                 activity_rule=system.activity_rule, timesteps=4)
 
         expected = [
@@ -148,9 +145,9 @@ class TestSubstitutionSystem(RuleTest):
     def _evolve_substitution_system(expected, rules):
         rows = len(expected)
         initial_conditions = np.array(expected[0]).flatten()
-        subn_system = ntm.SubstitutionSystem(rules=rules, n=len(initial_conditions), dtype=int)
-        trajectory = ntm.evolve(initial_conditions=initial_conditions, network=subn_system.network,
-                                activity_rule=subn_system.activity_rule, timesteps=rows)
+        system = ntm.SubstitutionSystem(rules=rules, axiom=initial_conditions)
+        trajectory = ntm.evolve(initial_conditions=system.initial_conditions, network=system.network,
+                                activity_rule=system.activity_rule, timesteps=rows)
         activities = {t: state.activities for t, state in enumerate(trajectory)}
         activities = [[v for e, v in sorted(activities[k].items())] for k in sorted(activities)]
         return activities

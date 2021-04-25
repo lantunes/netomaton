@@ -3,14 +3,15 @@ from .state import Network
 
 
 class SubstitutionSystem:
-    def __init__(self, n, rules, constants=None, dtype=None):
+    def __init__(self, axiom, rules, constants=None):
         self._rules = rules
         self._constants = constants if constants else []
         self._rules.update({c: c for c in self._constants})
-        self._dtype = dtype
         self._neighbourhood_size = self._get_neighbourhood_size(rules)
-        self._network = self._init_network(n)
-        self._last_node_index = n - 1
+        self._initial_conditions = [s for s in axiom]
+        self._dtype = type(self._initial_conditions[0])
+        self._network = self._init_network(len(self._initial_conditions))
+        self._last_node_index = len(self._initial_conditions) - 1
         self._num_nodes_added = 0
         self._last_timestep = 0
 
@@ -50,8 +51,7 @@ class SubstitutionSystem:
             outgoing_links = {}
             for j in range(0, min(self._num_nodes_added, self._neighbourhood_size)):
                 outgoing_links[new_node_label - j] = {}
-            if self._dtype:
-                state = self._dtype(state)
+            state = self._dtype(state)
             ctx.add_node(state, outgoing_links, new_node_label)
 
         # we return None here, since the graph has been re-written through the context, and the newly added node(s)
@@ -71,6 +71,10 @@ class SubstitutionSystem:
     @property
     def network(self):
         return self._network
+
+    @property
+    def initial_conditions(self):
+        return self._initial_conditions
 
     @staticmethod
     def pad(trajectory):

@@ -8,14 +8,13 @@ See: https://en.wikipedia.org/wiki/Moore_curve
 """
 
 if __name__ == '__main__':
-    system = ntm.SubstitutionSystem(n=9, rules={
+    system = ntm.SubstitutionSystem(rules={
         "L": "-RF+LFL+FR-",
         "R": "+LF-RFR-FL+"
-    }, constants=["F", "+", "-"])
+    }, constants=["F", "+", "-"], axiom="LFL+F+LFL")
 
-    initial_conditions = [s for s in "LFL+F+LFL"]
-
-    trajectory = ntm.evolve(network=system.network, initial_conditions=initial_conditions,
+    trajectory = ntm.evolve(network=system.network,
+                            initial_conditions=system.initial_conditions,
                             activity_rule=system.activity_rule, timesteps=5)
 
     t = ntm.Turtle()
