@@ -113,6 +113,7 @@ the Netomaton framework. Follow the link to learn more:
 * [Logistic Map](demos/logistic_map/README.md)
 * [Collatz Conjecture](demos/collatz_conjecture/README.md)
 * [Substitution Systems](demos/substitution_systems/README.md)
+* [Lindenmayer Systems](demos/lindenmayer_systems/README.md)
 * [Wireworld](demos/wireworld/README.md)
 * [Random Attachment Model](demos/random_attachment_model/README.md)
 * [Randomly Growing Network](demos/randomly_growing_network/README.md)

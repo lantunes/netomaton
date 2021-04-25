@@ -10,7 +10,7 @@ if __name__ == "__main__":
     initial_conditions = [1]
     timesteps = 6
 
-    subn_system = ntm.SubstitutionSystem(rules, len(initial_conditions))
+    subn_system = ntm.SubstitutionSystem(rules=rules, n=len(initial_conditions), dtype=int)
 
     trajectory = ntm.evolve(initial_conditions=initial_conditions, network=subn_system.network,
                             activity_rule=subn_system.activity_rule, timesteps=timesteps)

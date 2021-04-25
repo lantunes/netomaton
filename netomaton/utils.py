@@ -6,6 +6,7 @@ import matplotlib.animation as animation
 import matplotlib.collections as mcoll
 import collections
 from .state import State
+from .substitution_system import SubstitutionSystem
 try:
     import cPickle as pickle
 except:
@@ -456,3 +457,27 @@ def ncr(n, r):
         return 0
     f = math.factorial
     return f(n) // f(r) // f(n-r)
+
+
+def plot_L_system(state, turtle, bindings, **kwargs):
+    _render_L_system(state, bindings)
+    turtle.plot(**kwargs)
+
+
+def animate_L_system(state, turtle, bindings, **kwargs):
+    _render_L_system(state, bindings)
+    turtle.animate(**kwargs)
+
+
+def _render_L_system(state, bindings):
+    state = SubstitutionSystem.to_string([state])[0]
+    for s in state:
+        instructions = bindings[s]
+        if not isinstance(instructions, list):
+            instructions = [instructions]
+        for instruction in instructions:
+            if callable(instruction):
+                instruction()
+            else:
+                fn, *args = instruction
+                fn(*args)

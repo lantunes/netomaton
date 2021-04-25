@@ -3,8 +3,11 @@ from .state import Network
 
 
 class SubstitutionSystem:
-    def __init__(self, rules, n):
+    def __init__(self, n, rules, constants=None, dtype=None):
         self._rules = rules
+        self._constants = constants if constants else []
+        self._rules.update({c: c for c in self._constants})
+        self._dtype = dtype
         self._neighbourhood_size = self._get_neighbourhood_size(rules)
         self._network = self._init_network(n)
         self._last_node_index = n - 1
@@ -47,7 +50,9 @@ class SubstitutionSystem:
             outgoing_links = {}
             for j in range(0, min(self._num_nodes_added, self._neighbourhood_size)):
                 outgoing_links[new_node_label - j] = {}
-            ctx.add_node(int(state), outgoing_links, new_node_label)
+            if self._dtype:
+                state = self._dtype(state)
+            ctx.add_node(state, outgoing_links, new_node_label)
 
         # we return None here, since the graph has been re-written through the context, and the newly added node(s)
         #  carry the state information
@@ -67,8 +72,17 @@ class SubstitutionSystem:
     def network(self):
         return self._network
 
-    def pad(self, trajectory):
+    @staticmethod
+    def pad(trajectory):
         activities = {t: s.activities for t, s in enumerate(trajectory)}
         activities = [[v for e, v in sorted(activities[k].items())] for k in sorted(activities)]
         max_len = np.max([len(a) for a in activities])
         return np.asarray([np.pad(a, (0, max_len - len(a)), 'constant', constant_values=0) for a in activities])
+
+    @staticmethod
+    def to_string(trajectory):
+        s = []
+        for state in trajectory:
+            s.append("".join([state.activities[k] for k in sorted(state.activities)]))
+        return s
+
