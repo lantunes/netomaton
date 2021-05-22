@@ -37,9 +37,8 @@ v[n+1] = v[n] + Δt*(−6x[n])
 The following code snippet demonstrates this automaton:
 ```python
 import netomaton as ntm
-import matplotlib.pyplot as plt
 
-adjacency_matrix = [[1]]
+network = ntm.topology.from_adjacency_matrix([[1]])
 
 dt = 0.025000
 
@@ -51,9 +50,19 @@ def activity_rule(ctx):
 
 initial_conditions = [(-2.00000, 0.00000)]
 
-activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, activity_rule, timesteps=1000)
+trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
+                        activity_rule=activity_rule, timesteps=1000)
 
-# plot the position and velocity as a function of time; see the source code file for details
+activities = ntm.get_activities_over_time_as_list(trajectory)
+
+# plot the position and velocity as a function of time
+positions = [a[0][0] for a in activities]
+velocities = [a[0][1] for a in activities]
+ntm.plot1D(x=[i for i in range(1000)],
+           y=[positions, velocities],
+           color=["blue", "orange"],
+           xlabel="t", ylabel=["x(t)", "v(t)"],
+           ylim=[(-6, 6), (-6, 6)], twinx=True)
 ```
 
 <img src="../../resources/spring.png" width="55%"/>
@@ -73,7 +82,7 @@ import netomaton as ntm
 space = np.linspace(25, -25, 120)
 initial_conditions = [np.exp(-x ** 2) for x in space]
 
-adjacency_matrix = ntm.topology.adjacency.cellular_automaton(120)
+network = ntm.topology.cellular_automaton(120)
 
 a = 0.25
 dt = .5
@@ -82,14 +91,14 @@ F = a * dt / dx ** 2
 
 def activity_rule(ctx):
     current = ctx.current_activity
-    left = ctx.activities[0]
-    right = ctx.activities[2]
+    left = ctx.neighbourhood_activities[0]
+    right = ctx.neighbourhood_activities[2]
     return current + F * (right - 2 * current + left)
 
+trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
+                        activity_rule=activity_rule, timesteps=75)
 
-activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, activity_rule, timesteps=75)
-
-ntm.plot_grid(activities)
+ntm.plot_activities(trajectory)
 ```
 
 <img src="../../resources/diffusion.png" width="55%"/>
@@ -120,20 +129,23 @@ dt = .05  # the amount of time each timestep covers
 space = np.linspace(20, -20, nx)
 initial_conditions = [np.exp(-x ** 2) for x in space]
 
-adjacency_matrix = ntm.topology.adjacency.cellular_automaton(nx)
+network = ntm.topology.cellular_automaton(nx)
 
 def activity_rule(ctx):
     un_i = ctx.current_activity
-    un_i_m1 = ctx.activity_of((ctx.node_index - 1) % nx)
-    un_i_p1 = ctx.activity_of((ctx.node_index + 1) % nx)
+    left_label = (ctx.node_label - 1) % nx
+    un_i_m1 = ctx.activity_of(left_label)
+    right_label = (ctx.node_label + 1) % nx
+    un_i_p1 = ctx.activity_of(right_label)
     # the activity not at the previous timestep, but the timestep before that
-    un_m1_i = ctx.past_activity_of(ctx.node_index)
-    return ((dt**2 * (un_i_p1 - 2*un_i + un_i_m1)) / dx**2) + (2*un_i - un_m1_i)
+    un_m1_i = ctx.past_activity_of(ctx.node_label)
+    return ((dt ** 2 * (un_i_p1 - 2 * un_i + un_i_m1)) / dx ** 2) + (2 * un_i - un_m1_i)
 
-activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, activity_rule, timesteps=nt,
-                           past_conditions=[initial_conditions])
+trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
+                        activity_rule=activity_rule, timesteps=nt, 
+                        past_conditions=[initial_conditions])
 
-ntm.plot_grid(activities)
+ntm.plot_activities(trajectory)
 ```
 
 <img src="../../resources/wave_equation.png" width="55%"/>
@@ -161,8 +173,8 @@ Several examples from that resource are implemented with Netomaton here:
 
 See the following for more information:
 
-* https://www.myphysicslab.com/explain/numerical-solution-en.html
+> https://www.myphysicslab.com/explain/numerical-solution-en.html
 
-* http://hplgit.github.io/num-methods-for-PDEs/doc/pub/diffu/sphinx/._main_diffu001.html
+> http://hplgit.github.io/num-methods-for-PDEs/doc/pub/diffu/sphinx/._main_diffu001.html
 
-* https://www.wolframscience.com/nks/p163--partial-differential-equations/
+> https://www.wolframscience.com/nks/p163--partial-differential-equations/
