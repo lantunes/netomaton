@@ -1,11 +1,11 @@
 # Animating Network Automata
 
-Network Automata can be animated with the Netomaton `animate` function.
+Network Automata can be animated with the Netomaton `animate_activities` function.
 
 For example, the evolution of a 2D 60x60 Cellular Automaton can be
 visualized using:
 ```python
-ntm.animate(activities, shape=(60, 60), interval=150)
+ntm.animate_activities(trajectory, shape=(60, 60), interval=150)
 ```
 <img src="../../resources/animation2D.gif" width="40%"/>
 
@@ -13,7 +13,7 @@ The evolution of a 1D Celluar Automaton with 200 cells can be visualized
 using:
 ```python
 # note that the shape specified is a tuple containing only a single value
-ntm.animate(activities, shape=(200,))
+ntm.animate_activities(trajectory, shape=(200,))
 ```
 <img src="../../resources/animation1D.gif" width="40%"/>
 
@@ -22,7 +22,7 @@ timestep, that vector can be reshaped and visualized however desired.
 For example, the evolution of a 1D Cellular Automaton with 225 cells
 can be visualized as if it were a 2D Cellular Automation, using:
 ```python
-ntm.animate(activities, shape=(15, 15))
+ntm.animate_activities(trajectory, shape=(15, 15), interval=100)
 ```
 <img src="../../resources/animation1Db.gif" width="40%"/>
 

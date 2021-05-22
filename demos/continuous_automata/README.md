@@ -10,22 +10,23 @@ from Wolfram's NKS book, found on page 157:
 import math
 import netomaton as ntm
 
-adjacency_matrix = ntm.topology.adjacency.cellular_automaton(n=200)
+network = ntm.topology.cellular_automaton(n=200)
 
 initial_conditions = [0.0]*100 + [1.0] + [0.0]*99
 
-# NKS page 157
+ # NKS page 157
 def activity_rule(ctx):
-    activities = ctx.activities
+    activities = ctx.neighbourhood_activities
     result = (sum(activities) / len(activities)) * (3 / 2)
     frac, whole = math.modf(result)
     return frac
 
-activities, adjacencies = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=150,
-                                     activity_rule=activity_rule)
+trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
+                        activity_rule=activity_rule, timesteps=150)
 
-ntm.plot_grid(activities)
+ntm.plot_activities(trajectory)
 ```
+
 <img src="../../resources/continuous_ca.png" width="40%"/>
 
 The full source code for this example can be found [here](continuous_automata_demo.py).
