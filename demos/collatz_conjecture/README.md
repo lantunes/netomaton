@@ -37,7 +37,7 @@ activities = ntm.binarize_for_plotting(activities)
 ntm.plot_grid(activities)
 ```
 
-<img src="../../resources/collatz_conjecture_demo.png" width="40%"/>
+<img src="../../resources/collatz_conjecture_demo.png" width="15%"/>
 
 The full source code for this example can be found [here](collatz_conjecture_demo.py).
 
@@ -70,7 +70,7 @@ activities = ntm.binarize_for_plotting(activities)
 ntm.plot_grid(activities)
 ```
 
-<img src="../../resources/collatz_conjecture_demo2.png" width="40%"/>
+<img src="../../resources/collatz_conjecture_demo2.png" width="12%"/>
 
 The full source code for this example can be found [here](collatz_conjecture_demo2.py).
   
