@@ -1,5 +1,4 @@
 import netomaton as ntm
-import numpy as np
 
 if __name__ == '__main__':
     """
@@ -33,8 +32,6 @@ if __name__ == '__main__':
     print([a[0] for a in activities])
 
     # convert the numbers to binary lists and left-pad with zeroes, so we can plot them
-    activities = [[int(x) for x in bin(int(a[0]))[2:]] for a in activities]
-    max_len = np.max([len(a) for a in activities])
-    activities = np.asarray([np.pad(a, (max_len - len(a), 0), 'constant', constant_values=0) for a in activities])
+    activities = ntm.binarize_for_plotting(activities)
 
     ntm.plot_grid(activities)

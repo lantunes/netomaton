@@ -166,6 +166,12 @@ Create a Conda environment from the provided environment YAML file:
 $ conda env create -f netomaton_dev.yaml
 ```
 
+To build the Sphinx documentation, from the `doc` directory:
+```
+$ make html
+```
+The generated files will be in `_build/html`.
+
 **Testing**
 
 There are a number of unit tests for this project. To run the tests:

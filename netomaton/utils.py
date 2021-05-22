@@ -481,3 +481,18 @@ def _render_L_system(state, bindings):
             else:
                 fn, *args = instruction
                 fn(*args)
+
+
+def binarize_for_plotting(activities):
+    """
+    Expects a list of lists of single numbers representing the activities (e.g. [[2], [35], [12]]),
+    and returns a list of lists of the binarized versions of the given numbers, left-padded with
+    zeroes. (e.g. [[0, 0, 0, 0, 1, 0], [1, 0, 0, 0, 1, 1], [0, 0, 1, 1, 0, 0]])
+
+    :param activities: the activities as a list of lists of single numbers
+
+    :return: a list of lists of the binary versions of the numbers, left-padded with zeroes
+    """
+    activities = [[int(x) for x in bin(int(a[0]))[2:]] for a in activities]
+    max_len = np.max([len(a) for a in activities])
+    return np.asarray([np.pad(a, (max_len - len(a), 0), 'constant', constant_values=0) for a in activities])
