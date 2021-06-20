@@ -16,22 +16,21 @@ Consider the Cellular Automaton Rule 30 below, which is perturbed at
 every timestep such that node with index 100 is changed randomly to
 either a 0 or a 1:
 ```python
-adjacency_matrix = ntm.topology.adjacency.cellular_automaton(n=200)
+network = ntm.topology.cellular_automaton(n=200)
 initial_conditions = [0] * 100 + [1] + [0] * 99
 
 def perturb(pctx):
     """
     Mutates the value of the node with index 100 at each timestep, making it either 0 or 1 randomly.
     """
-    if pctx.node_index == 100:
+    if pctx.node_label == 100:
         return np.random.randint(2)
     return pctx.node_activity
 
-activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=100,
-                           activity_rule=ntm.rules.nks_ca_rule(30),
-                           perturbation=perturb)
+trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network, timesteps=100,
+                        activity_rule=ntm.rules.nks_ca_rule(30), perturbation=perturb)
 
-ntm.plot_grid(activities)
+ntm.plot_activities(trajectory)
 ```
 <img src="../../resources/perturbation.png" width="50%"/>
 
@@ -40,20 +39,19 @@ rule function with yet another function. Such an approach offers more
 control over when the activity is determined, and what is done with it.
 Below is an example of a perturbed Cellular Automaton rule 90R:
 ```python
-adjacency_matrix = ntm.topology.adjacency.cellular_automaton(n=200)
+network = ntm.topology.cellular_automaton(n=200)
 initial_conditions = np.random.randint(0, 2, 200)
 
 def perturbed_rule(ctx):
     rule = ntm.rules.nks_ca_rule(90)
-    if t % 10 == 0:
+    if ctx.timestep % 10 == 0:
         return 1
     return rule(ctx)
 
-activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=100,
-                           activity_rule=ntm.ReversibleRule(perturbed_rule),
-                           past_conditions=[initial_conditions])
+trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network, timesteps=100,
+                        activity_rule=ntm.ReversibleRule(perturbed_rule), past_conditions=[initial_conditions])
 
-ntm.plot_grid(activities)
+ntm.plot_activities(trajectory)
 ```
 <img src="../../resources/perturbation_reversible.png" width="50%"/>
 
