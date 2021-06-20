@@ -23,7 +23,7 @@ trajectory = ntm.evolve(network=model.network, topology_rule=model.topology_rule
 show_network(trajectory[-1].network)
 ```
 
-<img src="../../resources/wolfram_physics.gif" width="40%"/>
+<img src="../../resources/wolfram_physics.png" width="40%"/>
 
 Note that `show_network` will launch a browser. The full source code for this example can be found 
 [here](wolfram_physics_demo.py).
