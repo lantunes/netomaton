@@ -59,10 +59,11 @@ tm = TapeCentricTuringMachine(n=21, rule_table=rule_table,
 
 initial_conditions = [0] * 21
 
-activities, _ = ntm.evolve(initial_conditions, tm.adjacency_matrix,
-                           activity_rule=tm.activity_rule, timesteps=61)
+trajectory = ntm.evolve(initial_conditions=initial_conditions, network=tm.network,
+                            activity_rule=tm.activity_rule, timesteps=61)
 
-ntm.plot_grid(activities, node_annotations=tm.head_activities(activities), show_grid=True)
+activities = ntm.get_activities_over_time_as_list(trajectory)
+ntm.plot_grid(activities, node_annotations=tm.head_activities(trajectory), show_grid=True)
 ```
 
 <img src="../../resources/turing2.png" width="23%"/>
@@ -111,10 +112,11 @@ tm = TapeCentricTuringMachine(n=len(tape), rule_table=rule_table,
 
 initial_conditions = [CELL[t] for t in tape]
 
-activities, _ = ntm.evolve(initial_conditions, tm.adjacency_matrix,
-                           activity_rule=tm.activity_rule, timesteps=58)
+trajectory = ntm.evolve(initial_conditions=initial_conditions, network=tm.network,
+                            activity_rule=tm.activity_rule, timesteps=58)
 
-ntm.plot_grid(activities, node_annotations=tm.head_activities(activities), show_grid=True)
+activities = ntm.get_activities_over_time_as_list(trajectory)
+ntm.plot_grid(activities, node_annotations=tm.head_activities(trajectory), show_grid=True)
 ```
 
 <img src="../../resources/turing2c.png" width="83%"/>
@@ -152,11 +154,10 @@ tm = HeadCentricTuringMachine(tape=[CELL[t] for t in tape], rule_table=rule_tabl
                               initial_head_state=HEAD['q0'], initial_head_position=2,
                               terminating_state=HEAD['q6'], max_timesteps=50)
 
-activities, _ = ntm.evolve(tm.initial_conditions, tm.adjacency_matrix,
-                           activity_rule=tm.activity_rule,
-                           input=tm.input_function)
+trajectory = ntm.evolve(initial_conditions=tm.initial_conditions, network=tm.network,
+                            activity_rule=tm.activity_rule, input=tm.input_function)
 
-tape_history, head_activities = tm.activities_for_plotting(activities)
+tape_history, head_activities = tm.activities_for_plotting(trajectory)
 
 ntm.plot_grid(tape_history, node_annotations=head_activities, show_grid=True)
 ```
