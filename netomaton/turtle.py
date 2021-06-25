@@ -93,7 +93,7 @@ class Turtle:
         plt.yticks([])
         plt.show()
 
-    def animate(self, save=False, interval=50, dpi=80, marker="", repeat=False):
+    def animate(self, save=False, interval=50, dpi=80, marker="", repeat=False, fps=50):
         fig, ax = plt.subplots()
         ax.set_aspect('equal')
 
@@ -121,8 +121,6 @@ class Turtle:
 
         ani = animation.FuncAnimation(fig, update, frames=len(self.trajectory), interval=interval,
                                       save_count=len(self.trajectory), repeat=repeat)
-        if save:
-            ani.save('turtle.gif', dpi=dpi, writer="imagemagick")
 
         plt.xlim(min_x, max_x)
         plt.ylim(min_y, max_y)
@@ -131,4 +129,7 @@ class Turtle:
         plt.gca().axes.yaxis.set_ticklabels([])
         plt.xticks([])
         plt.yticks([])
+
+        if save:
+            ani.save('turtle.gif', dpi=dpi, writer="imagemagick", fps=fps)
         plt.show()
