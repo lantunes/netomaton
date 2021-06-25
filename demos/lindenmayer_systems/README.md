@@ -74,3 +74,5 @@ For more information, see:
 > https://en.wikipedia.org/wiki/L-system
 
 > https://en.wikipedia.org/wiki/Turtle_graphics
+
+> https://www.wolframscience.com/nks/p400--growth-of-plants-and-animals/
