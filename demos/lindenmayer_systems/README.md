@@ -33,7 +33,7 @@ ntm.plot_L_system(state=trajectory[-1], turtle=t, bindings={
 })
 ```
 
-<img src="../../resources/sierpinski.png" width="50%"/>
+<img src="../../resources/sierpinski.png" width="30%"/>
 
 The full source code for this example can be found [here](sierpinski_triangle_demo.py). See also the examples for 
 creating a [Moore curve](moore_curve_demo.py), a [Koch curve](koch_curve_demo.py), and a 
