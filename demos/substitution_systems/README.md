@@ -63,7 +63,7 @@ padded = system.pad(trajectory)
 ntm.plot_grid(padded, show_grid=True)
 ```
 
-<img src="../../resources/subsys5.png" width="50%"/>
+<img src="../../resources/subsys5.png" width="26%"/>
 
 The full source code for this example can be found [here](substitution_system_demo5.py). See also the demo
 [here](substitution_system_demo4.py).
