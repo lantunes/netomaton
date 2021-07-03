@@ -49,7 +49,7 @@ ntm.plot1D(x=[n for n in range(1, timesteps + 1)],
            tight_layout={"rect": [0, 0, 0.95, 1]})
 ```
 
-<img src="../../resources/logistic_map.png" width="30%"/>
+<img src="../../resources/logistic_map.png" width="50%"/>
 
 The source code for the example above can be found [here](logistic_map_demo.py).
 
@@ -83,7 +83,7 @@ ntm.bifurcation_plot(x=growth_rates, timesteps=int((timesteps/2)),
                      xlabel="Growth rate", ylabel="Population")
 ```
 
-<img src="../../resources/bifurcation_plot.png" width="30%"/>
+<img src="../../resources/bifurcation_plot.png" width="50%"/>
 
 The source code for the example above can be found [here](logistic_map_demo2.py).
 
@@ -118,7 +118,7 @@ ntm.poincare_plot(activities=[activities[:, i] for i in range(num_nodes)],
                   xlim=(0.25, 0.75), ylim=(0.8, 1.01))
 ```
 
-<img src="../../resources/poincare_plot.png" width="30%"/>
+<img src="../../resources/poincare_plot.png" width="50%"/>
 
 The source code for the example above can be found [here](logistic_map_demo3.py).
 
