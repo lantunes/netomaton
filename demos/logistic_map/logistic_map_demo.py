@@ -6,7 +6,7 @@ if __name__ == '__main__':
     timesteps = 20
     growth_rates = [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5]
 
-    # We'll create a network of fully disconnected nodes, except for a connection to
+    # We'll create a network of fully disconnected nodes, except for a connection
     # from a node to itself, and a value on that self-loop that represents the growth rate.
     # Thus, we are simply setting up a node for each growth rate, so that we can evolve the
     # system with different growth rates at the same time.
