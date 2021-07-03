@@ -16,8 +16,8 @@ which represents the fraction of maximum population size attainable). The self-c
 the growth rate, <i>r</i>. Finally, the rule operating on the network is simply the difference equation given above.
 
 In the following demo, we simulate a Logistic Map with Netomaton. To illustrate how the population changes in response 
-to different growth rates, we set up a network with a number of disconnected nodes, so that we can evolve the system
-with different growth rates in simultaneously.
+to different growth rates, we set up a network with a number of disconnected nodes so that we can evolve the system
+with different growth rates simultaneously.
 
 ```python
 import netomaton as ntm
