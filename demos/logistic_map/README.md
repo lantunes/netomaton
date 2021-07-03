@@ -13,7 +13,7 @@ It is also an example of a system that exhibits complex behaviour despite consis
 The Logistic Map can be placed into the Network Automaton framework by considering a network with a single node, with a
 single self-connection. The node's state represents the population size, <i>x</i> (typically, a number between 0 and 1, 
 which represents the fraction of maximum population size attainable). The self-connection possesses a value, which is 
-the growth rate, <i>r</r>. Finally, the rule operating on the network is simply the difference equation given above.
+the growth rate, <i>r</i>. Finally, the rule operating on the network is simply the difference equation given above.
 
 In the following demo, we simulate a Logistic Map with Netomaton. To illustrate how the population changes in response 
 to different growth rates, we set up a network with a number of disconnected nodes, so that we can evolve the system
