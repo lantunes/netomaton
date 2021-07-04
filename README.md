@@ -1,5 +1,5 @@
 <div align="center">
-<img src="https://raw.githubusercontent.com/lantunes/netomaton/master/resources/logo.png" alt="logo"></img>
+<img src="https://raw.githubusercontent.com/lantunes/netomaton/master/resources/logo.png" alt="logo" width="20%"></img>
 </div>
 
 Netomaton
