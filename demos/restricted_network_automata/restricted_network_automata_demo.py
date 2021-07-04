@@ -58,4 +58,4 @@ if __name__ == '__main__':
     trajectory = ntm.evolve(network=initial_network, topology_rule=topology_rule, timesteps=6)
 
     pos = nx.spring_layout(ntm.topology.lattice(dim=(1, 6, 6), periodic=False).to_networkx())
-    ntm.animate_network(trajectory, layout=pos, interval=500)
+    ntm.animate_network(trajectory, layout=pos, interval=500, save=True)
