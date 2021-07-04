@@ -1,4 +1,4 @@
-### Density Classification with Evolved 1D Cellular Automata
+# Density Classification with Evolved 1D Cellular Automata
 
 When creating a 1D Cellular Automaton adjacency matrix, the size of the
 cell neighbourhood can be varied by setting the parameter _*r*_. The
@@ -21,7 +21,7 @@ import netomaton as ntm
 import numpy as np
 
 # set r to 3, for a neighbourhood size of 7
-adjacency_matrix = ntm.network.cellular_automaton(149, r=3)
+network = ntm.topology.cellular_automaton(149, r=3)
 
 initial_conditions = np.random.randint(0, 2, 149)
 
@@ -30,11 +30,12 @@ rule_number = 6667021275756174439087127638698866559
 
 print("density of 1s: %s" % (np.count_nonzero(initial_conditions) / 149))
 
-activities, adjacencies = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=149,
-                                     activity_rule=lambda ctx: ntm.rules.binary_ca_rule(ctx, rule_number))
+trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
+                        activity_rule=ntm.rules.binary_ca_rule(rule_number), timesteps=149)
 
-ntm.plot_grid(activities)
+ntm.plot_activities(trajectory)
 ```
+
 <img src="../../resources/density_classification.png" width="50%"/>
 
 The full source code for this example can be found [here](ca_density_classification_demo.py).

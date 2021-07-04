@@ -1,4 +1,5 @@
 
+
 class ReversibleRule:
     """
     An automaton rule explicitly set up to be reversible.
@@ -12,7 +13,7 @@ class ReversibleRule:
         """
         self._activity_rule = activity_rule
 
-    def activity_rule(self, ctx):
+    def __call__(self, ctx):
         regular_result = self._activity_rule(ctx)
-        new_result = regular_result ^ ctx.past_activity_of(ctx.node_index)
+        new_result = regular_result ^ ctx.past_activity_of(ctx.node_label)
         return new_result

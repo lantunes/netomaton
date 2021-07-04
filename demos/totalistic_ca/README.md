@@ -1,4 +1,4 @@
-### 1D Cellular Automata with Totalistic Rules
+# 1D Cellular Automata with Totalistic Rules
 
 The number of states, or colors, that a cell in a Cellular Automaton can adopt is given by _k_. For example, in a binary Cellular Automaton a cell can
 assume only values of 0 and 1, and thus has _k_ = 2. A built-in function, `totalistic_ca`,
@@ -10,14 +10,14 @@ given in base 10 but is interpreted as the rule in base _k_ (thus rule 777 corre
 ```python
 import netomaton as ntm
 
-adjacency_matrix = ntm.network.cellular_automaton(n=200)
+network = ntm.topology.cellular_automaton(n=200)
 
 initial_conditions = [0]*100 + [1] + [0]*99
 
-activities, adjacencies = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=100,
-                                     activity_rule=lambda ctx: ntm.rules.totalistic_ca(ctx, k=3, rule=777))
+trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
+                        activity_rule=ntm.rules.totalistic_ca(k=3, rule=777), timesteps=100)
 
-ntm.plot_grid(activities)
+ntm.plot_activities(trajectory)
 ```
 
 <img src="../../resources/tot3_rule777.png" width="50%"/>

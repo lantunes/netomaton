@@ -14,21 +14,20 @@ if __name__ == "__main__":
     dt = .025          # the amount of time each timestep covers
     dx = 2 / (nx - 1)  # the distance between any pair of adjacent points
 
-    adjacency_matrix = ntm.network.cellular_automaton(nx)
+    network = ntm.topology.cellular_automaton(nx)
 
     initial_conditions = [1.]*10 + [2.]*11 + [1.]*20
-
 
     def activity_rule(ctx):
         un_i = ctx.current_activity
         # the space derivative is handled using the Backward Difference, i.e. the value of the neighbour to the left
-        left_index = (ctx.node_index - 1) % nx
-        un_i_m1 = ctx.activity_of(left_index)
+        left_label = (ctx.node_label - 1) % nx
+        un_i_m1 = ctx.activity_of(left_label)
         return un_i - un_i * dt / dx * (un_i - un_i_m1)
 
+    trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
+                            activity_rule=activity_rule, timesteps=nt)
 
-    activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, activity_rule, timesteps=nt)
+    ntm.plot_activities(trajectory)
 
-    ntm.plot_grid(activities)
-
-    ntm.animate_plot1D(np.linspace(0, 2, nx), activities)
+    ntm.animate_plot1D(np.linspace(0, 2, nx), trajectory)

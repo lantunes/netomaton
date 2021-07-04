@@ -1,4 +1,4 @@
-### Conway's Game of Life
+# Conway's Game of Life
 
 Conway's Game of Life is a well-known 2D Cellular Automaton.
 
@@ -9,7 +9,7 @@ It can be defined with the Netomaton framework:
 ```python
 import netomaton as ntm
 
-adjacency_matrix = ntm.network.cellular_automaton2d(rows=60, cols=60, r=1, neighbourhood='Moore')
+adjacency_matrix = ntm.topology.adjacency.cellular_automaton2d(rows=60, cols=60, r=1, neighbourhood='Moore')
 
 initial_conditions = ntm.init_simple2d(60, 60)
 
@@ -36,10 +36,10 @@ initial_conditions[2415] = 1
 initial_conditions[2416] = 1
 initial_conditions[2417] = 1
 
-activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=60,
-                           activity_rule=lambda ctx: ntm.rules.game_of_life_rule(ctx))
+trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network, timesteps=60,
+                        activity_rule=ntm.rules.game_of_life_rule)
 
-ntm.animate(activities, shape=(60, 60))
+ntm.animate_activities(trajectory, shape=(60, 60))
 ```
 
 The full source code for this example can be found [here](game_of_life_demo.py).

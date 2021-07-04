@@ -1,4 +1,4 @@
-### Turing Machine
+# Turing Machine
 
 There are two different ways that a Turing Machine can be described in
 the context of the Netomaton framework:
@@ -59,16 +59,17 @@ tm = TapeCentricTuringMachine(n=21, rule_table=rule_table,
 
 initial_conditions = [0] * 21
 
-activities, _ = ntm.evolve(initial_conditions, tm.adjacency_matrix,
-                           activity_rule=tm.activity_rule, timesteps=61)
+trajectory = ntm.evolve(initial_conditions=initial_conditions, network=tm.network,
+                            activity_rule=tm.activity_rule, timesteps=61)
 
-ntm.plot_grid(activities, node_annotations=tm.head_activities(activities), show_grid=True)
+activities = ntm.get_activities_over_time_as_list(trajectory)
+ntm.plot_grid(activities, node_annotations=tm.head_activities(trajectory), show_grid=True)
 ```
 
-<img src="../../resources/turing_2.png" width="23%"/>
+<img src="../../resources/turing2.png" width="23%"/>
 
 The `TapeCentricTuringMachine` is based on approach **2**, described
-above. The complete source code for this example is [here](turing_machine_demo_2.py).
+above. The complete source code for this example is [here](turing_machine_demo2.py).
 
 In the example above, the initial state (i.e. the tape) is very simple,
 and there are only four rules. But with just a little more complexity,
@@ -111,17 +112,18 @@ tm = TapeCentricTuringMachine(n=len(tape), rule_table=rule_table,
 
 initial_conditions = [CELL[t] for t in tape]
 
-activities, _ = ntm.evolve(initial_conditions, tm.adjacency_matrix,
-                           activity_rule=tm.activity_rule, timesteps=58)
+trajectory = ntm.evolve(initial_conditions=initial_conditions, network=tm.network,
+                            activity_rule=tm.activity_rule, timesteps=58)
 
-ntm.plot_grid(activities, node_annotations=tm.head_activities(activities), show_grid=True)
+activities = ntm.get_activities_over_time_as_list(trajectory)
+ntm.plot_grid(activities, node_annotations=tm.head_activities(trajectory), show_grid=True)
 ```
 
-<img src="../../resources/turing_2c.png" width="83%"/>
+<img src="../../resources/turing2c.png" width="83%"/>
 
 The plot on the right is the compressed output of running the machine
 for 5000 steps, and it clearly demonstrates that Rule 110 is emulated.
-(The code for this plot can be seen [here](turing_machine_demo_2c.py),
+(The code for this plot can be seen [here](turing_machine_demo2c.py),
 along with the full source code for this example.)
 
 The `HeadCentricTuringMachine` is based on approach **1**, described
@@ -152,21 +154,20 @@ tm = HeadCentricTuringMachine(tape=[CELL[t] for t in tape], rule_table=rule_tabl
                               initial_head_state=HEAD['q0'], initial_head_position=2,
                               terminating_state=HEAD['q6'], max_timesteps=50)
 
-activities, _ = ntm.evolve(tm.initial_conditions, tm.adjacency_matrix,
-                           activity_rule=tm.activity_rule,
-                           input=tm.input_function)
+trajectory = ntm.evolve(initial_conditions=tm.initial_conditions, network=tm.network,
+                            activity_rule=tm.activity_rule, input=tm.input_function)
 
-tape_history, head_activities = tm.activities_for_plotting(activities)
+tape_history, head_activities = tm.activities_for_plotting(trajectory)
 
 ntm.plot_grid(tape_history, node_annotations=head_activities, show_grid=True)
 ```
 
-<img src="../../resources/turing_1b.png" width="22%"/>
+<img src="../../resources/turing1b.png" width="22%"/>
 
 Note that the `evolve` function is given the `input` parameter, which in
 this case is a function, which returns the value the head is currently
 reading, and `None` when (and if) the machine reaches the terminating
-state of 'q6'. The full source code for this example is [here](turing_machine_demo_1b.py).
+state of 'q6'. The full source code for this example is [here](turing_machine_demo1b.py).
 
 Both the `TapeCentricTuringMachine` and `HeadCentricTuringMachine` will
 produce the same results. However, the `HeadCentricTuringMachine` may

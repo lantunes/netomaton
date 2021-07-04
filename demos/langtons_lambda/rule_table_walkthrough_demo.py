@@ -8,7 +8,7 @@ if __name__ == '__main__':
     ca_list = []
     titles = []
     for i in range(0, 3):
-        adjacency_matrix = ntm.network.cellular_automaton(n=128, r=2)
+        network = ntm.topology.cellular_automaton(n=128, r=2)
 
         initial_conditions = ntm.init_random(128, k=4)
 
@@ -17,12 +17,12 @@ if __name__ == '__main__':
         print(actual_lambda)
 
         # evolve the cellular automaton for 200 time steps
-        activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=200,
-                                   activity_rule=lambda ctx: ntm.table_rule(ctx, rule_table))
+        trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
+                                activity_rule=ntm.table_rule(rule_table), timesteps=200)
 
-        ca_list.append(activities)
-        avg_node_entropy = ntm.average_node_entropy(activities)
-        avg_mutual_information = ntm.average_mutual_information(activities)
+        ca_list.append(ntm.get_activities_over_time_as_list(trajectory))
+        avg_node_entropy = ntm.average_node_entropy(trajectory)
+        avg_mutual_information = ntm.average_mutual_information(trajectory)
         titles.append(r'$\lambda$ = %s, $\widebar{H}$ = %s, $\widebar{I}$ = %s' %
                       (lambda_vals[i], "{:.4}".format(avg_node_entropy), "{:.4}".format(avg_mutual_information)))
 

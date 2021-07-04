@@ -3,13 +3,12 @@ import numpy as np
 
 if __name__ == '__main__':
 
-    adjacency_matrix = ntm.network.cellular_automaton(n=200)
+    network = ntm.topology.cellular_automaton(n=200)
 
     initial_conditions = np.random.randint(0, 2, 200)
 
-    r = ntm.ReversibleRule(lambda ctx: ntm.rules.nks_ca_rule(ctx, 90))
+    trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
+                            activity_rule=ntm.ReversibleRule(ntm.rules.nks_ca_rule(90)),
+                            past_conditions=[initial_conditions], timesteps=100)
 
-    activities, adjacencies = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=100,
-                                         activity_rule=r.activity_rule, past_conditions=[initial_conditions])
-
-    ntm.plot_grid(activities)
+    ntm.plot_activities(trajectory)

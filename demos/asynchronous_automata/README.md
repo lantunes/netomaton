@@ -1,4 +1,4 @@
-### Asynchronous Automata
+# Asynchronous Automata
 
 Network Automata are usually processed synchronously. That is, each node's
 state is based strictly on the activity of its neighbourhood in the previous
@@ -22,19 +22,21 @@ automaton from Wolfram's NKS Notes on Chapter 9, section 10:
 ```python
 import netomaton as ntm
 
-adjacency_matrix = ntm.network.cellular_automaton(n=21)
+network = ntm.topology.cellular_automaton(n=21)
 
 initial_conditions =[0]*10 + [1] + [0]*10
 
-r = ntm.AsynchronousRule(activity_rule=lambda ctx: ntm.rules.nks_ca_rule(ctx, 60),
+r = ntm.AsynchronousRule(activity_rule=ntm.rules.nks_ca_rule(60),
                          update_order=range(1, 20))
 
-activities, adjacencies = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=19*20,
-                                     activity_rule=r.activity_rule)
+trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
+                        timesteps=19*20, activity_rule=r)
 
 # plot every 19th row, including the first, as a cycle is completed every 19 rows
+activities = ntm.get_activities_over_time_as_list(trajectory)
 ntm.plot_grid(activities[::19])
 ```
+
 <img src="../../resources/rule60async.png" width="40%"/>
 
 The full source code for this example can be found [here](asynchronous_automata_demo.py).

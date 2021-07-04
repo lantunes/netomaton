@@ -6,15 +6,16 @@ import numpy as np
 if __name__ == '__main__':
 
     # NKS page 442 - Rule 122R
-    adjacency_matrix = ntm.network.cellular_automaton(n=100)
+    network = ntm.topology.cellular_automaton(n=100)
     initial_conditions = [0]*40 + [1]*20 + [0]*40
-    r = ntm.ReversibleRule(lambda ctx: ntm.rules.nks_ca_rule(ctx, 122))
-    activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=1000, activity_rule=r.activity_rule,
-                               past_conditions=[initial_conditions])
+    trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
+                            activity_rule=ntm.ReversibleRule(ntm.rules.nks_ca_rule(122)),
+                            past_conditions=[initial_conditions], timesteps=1000)
 
     timestep = []
     average_node_entropies = []
 
+    activities = ntm.get_activities_over_time_as_list(trajectory)
     for i, c in enumerate(activities):
         timestep.append(i)
         bit_string = ''.join([str(x) for x in c])

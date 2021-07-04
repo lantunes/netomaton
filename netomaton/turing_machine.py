@@ -1,4 +1,7 @@
-from .network import cellular_automaton
+from abc import abstractmethod
+
+from .topology import cellular_automaton, from_adjacency_matrix
+from .utils import get_activities_over_time_as_list
 
 
 class TuringMachine:
@@ -6,10 +9,11 @@ class TuringMachine:
     STAY = 1
     RIGHT = 2
 
-    @property
-    def adjacency_matrix(self):
+    @abstractmethod
+    def network(self):
         pass
 
+    @abstractmethod
     def activity_rule(self, ctx):
         pass
 
@@ -28,7 +32,7 @@ class TapeCentricTuringMachine(TuringMachine):
         self._current_timestep = 1
 
     @property
-    def adjacency_matrix(self):
+    def network(self):
         return cellular_automaton(self._n)
 
     def activity_rule(self, ctx):
@@ -36,16 +40,17 @@ class TapeCentricTuringMachine(TuringMachine):
             self._current_timestep = ctx.timestep
         head_state, head_pos = self._head_history[self._current_timestep - 1]
         node_state = ctx.current_activity
-        if ctx.node_index == head_pos:
+        if ctx.node_label == head_pos:
             try:
                 next_head_state, new_node_state, direction = self._rule_table[head_state][node_state]
             except KeyError as err:
                 raise Exception("no rule defined for head state %s, input %s" % (head_state, node_state)) from err
-            self._head_history.append((next_head_state, ctx.neighbour_indices[direction]))
+            self._head_history.append((next_head_state, ctx.neighbour_labels[direction]))
             return new_node_state
         return node_state
 
-    def head_activities(self, activities):
+    def head_activities(self, trajectory):
+        activities = get_activities_over_time_as_list(trajectory)
         annotations = [[None for _ in range(self._n)] for _ in range(len(activities))]
         for i, h in enumerate(self._head_history):
             annotations[i][h[1]] = str(h[0])
@@ -72,9 +77,9 @@ class HeadCentricTuringMachine(TuringMachine):
         self._halt = False
 
     @property
-    def adjacency_matrix(self):
+    def network(self):
         # a Turing Machine can be thought of as a Network Automaton with a single node
-        return [[1]]
+        return from_adjacency_matrix([[1]])
 
     @property
     def initial_conditions(self):
@@ -107,7 +112,7 @@ class HeadCentricTuringMachine(TuringMachine):
         else:
             raise Exception("unsupported direction: %s" % direction)
 
-    def input_function(self, t):
+    def input_function(self, t, a, n):
         if self._max_timesteps is not None and len(self._tape_history) == self._max_timesteps:
             return None
 
@@ -116,7 +121,8 @@ class HeadCentricTuringMachine(TuringMachine):
 
         return self._tape_history[-1][self._head_pos]
 
-    def activities_for_plotting(self, activities):
+    def activities_for_plotting(self, trajectory):
+        activities = get_activities_over_time_as_list(trajectory)
         head_activities = [[None for _ in range(len(self._tape_history[-1]))] for _ in range(len(self._tape_history))]
         for i, h in enumerate(activities):
             head_activities[i][h[0][1]] = str(h[0][0])

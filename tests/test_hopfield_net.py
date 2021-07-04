@@ -1,13 +1,14 @@
-import unittest
-
+from .rule_test import *
 import numpy as np
-
+import netomaton as ntm
 from netomaton import HopfieldNet
 
 
-class TestHopfieldNet(unittest.TestCase):
+class TestHopfieldNet(RuleTest):
 
     def test_hopfield_net(self):
+        np.random.seed(0)
+
         # patterns for training
         zero = [
             0, 1, 1, 1, 0,
@@ -70,3 +71,22 @@ class TestHopfieldNet(unittest.TestCase):
                             [ 1, 1, 1, 1, -1, 1, -1, -3, 1, 1, 1, -1, -3, 1, 1, 1, 1, -1, -1, 1, 3, -1, -3, -1, 1, 1, 3, 1, 0, 1],
                             [ 3, -1, -1, -1, 1, -1, 1, -1, 3, -1, -1, 1, -1, 3, -1, -1, 3, 1, 1, -1, 1, 1, -1, 1, -1, 3, 1, -1, 1, 0,]]
         np.testing.assert_equal(expected_weights, hopfield_net.adjacency_matrix)
+
+        expected_activities = self._convert_to_list_of_lists("hopfield_net.ca")
+
+        half_two = [
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0,
+            0, 1, 1, 0, 0,
+            1, 0, 0, 0, 0,
+            1, 1, 1, 1, 1]
+        half_two = [-1 if x == 0 else x for x in half_two]
+
+        initial_conditions = half_two
+
+        trajectory = ntm.evolve(initial_conditions=initial_conditions, network=hopfield_net.network,
+                                timesteps=hopfield_net.num_nodes * 7, activity_rule=hopfield_net.activity_rule)
+
+        activities = ntm.get_activities_over_time_as_list(trajectory)
+        np.testing.assert_equal(expected_activities, activities)

@@ -16,7 +16,7 @@ pip install netomaton
 ```
 
 Requirements for using this library are Python 3.6, numpy 1.15.4,
-matplotlib 3.0.2, and networkx 2.2.
+matplotlib 3.0.2, networkx 2.5, and msgpack 1.0.2.
 
 
 ### What are Network Automata?
@@ -53,10 +53,9 @@ that:
 **A**<sub>*t+1*</sub> = *g*(**A**<sub>*t*</sub>, **S**<sub>*t*</sub>)
 
 
-A network may have nodes added or removed at any given timestep; however,
-this framework will consider that a network has a total fixed number of
-nodes at all times, and that nodes may become connected or fully
-disconnected from the network instead.
+There are no restrictions to the kinds of topological changes that a
+network may undergo over the course of its evolution. A network may have
+nodes added or removed at any given timestep.
 
 To learn more, please refer to the scientific literature on the subject:
 
@@ -77,14 +76,14 @@ implemented with the Netomaton library:
 ```python
 import netomaton as ntm
 
-adjacency_matrix = ntm.network.cellular_automaton(n=200)
+network = ntm.topology.cellular_automaton(n=200)
 
 initial_conditions = [0] * 100 + [1] + [0] * 99
 
-activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=100,
-                           activity_rule=lambda ctx: ntm.rules.nks_ca_rule(ctx, 30))
+trajectory = ntm.evolve(network=network, initial_conditions=initial_conditions,
+                        activity_rule=ntm.rules.nks_ca_rule(30), timesteps=100)
 
-ntm.plot_grid(activities)
+ntm.plot_activities(trajectory)
 ```
 
 <img src="resources/rule30.png" width="50%"/>
@@ -94,44 +93,35 @@ various kinds of collective computation models, all implemented using
 the Netomaton framework. Follow the link to learn more:
 
 * [Elementary Cellular Automata](demos/elementary_ca/README.md)
-
 * [1D Cellular Automata with Totalistic Rules](demos/totalistic_ca/README.md)
-
 * [Reversible 1D Cellular Automata](demos/reversible_ca/README.md)
-
 * [Density Classification with Evolved 1D Cellular Automata](demos/ca_density_classification/README.md)
-
 * [Density Classification with a Watts-Strogatz small-world graph](demos/small_world_density_classification/README.md)
-
 * [Asynchronous Automata](demos/asynchronous_automata/README.md)
-
 * [Continuous Automata](demos/continuous_automata/README.md)
-
 * [Finite State Machines](demos/finite_state_machine/README.md)
-
 * [Pushdown Automata](demos/pushdown_automata/README.md)
-
 * [Turing Machines](demos/turing_machine/README.md)
-
 * [Langton's Lambda and Measures of Complexity](demos/langtons_lambda/README.md)
-
 * [2D Cellular Automata](demos/totalistic_ca2d/README.md)
-
 * [Conway's Game of Life](demos/game_of_life/README.md)
-
 * [Gray-Scott Reaction-Diffusion Model](demos/reaction_diffusion/README.md)
-
 * [Hexagonal Cell Lattices](demos/hexagonal_ca/README.md)
-
 * [Hopfield Network](demos/hopfield_net/README.md)
-
 * [Perturbations](demos/perturbation_demo/README.md)
-
 * [Sandpiles](demos/sandpiles/README.md)
-
 * [Continuous-Time Models](demos/continuous_time_models/README.md)
-
 * [Travelling Salesman Problem with the Hopfield-Tank Neural Net](demos/hopfield_tank_tsp/README.md)
+* [Logistic Map](demos/logistic_map/README.md)
+* [Collatz Conjecture](demos/collatz_conjecture/README.md)
+* [Substitution Systems](demos/substitution_systems/README.md)
+* [Lindenmayer Systems](demos/lindenmayer_systems/README.md)
+* [Wireworld](demos/wireworld/README.md)
+* [Random Attachment Model](demos/random_attachment_model/README.md)
+* [Randomly Growing Network](demos/randomly_growing_network/README.md)
+* [Restricted Network Automata](demos/restricted_network_automata/README.md)
+* [Fungal Growth Model](demos/fungal_growth/README.md)
+* [Wolfram Physics Model](demos/wolfram_physics/README.md)
 
 Additionally, this library includes a number of utility functions for
 working with the results produced by the automata. For example, there
@@ -177,6 +167,14 @@ Create a Conda environment from the provided environment YAML file:
 ```
 $ conda env create -f netomaton_dev.yaml
 ```
+
+**Documentation**
+
+To build the Sphinx documentation, from the `doc` directory:
+```
+$ make html
+```
+The generated files will be in `_build/html`.
 
 **Testing**
 

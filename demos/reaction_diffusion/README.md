@@ -1,4 +1,4 @@
-### Gray-Scott Reaction-Diffusion Model
+# Gray-Scott Reaction-Diffusion Model
 
 This example attempts to demonstrate the Gray-Scott Reaction-Diffusion
 model. The reactions are:

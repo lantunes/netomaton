@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from netomaton import HopfieldTankTSPNet, evolve
+from netomaton import HopfieldTankTSPNet, evolve, topology, get_activities_over_time_as_list
 
 
 class TestHopfieldTankTSPNet(unittest.TestCase):
@@ -104,9 +104,11 @@ class TestHopfieldTankTSPNet(unittest.TestCase):
                               -0.021526161923257372, -0.02003505371915011, -0.023113647911417328,
                               -0.023001396844357286]
 
-        activities, _ = evolve(initial_conditions, tsp_net.adjacency_matrix, tsp_net.activity_rule,
-                               timesteps=timesteps, parallel=True)
+        trajectory = evolve(initial_conditions=initial_conditions,
+                            network=topology.from_adjacency_matrix(tsp_net.adjacency_matrix),
+                            activity_rule=tsp_net.activity_rule, timesteps=timesteps)
 
+        activities = get_activities_over_time_as_list(trajectory)
         permutation_matrix = tsp_net.get_permutation_matrix(activities)
 
         expected_permutation_matrix = [[4.81578032e-08, 0.0, 0.0, 0.0],

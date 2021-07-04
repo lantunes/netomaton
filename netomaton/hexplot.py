@@ -5,6 +5,7 @@ import matplotlib.animation as animation
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import numpy as np
+from .utils import get_activities_over_time_as_list
 from matplotlib.patches import RegularPolygon
 from matplotlib.collections import PatchCollection
 
@@ -37,7 +38,8 @@ def _get_triples(activities):
     return [(x, y, val) for y, row in enumerate(activities) for x, val in enumerate(row)]
 
 
-def plot_hex_grid(activities, shape=None, slice=-1, title='', colormap='Greys', vmin=None, vmax=None, edgecolor=None):
+def plot_hex_grid(trajectory, shape=None, slice=-1, title='', colormap='Greys', vmin=None, vmax=None, edgecolor=None):
+    activities = get_activities_over_time_as_list(trajectory)
     if shape is not None:
         activities = np.array(activities).reshape((len(activities), shape[0], shape[1]))[slice]
     triples = _get_triples(activities)
@@ -57,7 +59,9 @@ def plot_hex_grid(activities, shape=None, slice=-1, title='', colormap='Greys', 
     plt.show()
 
 
-def animate_hex(activities, title='', shape=None, save=False, interval=50, colormap='Greys', vmin=None, vmax=None, edgecolor=None):
+def animate_hex(trajectory, title='', shape=None, save=False, interval=50, colormap='Greys',
+                vmin=None, vmax=None, edgecolor=None):
+    activities = get_activities_over_time_as_list(trajectory)
     if shape is not None:
         activities = np.reshape(activities, (len(activities), shape[0], shape[1]))
     triples = _get_triples(activities[0])

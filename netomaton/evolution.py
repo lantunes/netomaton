@@ -1,162 +1,122 @@
 import collections
-import multiprocessing
-from multiprocessing import Pool
+from enum import Enum
+from .state import State
 
 import numpy as np
-import scipy.sparse as sparse
-
-from .connectivity_rule import *
 
 
 class NodeContext(object):
     """
     The NodeContext consists of the states, identities (as node indices), and adjancency matrix weights of the nodes
-    that influence a given node. Each of the properties (i.e. activities, neighbour_indices, weights) are represented as
-    lists. Each of the lists are of the same size, and the first item in each list corresponds to the first node in the
-    neighbourhood, etc. The neighbourhood of a node also contains the node's current activity (i.e. the activity as of
-    the last timestep).
+    that influence a given node. Each of the properties (i.e. activities, neighbour_indices, connection states) are
+    represented as lists. Each of the lists are of the same size, and the first item in each list corresponds to the
+    first node in the neighbourhood, etc. The neighbourhood of a node also contains the node's current activity (i.e.
+    the activity as of the last timestep).
     """
-    def __init__(self, node_index, timestep, activities, neighbour_indices, weights, current_activity,
-                 past_activities, input):
-        self._node_index = node_index
-        self._timestep = timestep
-        self._activities = activities
-        self._neighbour_indices = neighbour_indices
-        self._weights = weights
-        self._current_activity = current_activity
-        self._past_activities = past_activities
-        self._input = input
 
-    @property
-    def node_index(self):
-        """
-        Returns the current node's index.
-        :return: the index of the current node
-        """
-        return self._node_index
+    __slots__ = ("node_label", "timestep", "activities", "neighbour_labels", "neighbourhood_activities",
+                 "connection_states", "current_activity", "past_activities", "input", "added_nodes", "removed_nodes")
 
-    @property
-    def timestep(self):
+    def __init__(self, node_label, timestep, activities, neighbour_labels, neighbourhood_activities, connection_states,
+                 current_activity, past_activities, input):
         """
-        Returns the current timestep.
-        :return: the current timestep
+        :param node_label: the label of the node being processed
+        :param timestep: the current timestep
+        :param activities: the activities of all the nodes after the previous timestep
+        :param neighbour_labels: the labels of all neighbour nodes
+        :param neighbourhood_activities: the node states of all neighbourhood nodes
+        :param connection_states: the states of all the incoming connections of the node being processed
+        :param current_activity: the state of the node after the previous timestep
+        :param past_activities: the past activities of previous timesteps for all nodes
+        :param input: the input for this timestep, if provided, or None otherwise
         """
-        return self._timestep
+        self.node_label = node_label
+        self.timestep = timestep
+        self.activities = activities
+        self.neighbour_labels = neighbour_labels
+        self.neighbourhood_activities = neighbourhood_activities
+        self.connection_states = connection_states
+        self.current_activity = current_activity
+        self.past_activities = past_activities
+        self.input = input
+        self.added_nodes = []
+        self.removed_nodes = []
 
-    def activity_of(self, node_index):
-        """
-        Returns the activity of the node with the given node index.
-        :param node_index: the index of the node whose activity is being requested
-        :return: the activity of the node with the given index
-        """
-        return self.activities[self.neighbour_indices.index(node_index)]
+    def activity_of(self, node_label):
+        return self.activities[node_label]
 
-    def weight_from(self, node_index):
-        """
-        Returns the connection weight of the node with the given node index to the current node.
-        :param node_index: the index of the node whose connection strength to the current node is being requested
-        :return: the connection strength of the node with the given index to the current node
-        """
-        return self.weights[self.neighbour_indices.index(node_index)]
+    # TODO support incoming_links also; must provide one or the other
+    def add_node(self, state, outgoing_links, nodel_label):
+        self.added_nodes.append((state, outgoing_links, nodel_label))
 
-    def past_activity_of(self, node_index, past_activity_index=-1):
+    def remove_node(self, nodel_label):
+        self.removed_nodes.append(nodel_label)
+
+    def past_activity_of(self, node_label, past_activity_index=-1):
         """
-        Returns the activity of the node with the given node index, in the past.
-        :param node_index: the index of the node whose activity is being requested
+        Returns the activity of the node with the given node label, in the past.
+        :param node_label: the label of the node whose activity is being requested
         :param past_activity_index: the index of the past activity (-1 means the timestep before the last timestep)
-        :return: the activity of the node with the given index, in the past
+        :return: the activity of the node with the given label, in the past
         """
-        return self.past_activities[past_activity_index][self.neighbour_indices.index(node_index)]
+        return self.past_activities[past_activity_index][node_label]
 
-    @property
-    def activities(self):
-        """
-        A list containing the neighbourhood's activities.
-        :return: a list containing the neighbourhood's activities
-        """
-        return self._activities
+    def edge_data(self, neigbour_label, attr, index=0):
+        return self.connection_states[neigbour_label][index][attr]
 
-    @property
-    def neighbour_indices(self):
-        """
-        A list containing the neighbourhood's node indices.
-        :return: a list containing the neighbourhood's node indices
-        """
-        return self._neighbour_indices
 
-    @property
-    def weights(self):
-        """
-        A list containing the weights of the connections to the node.
-        :return: a list containing the weights of the connections to the node
-        """
-        return self._weights
+class TopologyContext(object):
+    """
+    The TopologyContext contains the network and its activities for a particular timestep.
+    """
 
-    @property
-    def current_activity(self):
-        """
-        The current activity of the node.
-        :return: the current activity of the node
-        """
-        return self._current_activity
+    __slots__ = ("network", "activities", "timestep")
 
-    @property
-    def past_activities(self):
-        """
-        A list of lists containing the past activities. The last entry in the list (with index -1) will contain
-        the activities for the neighbourhood at the timestep before the last timestep, the second-to-last entry in the
-        list (with index -2) will contain the activities before that, etc.
-        :return: a list of lists containing the past activities
-        """
-        return self._past_activities
-
-    @property
-    def input(self):
-        """
-        Returns the current input to the node, or None if no input was provided.
-        :return: the input to the node, or None if no input was provided
-        """
-        return self._input
+    def __init__(self, network, activities, t):
+        self.network = network
+        self.activities = activities
+        self.timestep = t
 
 
 class PerturbationContext(object):
     """
-    The PerturbationContext contains the node index, activity and input for a particular timestep.
+    The PerturbationContext contains the node label, activity and input for a particular timestep.
     """
-    def __init__(self, node_index, node_activity, timestep, input):
-        self._node_index = node_index
-        self._node_activity = node_activity
-        self._timestep = timestep
-        self._input = input
 
-    @property
-    def node_index(self):
-        return self._node_index
+    __slots__ = ("node_label", "node_activity", "timestep", "input")
 
-    @property
-    def node_activity(self):
-        return self._node_activity
-
-    @property
-    def timestep(self):
-        return self._timestep
-
-    @property
-    def input(self):
-        return self._input
+    def __init__(self, node_label, node_activity, timestep, input):
+        self.node_label = node_label
+        self.node_activity = node_activity
+        self.timestep = timestep
+        self.input = input
 
 
-def evolve(initial_conditions, adjacency_matrix, activity_rule, timesteps=None, input=None, connectivity_rule=None,
-           perturbation=None, past_conditions=None, parallel=False, processes=None):
+class UpdateOrder(Enum):
+    ACTIVITIES_FIRST = 1
+    TOPOLOGY_FIRST = 2
+    SYNCHRONOUS = 3
+
+
+def evolve(network, initial_conditions=None, activity_rule=None, timesteps=None, input=None, topology_rule=None,
+           perturbation=None, past_conditions=None, update_order=UpdateOrder.ACTIVITIES_FIRST, copy_network=True,
+           compression=False, persist_activities=True, persist_network=True):
     """
-    Evolves a network defined by the given adjacency matrix with the given initial conditions, for the specified
-    number of timesteps, using the given activity and connectivity rules. Note that if A(t) is the adjacency matrix at
-    timestep t, and S(t) is the network activity vector at timestep t, and F is a function defining a connectivity
-    rule, and G is a function describing an activity rule, then A(t+1) and S(t+1) are defined as follows:
-    A(t+1) = F(A(t), S(t))
-    S(t+1) = G(A(t), S(t))
+    Evolves the given network with the given initial conditions, for the specified number of timesteps, using the given
+    activity and topology rules. Note that if A(t) is the network at timestep t, and S(t) is the network activity vector
+    at timestep t, and F is a function defining a topology rule, and G is a function describing an activity rule, then
+    A(t+1) and S(t+1) are defined as follows:
+    When `update_order` is `UpdateOrder.ACTIVITIES_FIRST`:
+    S(t + 1) = G(A(t), S(t))
+    A(t + 1) = F(A(t), S(t + 1))
+    When `update_order` is `UpdateOrder.TOPOLOGY_FIRST`:
+    A(t + 1) = F(A(t), S(t))
+    S(t + 1) = G(A(t + 1), S(t))
+    When`update_order` is `UpdateOrder.SYNCHRONOUS`:
+    A(t + 1) = F(A(t), S(t))
+    S(t + 1) = G(A(t), S(t))
     :param initial_conditions: the initial activities of the network
-    :param adjacency_matrix: the adjacency matrix defining the network topology
+    :param network: the network defining the topology of the system
     :param activity_rule: the rule that will determine the activity of a node in the network
     :param timesteps: the number of steps in the evolution of the network; Note that the initial state, specified by the
                       initial_conditions, is considered the result of a timestep, so that the activity_rule is invoked
@@ -175,89 +135,175 @@ def evolve(initial_conditions, adjacency_matrix, activity_rule, timesteps=None, 
                   the first item in the input list is given to the network at t=1, the second at t=2, etc. (i.e. no
                   input is specified for the initial state); specifying the input implies an automaton whose evolution
                   is driven by an external signal
-    :param connectivity_rule: the rule that will determine the connectivity of the network
+    :param topology_rule: the rule that will determine the topology of the network
     :param perturbation: a function that defines a perturbation applied as the system evolves; the function accepts
                          one parameter: the PerturbationContext. It contains the node index, the timestep, the computed
                          activity for the node, and its input (or None if there is no input). The function must return
                          the new activity for the node at the timestep.
     :param past_conditions: a list of lists that represent activities of the network that existed before the initial
-                           timestep; if this parameter is provided, then the Neighbourhood will contain past_activities;
+                           timestep; if this parameter is provided, then the NodeContext will contain past_activities;
                            there will be as many past_activities entries as there are entries in this list
-    :param parallel: whether the evolution of the nodes should be performed in parallel;
-                     Note: the activity_rule function must be safe to use concurrently, as it will
-                     be invoked concurrently from different processes when this flag is set to True (the same is true
-                     for the perturbation function); this generally means that the activity rule (and perturbation)
-                     function cannot keep any state; some built-in rules, such as AsynchronousRule, won't work correctly
-                     when 'parallel' is True
-    :param processes: the number of processes to start for parallel execution, if 'parallel' is set to True;
-                      the number of CPUs will be used if 'processes' is not provided and 'parallel' is True
-    :return: a tuple of the activities over time and the adjacencies over time
+    :param update_order: the order in which to perform the update to the system (default is
+                         `UpdateOrder.ACTIVITIES_FIRST`)
+    :param copy_network: whether to copy the network during its evolution (default is True)
+    :param compression: whether to compress the network when it is persisted in the State (default is False)
+    :param persist_activities: whether to persist the activities in the State (default is True)
+    :param persist_network: whether to persist the network in the State (default is True)
+    :return: a trajectory, which is a list of States, where each State defines the network and its activities for a
+             particular timestep
     """
-    if len(initial_conditions) != len(adjacency_matrix[0]):
-        raise Exception("the length of the initial conditions list does not match the given adjacency matrix")
+    if initial_conditions is None:
+        initial_conditions = {}
 
-    input_fn, steps = _get_input_function(timesteps, input)
+    # convert initial_conditions to map, if it isn't already
+    if not isinstance(initial_conditions, dict) and isinstance(initial_conditions, (list, np.ndarray)):
+        initial_conditions = {i: check_np(v) for i, v in enumerate(initial_conditions)}
 
-    if connectivity_rule is not None:
-        return _evolve_both(initial_conditions, adjacency_matrix, activity_rule, steps, input_fn, connectivity_rule,
-                            perturbation, past_conditions)
-    else:
-        if parallel:
-            return _evolve_activities_parallel(initial_conditions, adjacency_matrix, activity_rule, steps, input_fn,
-                                               perturbation, processes, past_conditions)
-        else:
-            return _evolve_activities(initial_conditions, adjacency_matrix, activity_rule, steps, input_fn,
-                                      perturbation, past_conditions)
+    input_fn = _get_input_function(timesteps, input)
 
+    if len(initial_conditions) != len(network) and activity_rule:
+        raise Exception("too few intial conditions specified [%s] for the number of given nodes [%s]" %
+                        (len(initial_conditions), len(network)))
 
-def _evolve_activities(initial_conditions, adjacency_matrix, activity_rule, steps, input_fn, perturbation,
-                       past_conditions):
+    # key is the timestep
+    trajectory = {0: State(activities=initial_conditions, network=network, compression=compression)}
 
-    activities_over_time = np.empty((steps, len(initial_conditions)), dtype=np.dtype(type(initial_conditions[0])))
-    activities_over_time[0] = initial_conditions
-
-    num_nodes = len(adjacency_matrix[0])
-    adjacencies_sparse = sparse.csc_matrix(adjacency_matrix)
-    nonzero_index_map = {}
-    weight_map = {}
-    for c in range(num_nodes):
-        sparse_col =  adjacencies_sparse.getcol(c)
-        nonzero_index_map[c] = sparse_col.nonzero()[0].tolist()
-        weight_map[c] = sparse_col.data.tolist()
+    prev_activities = initial_conditions
+    prev_network = network
 
     t = 1
     while True:
-        inp = input_fn(t)
+        inp = input_fn(t, prev_activities, prev_network)
         if inp is None:
             break
-        last_activities = activities_over_time[t - 1]
-        past = _get_past_activities(past_conditions, activities_over_time, t)
 
-        if t == len(activities_over_time):
-            activities_over_time = _extend_activities(activities_over_time, initial_conditions)
+        past = _get_past_activities(past_conditions, trajectory, t)
+        curr_activities = {}
+        trajectory[t] = State(compression=compression)
 
-        for c in range(num_nodes):
-            nonzero_indices = nonzero_index_map[c]
-            activities = [last_activities[i] for i in nonzero_indices]
-            past_activities = [[p[i] for i in nonzero_indices] for p in past] if past else None
-            weights = weight_map[c]
-            node_in = None if inp == "__timestep__" else inp[c] if _is_indexable(inp) else inp
-            context = NodeContext(c, t, activities, nonzero_indices, weights, last_activities[c], past_activities, node_in)
-            activities_over_time[t][c] = activity_rule(context)
-            if perturbation is not None:
-                activities_over_time[t][c] = perturbation(PerturbationContext(c, activities_over_time[t][c], t, node_in))
+        if update_order is UpdateOrder.ACTIVITIES_FIRST:
+            added_nodes, removed_nodes = evolve_activities(activity_rule, t, inp, curr_activities, prev_activities,
+                                                           trajectory, prev_network, past,
+                                                           perturbation, persist_activities)
+            curr_network = evolve_topology(topology_rule, t, curr_activities, prev_network,
+                                           trajectory, copy_network, persist_network, added_nodes, removed_nodes)
+
+        elif update_order is UpdateOrder.TOPOLOGY_FIRST:
+            curr_network = evolve_topology(topology_rule, t, prev_activities, prev_network,
+                                           trajectory, copy_network, persist_network)
+            # added and removed nodes are ignore in this case
+            evolve_activities(activity_rule, t, inp, curr_activities, prev_activities,
+                              trajectory, curr_network, past, perturbation, persist_activities)
+
+        elif update_order is UpdateOrder.SYNCHRONOUS:
+            # TODO create test
+            curr_network = evolve_topology(topology_rule, t, prev_activities, prev_network,
+                                           trajectory, copy_network, persist_network)
+            # added and removed nodes are ignore in this case
+            evolve_activities(activity_rule, t, inp, curr_activities, prev_activities,
+                              trajectory, prev_network, past, perturbation, persist_activities)
+
+        else:
+            raise Exception("unsupported update_order: %s" % update_order)
+
+        prev_activities = curr_activities
+        prev_network = curr_network
 
         t += 1
 
-    return activities_over_time, [adjacency_matrix]*steps
+    # since we require Python 3.6, and dicts respect insertion order, we don't sort the trajectory entries by key
+    # (even though the 3.6 language spec doesn't officially support it)
+    return list(trajectory.values())
 
 
-def _get_past_activities(past_conditions, activities_over_time, t):
+def evolve_activities(activity_rule, t, inp, curr_activities, prev_activities, trajectory, network,
+                      past, perturbation, persist_activities):
+    added_nodes = []
+    removed_nodes = []
+    if activity_rule:
+        added_nodes, removed_nodes = do_activity_rule(t, inp, curr_activities, prev_activities, network,
+                                                      activity_rule, past, perturbation)
+
+        if added_nodes:
+            for state, outgoing_links, node_label in added_nodes:
+                curr_activities[node_label] = check_np(state)
+
+    if persist_activities:
+        trajectory[t].activities = curr_activities
+
+    return added_nodes, removed_nodes
+
+
+def do_activity_rule(t, inp, curr_activities, prev_activities, network, activity_rule, past, perturbation):
+    added_nodes = []
+    removed_nodes = []
+
+    for node_label in network.nodes:
+        incoming_connections = network.in_edges(node_label)
+        neighbour_labels = [i for i in incoming_connections]
+        current_activity = prev_activities[node_label]
+        neighbourhood_activities = [prev_activities[neighbour_label] for neighbour_label in neighbour_labels]
+        node_in = None if inp == "__timestep__" else inp[node_label] if _is_indexable(inp) else inp
+        ctx = NodeContext(node_label, t, prev_activities, neighbour_labels, neighbourhood_activities,
+                          incoming_connections, current_activity, past, node_in)
+
+        new_activity = activity_rule(ctx)
+        new_activity = check_np(new_activity)
+
+        if ctx.added_nodes:
+            added_nodes.extend(ctx.added_nodes)
+        if ctx.removed_nodes:
+            removed_nodes.extend(ctx.removed_nodes)
+
+        if node_label not in ctx.removed_nodes:
+            curr_activities[node_label] = new_activity
+
+        if perturbation is not None:
+            pctx = PerturbationContext(node_label, curr_activities[node_label], t, node_in)
+            curr_activities[node_label] = perturbation(pctx)
+
+    return added_nodes, removed_nodes
+
+
+def evolve_topology(topology_rule, t, activities, prev_network, trajectory, copy_network,
+                    persist_network, added_nodes=None, removed_nodes=None):
+    network = prev_network
+    if added_nodes or removed_nodes:
+        network = network.copy()
+
+        # adjust connectivity map according to node deletions and insertions
+        for node_label in removed_nodes:
+            network.remove_node(node_label)
+
+        for activity, outgoing_links, node_label in added_nodes:
+            network.add_node(node_label, activity=check_np(activity))
+            for target, connection_state in outgoing_links.items():
+                network.add_edge(node_label, target, **connection_state)
+
+    if topology_rule:
+        if copy_network:
+            network = network.copy()
+        network = topology_rule(TopologyContext(network, activities, t))
+        if not network:
+            raise Exception("topology rule must return a network")
+
+    if persist_network:
+        trajectory[t].network = network
+
+    return network
+
+
+def _get_past_activities(past_conditions, trajectory, t):
     if past_conditions and len(past_conditions) > 0:
         past_activities = [None]*len(past_conditions)
         last_t = t - 1
         for i in range(len(past_conditions)-1, -1, -1):
-            past_activities[i] = past_conditions[last_t-1] if last_t < 1 else activities_over_time[last_t-1]
+
+            curr_past_cond = past_conditions[last_t-1] if last_t < 1 else trajectory[last_t-1].activities
+            if not isinstance(curr_past_cond, dict) and isinstance(curr_past_cond, (list, np.ndarray)):
+                curr_past_cond = {i: v for i, v in enumerate(curr_past_cond)}
+
+            past_activities[i] = curr_past_cond
             last_t -= 1
         return past_activities
     return None
@@ -269,18 +315,22 @@ def _get_input_function(timesteps=None, input=None):
 
     if input is not None:
         if callable(input):
-            return input, 1
+            return input
         else:
-            return _ListInputFunction(input), len(input)+1
+            return _ListInputFunction(input)
 
-    return _TimestepInputFunction(timesteps), timesteps
+    return _TimestepInputFunction(timesteps)
+
+
+def _is_indexable(obj):
+    return isinstance(obj, collections.Sequence)
 
 
 class _TimestepInputFunction:
     def __init__(self, num_steps):
         self._num_steps = num_steps
 
-    def __call__(self, t):
+    def __call__(self, t, activities, network):
         if t == self._num_steps:
             return None
         return "__timestep__"
@@ -290,150 +340,10 @@ class _ListInputFunction:
     def __init__(self, input_list):
         self._input_list = input_list
 
-    def __call__(self, t):
+    def __call__(self, t, activities, network):
         if (t-1) >= len(self._input_list):
             return None
         return self._input_list[t-1]
-
-
-def _is_indexable(obj):
-    return isinstance(obj, collections.Sequence)
-
-
-def _extend_activities(activities_over_time, initial_conditions):
-    arr = np.empty((1, len(initial_conditions)), dtype=np.dtype(type(initial_conditions[0])))
-    return np.append(activities_over_time, arr, axis=0)
-
-
-def _extend_adjacencies(adjacencies_over_time, adjacency_matrix):
-    arr = np.empty((1, len(adjacency_matrix), len(adjacency_matrix)), dtype=np.dtype(type(adjacency_matrix[0][0])))
-    return np.append(adjacencies_over_time, arr, axis=0)
-
-
-def _process_nodes(node_indices, t, inp, last_activities, past):
-    global nonzero_index_map
-    global weight_map
-    global fn_activity
-    global fn_perturb
-    results = {}
-    for n in node_indices:
-        nonzero_indices = nonzero_index_map[n]
-        activities = [last_activities[i] for i in nonzero_indices]
-        past_activities = [[p[i] for i in nonzero_indices] for p in past] if past else None
-        weights = weight_map[n]
-        node_in = None if inp == "__timestep__" else inp[n] if _is_indexable(inp) else inp
-        context = NodeContext(n, t, activities, nonzero_indices, weights, last_activities[n], past_activities, node_in)
-        node_activity = fn_activity(context)
-        if fn_perturb is not None:
-            node_activity = fn_perturb(PerturbationContext(n, node_activity, t, node_in))
-        results[n] = node_activity
-    return results
-
-
-def _evolve_activities_parallel(initial_conditions, adjacency_matrix, activity_rule, steps, input_fn,
-                                perturbation, processes, past_conditions):
-
-    activities_over_time = np.empty((steps, len(initial_conditions)), dtype=np.dtype(type(initial_conditions[0])))
-    activities_over_time[0] = initial_conditions
-
-    num_nodes = len(adjacency_matrix[0])
-    adjacencies_sparse = sparse.csc_matrix(adjacency_matrix)
-    global nonzero_index_map
-    nonzero_index_map = {}
-    global weight_map
-    weight_map = {}
-    for c in range(num_nodes):
-        sparse_col = adjacencies_sparse.getcol(c)
-        nonzero_index_map[c] = sparse_col.nonzero()[0].tolist()
-        weight_map[c] = sparse_col.data.tolist()
-
-    global fn_activity
-    fn_activity = activity_rule
-    global fn_perturb
-    fn_perturb = perturbation
-
-    if processes is None:
-        processes = multiprocessing.cpu_count()
-    node_index_chunks = np.array_split(np.array(range(num_nodes)), processes)
-    pool = Pool(processes=processes)
-
-    t = 1
-    while True:
-        inp = input_fn(t)
-        if inp is None:
-            break
-        last_activities = activities_over_time[t - 1]
-        past = _get_past_activities(past_conditions, activities_over_time, t)
-
-        if t == len(activities_over_time):
-            activities_over_time = _extend_activities(activities_over_time, initial_conditions)
-
-        args = [(chunk, t, inp, last_activities, past) for chunk in node_index_chunks]
-        map_result = pool.starmap_async(_process_nodes, args)
-
-        for results in map_result.get():
-            for c in results.keys():
-                activities_over_time[t][c] = results[c]
-
-        t += 1
-
-    pool.close()
-    pool.join()
-
-    return activities_over_time, [adjacency_matrix]*steps
-
-
-def _evolve_both(initial_conditions, adjacency_matrix, activity_rule, steps, input_fn,
-                 connectivity_rule=ConnectivityRule.noop, perturbation=None, past_conditions=None):
-
-    activities_over_time = np.empty((steps, len(initial_conditions)), dtype=np.dtype(type(initial_conditions[0])))
-    activities_over_time[0] = initial_conditions
-
-    adjacencies_over_time = np.empty((steps, len(adjacency_matrix), len(adjacency_matrix)), dtype=np.dtype(type(adjacency_matrix[0][0])))
-    adjacencies_over_time[0] = adjacency_matrix
-
-    num_nodes = len(adjacency_matrix[0])
-
-    t = 1
-    while True:
-        inp = input_fn(t)
-        if inp is None:
-            break
-        last_activities = activities_over_time[t - 1]
-        past = _get_past_activities(past_conditions, activities_over_time, t)
-        last_adjacencies = adjacencies_over_time[t - 1]
-
-        if t == len(activities_over_time):
-            activities_over_time = _extend_activities(activities_over_time, initial_conditions)
-
-        if t == len(adjacencies_over_time):
-            adjacencies_over_time = _extend_adjacencies(adjacencies_over_time, adjacency_matrix)
-
-        last_adjacencies_transposed = np.array(last_adjacencies).T
-
-        nonzeros = np.nonzero(last_adjacencies_transposed)
-        index_map = {i: [] for i in range(num_nodes)}
-        [index_map[idx].append(nonzeros[1][i]) for i, idx in enumerate(nonzeros[0])]
-
-        for n in range(num_nodes):
-            # use the transpose of the adjacency matrix to get the nodes that are inputs to a given node defined by a row
-            row = last_adjacencies_transposed[n]
-            nonzero_indices = index_map[n]
-            activities = last_activities[nonzero_indices]
-            past_activities = [[p[i] for i in nonzero_indices] for p in past] if past else None
-            weights = row[nonzero_indices]
-            node_in = None if inp == "__timestep__" else inp[n] if _is_indexable(inp) else inp
-            context = NodeContext(n, t, activities, nonzero_indices, weights, last_activities[n], past_activities, node_in)
-            activities_over_time[t][n] = activity_rule(context)
-            if perturbation is not None:
-                activities_over_time[t][n] = perturbation(PerturbationContext(n, activities_over_time[t][n], t, node_in))
-
-        adjacencies = connectivity_rule(last_adjacencies, last_activities, t)
-        adjacencies_over_time[t] = adjacencies
-
-        t += 1
-
-    return activities_over_time, adjacencies_over_time
 
 
 def init_simple(size, val=1, dtype=np.int):
@@ -488,3 +398,9 @@ def init_simple2d(rows, cols, val=1, dtype=np.int):
     x = np.zeros((rows, cols), dtype=dtype)
     x[x.shape[0]//2][x.shape[1]//2] = val
     return np.array(x).reshape(rows * cols).tolist()
+
+
+def check_np(obj):
+    if isinstance(obj, np.generic):
+        return np.asscalar(obj)
+    return obj

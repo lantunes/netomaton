@@ -1,4 +1,5 @@
 from .asynchronous_rule import *
+from .topology import from_adjacency_matrix
 import numpy as np
 
 
@@ -10,7 +11,7 @@ class HopfieldNet:
     of the network should settle into one of the training patterns.
     """
     def __init__(self, n):
-        self._activity_rule = AsynchronousRule(activity_rule=self._rule, n=n, randomize_each_cycle=True).activity_rule
+        self._activity_rule = AsynchronousRule(activity_rule=self._rule, n=n, randomize_each_cycle=True)
         self._num_nodes = n
 
     def train(self, P):
@@ -28,6 +29,7 @@ class HopfieldNet:
                         self._adjacency_matrix[i, j] = 0
                     else:
                         self._adjacency_matrix[i, j] += p[i]*p[j]
+        self._network = from_adjacency_matrix(self._adjacency_matrix)
 
     def _rule(self, ctx):
         """
@@ -38,13 +40,17 @@ class HopfieldNet:
         :return: the new value of the node
         """
         V = 0
-        for i, _ in enumerate(ctx.activities):
-            V += ctx.weights[i] * ctx.activities[i]
+        for neighbour_label in ctx.neighbour_labels:
+            V += ctx.connection_states[neighbour_label][0]["weight"] * ctx.activities[neighbour_label]
         return 1 if V >= 0 else -1
 
     @property
     def activity_rule(self):
         return self._activity_rule
+
+    @property
+    def network(self):
+        return self._network
 
     @property
     def adjacency_matrix(self):

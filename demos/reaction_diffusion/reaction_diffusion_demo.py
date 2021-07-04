@@ -4,7 +4,7 @@ import numpy as np
 
 if __name__ == '__main__':
 
-    adjacency_matrix = ntm.network.cellular_automaton2d(rows=100, cols=100, r=1, neighbourhood='von Neumann')
+    network = ntm.topology.cellular_automaton2d(rows=100, cols=100, r=1, neighbourhood='von Neumann')
 
     # create perturbation 'dots' in the center of uniform conditions
     initial_conditions = np.array([(1, 0) for i in range(100 * 100)], dtype='d, d').reshape(100, 100)
@@ -39,24 +39,27 @@ if __name__ == '__main__':
         prev_u = ctx.current_activity[0]
         prev_v = ctx.current_activity[1]
 
-        neighbourhood_u = [ctx.activities[i][0] for i, idx in enumerate(ctx.neighbour_indices) if idx != ctx.node_index]
-        neighbourhood_v = [ctx.activities[i][1] for i, idx in enumerate(ctx.neighbour_indices) if idx != ctx.node_index]
+        neighbourhood_u = [ctx.neighbourhood_activities[i][0] for i, idx in enumerate(ctx.neighbour_labels) if
+                           idx != ctx.node_label]
+        neighbourhood_v = [ctx.neighbourhood_activities[i][1] for i, idx in enumerate(ctx.neighbour_labels) if
+                           idx != ctx.node_label]
 
         diffusion_u = sum(neighbourhood_u) - (4 * prev_u)
         diffusion_v = sum(neighbourhood_v) - (4 * prev_v)
 
-        inter_u = (-prev_u * prev_v**2) + f*(1 - prev_u)
-        inter_v = (prev_u * prev_v**2) - (k)*prev_v
+        inter_u = (-prev_u * prev_v ** 2) + f * (1 - prev_u)
+        inter_v = (prev_u * prev_v ** 2) - (k) * prev_v
 
         new_u = prev_u + (r_u * diffusion_u) + inter_u
         new_v = prev_v + (r_v * diffusion_v) + inter_v
 
         return new_u, new_v
 
-    activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=3000,
-                               activity_rule=react_diffuse)
+    trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
+                            activity_rule=react_diffuse, timesteps=3000)
 
     # we want to visualize the concentrations of U only
+    activities = ntm.get_activities_over_time_as_list(trajectory)
     activities = [[j[0] for j in i] for i in activities]
 
-    ntm.animate(activities, shape=(100, 100), colormap='RdYlBu', vmin=0.2, interval=25)
+    ntm.animate_activities(activities, shape=(100, 100), colormap='RdYlBu', vmin=0.2, interval=25)

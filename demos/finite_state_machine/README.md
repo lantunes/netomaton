@@ -1,4 +1,4 @@
-### Finite State Machine
+# Finite State Machine
 
 This example illustrates the construction of a Finite State Machine.
 Although simplistic, it demonstrates how Finite State Machines can be
@@ -23,24 +23,27 @@ states = {'locked': 0, 'unlocked': 1}
 transitions = {'PUSH': 'p', 'COIN': 'c'}
 
 # a FSM can be thought of as a Network Automaton with a single node
-adjacency_matrix = [[1]]
+network = ntm.topology.from_adjacency_matrix([[1]])
 
 # the FSM starts off in the Locked state
 initial_conditions = [states['locked']]
 
 events = "cpcpp"
 
-def fsm_rule(n, c, event):
-    if event == transitions['PUSH']:
+def fsm_rule(ctx):
+    if ctx.input == transitions['PUSH']:
         return states['locked']
     else:
         # COIN event
         return states['unlocked']
 
-activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, input=events,
-                           activity_rule=fsm_rule)
+trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
+                        input=events, activity_rule=fsm_rule)
 
-ntm.plot_grid(activities)
+activities = ntm.get_activities_over_time_as_list(trajectory)
+print("final state: %s" % activities[-1][0])
+
+ntm.plot_activities(trajectory)
 ```
 
 <img src="../../resources/fsm.png" width="35%"/>

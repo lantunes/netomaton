@@ -10,11 +10,11 @@ if __name__ == '__main__':
 
     def perturb(pctx):
         # drop a grain on some node at the 85th timestep
-        if pctx.timestep == 85 and pctx.node_index == 1034:
+        if pctx.timestep == 85 and pctx.node_label == 1034:
             return pctx.node_activity + 1
         return pctx.node_activity
 
-    activities, _ = ntm.evolve(initial_conditions, sandpile.adjacency_matrix, timesteps=110,
-                               activity_rule=sandpile.activity_rule, perturbation=perturb)
+    trajectory = ntm.evolve(initial_conditions=initial_conditions, network=sandpile.network,
+                            activity_rule=sandpile.activity_rule, perturbation=perturb, timesteps=110)
 
-    ntm.animate(activities, shape=(60, 60), interval=150)
+    ntm.animate_activities(trajectory, shape=(60, 60), interval=150)

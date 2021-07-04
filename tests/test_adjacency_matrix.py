@@ -1,7 +1,7 @@
 import os
 import unittest
 
-import netomaton.network as adjacency
+from netomaton.topology import adjacency
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 

@@ -1,4 +1,4 @@
-### Langton's Lambda and Measures of Complexity
+# Langton's Lambda and Measures of Complexity
 
 One way to specify Cellular Automata rules is with rule tables. Rule tables are enumerations of all possible
 neighbourhood states together with their node state mappings. For any given neighbourhood state, a rule table provides
@@ -10,13 +10,13 @@ import netomaton as ntm
 rule_table, actual_lambda, quiescent_state = ntm.random_rule_table(lambda_val=0.45, k=4, r=2,
                                                                    strong_quiescence=True, isotropic=True)
 
-adjacency_matrix = ntm.network.cellular_automaton(n=128, r=2)
+network = ntm.topology.cellular_automaton(n=128, r=2)
 
 initial_conditions = ntm.init_random(128, k=4)
 
 # use the built-in table_rule to use the generated rule table
-activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=200,
-                           activity_rule=lambda ctx: ntm.table_rule(ctx, rule_table))
+trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network, timesteps=200,
+                        activity_rule=ntm.table_rule(rule_table))
 ```
 The following plots demonstrate the effect of varying the lambda parameter:
 
@@ -43,15 +43,15 @@ automaton. The following snippet demonstrates the calculation of the average nod
 ```python
 import netomaton as ntm
 
-adjacency_matrix = ntm.network.cellular_automaton(n=200)
+network = ntm.topology.cellular_automaton(n=200)
 
 initial_conditions = ntm.init_random(200)
 
-activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=1000,
-                           activity_rule=lambda ctx: ntm.rules.nks_ca_rule(ctx, 30))
+trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network, timesteps=1000,
+                        activity_rule=ntm.rules.nks_ca_rule(30))
 
 # calculate the average node entropy; the value will be ~0.999 in this case
-avg_node_entropy = ntm.average_node_entropy(activities)
+avg_node_entropy = ntm.average_node_entropy(trajectory)
 ```
 
 The source code for the example above can be found [here](average_node_entropy_demo.py).
@@ -71,15 +71,15 @@ information:
 ```python
 import netomaton as ntm
 
-adjacency_matrix = ntm.network.cellular_automaton(n=200)
+network = ntm.topology.cellular_automaton(n=200)
 
 initial_conditions = ntm.init_random(200)
 
-activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, timesteps=1000,
-                           activity_rule=lambda ctx: ntm.rules.nks_ca_rule(ctx, 30))
+trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network, timesteps=1000,
+                        activity_rule=ntm.rules.nks_ca_rule(30))
 
 # calculate the average mutual information between a node and itself in the next time step
-avg_mutual_information = ntm.average_mutual_information(activities)
+avg_mutual_information = ntm.average_mutual_information(trajectory)
 ```
 
 The source code for the example above can be found [here](average_mutual_information_demo.py).

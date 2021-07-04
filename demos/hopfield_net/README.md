@@ -1,4 +1,4 @@
-### Hopfield Network
+# Hopfield Network
 
 The Hopfield Network can be thought of as a network automaton with a
 complete graph. The nodes (or neurons) are binary units, and
@@ -64,11 +64,14 @@ half_two = [-1 if x == 0 else x for x in half_two]
 
 initial_conditions = half_two
 
-activities, adjacencies = evolve(initial_conditions, hopfield_net.adjacency_matrix, timesteps=155,
-                                 activity_rule=hopfield_net.activity_rule)
+trajectory = evolve(initial_conditions=initial_conditions, 
+                    network=hopfield_net.network,
+                    timesteps=hopfield_net.num_nodes * 7, 
+                    activity_rule=hopfield_net.activity_rule)
 
 # view the time evolution of the Hopfield net as it completes the given pattern
-animate(activities[::hopfield_net.num_nodes], shape=(6, 5), interval=150)
+activities = get_activities_over_time_as_list(trajectory)
+animate_activities(activities[::hopfield_net.num_nodes], shape=(6, 5), interval=150)
 ```
 
 <img src="../../resources/hopfield.gif" width="65%"/>

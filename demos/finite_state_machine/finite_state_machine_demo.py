@@ -15,7 +15,7 @@ if __name__ == "__main__":
     transitions = {'PUSH': 'p', 'COIN': 'c'}
 
     # a FSM can be thought of as a Network Automaton with a single node
-    adjacency_matrix = [[1]]
+    network = ntm.topology.from_adjacency_matrix([[1]])
 
     # the FSM starts off in the Locked state
     initial_conditions = [states['locked']]
@@ -29,8 +29,10 @@ if __name__ == "__main__":
             # COIN event
             return states['unlocked']
 
-    activities, _ = ntm.evolve(initial_conditions, adjacency_matrix, input=events, activity_rule=fsm_rule)
+    trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network,
+                            input=events, activity_rule=fsm_rule)
 
+    activities = ntm.get_activities_over_time_as_list(trajectory)
     print("final state: %s" % activities[-1][0])
 
-    ntm.plot_grid(activities)
+    ntm.plot_activities(trajectory)

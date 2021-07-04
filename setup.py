@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 packages = find_packages(exclude=("tests", "demos",))
 
 setup(name="netomaton",
-      version="0.2.1",
+      version="1.0.0",
       description="Netomaton, A Python library for working with Network Automata.",
       long_description="Netomaton is a Python framework for exploring discrete dynamical network systems, "
                        "also known as Network Automata. It is a software abstraction meant to aid in the "
@@ -23,4 +23,4 @@ setup(name="netomaton",
       packages=packages,
       keywords=["network automata", "cellular automata", "complexity", "complex systems", "computation", "non-linear dynamics"],
       python_requires='>3.5.2',
-      install_requires=["numpy >= 1.15.4", "matplotlib >= 3.0.2", "networkx == 2.2", "scipy == 1.3.1"])
+      install_requires=["numpy >= 1.15.4", "matplotlib >= 3.0.2", "networkx == 2.2", "scipy == 1.3.1", "msgpack == 1.0.2"])
