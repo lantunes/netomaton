@@ -66,6 +66,9 @@ class NodeContext(object):
 
 
 class TopologyContext(object):
+    """
+    The TopologyContext contains the network and its activities for a particular timestep.
+    """
 
     __slots__ = ("network", "activities", "timestep")
 
@@ -98,7 +101,57 @@ class UpdateOrder(Enum):
 def evolve(network, initial_conditions=None, activity_rule=None, timesteps=None, input=None, topology_rule=None,
            perturbation=None, past_conditions=None, update_order=UpdateOrder.ACTIVITIES_FIRST, copy_network=True,
            compression=False, persist_activities=True, persist_network=True):
-
+    """
+    Evolves the given network with the given initial conditions, for the specified number of timesteps, using the given
+    activity and topology rules. Note that if A(t) is the network at timestep t, and S(t) is the network activity vector
+    at timestep t, and F is a function defining a topology rule, and G is a function describing an activity rule, then
+    A(t+1) and S(t+1) are defined as follows:
+    When `update_order` is `UpdateOrder.ACTIVITIES_FIRST`:
+    S(t + 1) = G(A(t), S(t))
+    A(t + 1) = F(A(t), S(t + 1))
+    When `update_order` is `UpdateOrder.TOPOLOGY_FIRST`:
+    A(t + 1) = F(A(t), S(t))
+    S(t + 1) = G(A(t + 1), S(t))
+    When`update_order` is `UpdateOrder.SYNCHRONOUS`:
+    A(t + 1) = F(A(t), S(t))
+    S(t + 1) = G(A(t), S(t))
+    :param initial_conditions: the initial activities of the network
+    :param network: the network defining the topology of the system
+    :param activity_rule: the rule that will determine the activity of a node in the network
+    :param timesteps: the number of steps in the evolution of the network; Note that the initial state, specified by the
+                      initial_conditions, is considered the result of a timestep, so that the activity_rule is invoked
+                      t - 1 times; for example, if timesteps is 6, then the initial state is considered the result of
+                      the first timestep (t=0), and the activity_rule will be invoked five times; the activity_rule
+                      (and any perturbation) will receive the current timestep number each time it is invoked;
+                      specifying the timesteps implies an automaton that evolves on its own, in the absence of any
+                      external driving signal
+    :param input: a list representing the inputs to the network at each timestep, or a function that accepts the
+                  current timestep number, returns the input for that timestep, or None to signal the end of the
+                  evolution; if a list is provided, each item in the list contains the input for each node in the
+                  network for a particular timestep; the activity_rule (and any perturbation) will receive the current
+                  input value for a given node through the NodeContext, when the input parameter is provided;
+                  either the input or timesteps parameter must be provided, but not both; if the input parameter is
+                  provided, it will override the timesteps parameter, and the timesteps parameter will have no effect;
+                  the first item in the input list is given to the network at t=1, the second at t=2, etc. (i.e. no
+                  input is specified for the initial state); specifying the input implies an automaton whose evolution
+                  is driven by an external signal
+    :param topology_rule: the rule that will determine the topology of the network
+    :param perturbation: a function that defines a perturbation applied as the system evolves; the function accepts
+                         one parameter: the PerturbationContext. It contains the node index, the timestep, the computed
+                         activity for the node, and its input (or None if there is no input). The function must return
+                         the new activity for the node at the timestep.
+    :param past_conditions: a list of lists that represent activities of the network that existed before the initial
+                           timestep; if this parameter is provided, then the NodeContext will contain past_activities;
+                           there will be as many past_activities entries as there are entries in this list
+    :param update_order: the order in which to perform the update to the system (default is
+                         `UpdateOrder.ACTIVITIES_FIRST`)
+    :param copy_network: whether to copy the network during its evolution (default is True)
+    :param compression: whether to compress the network when it is persisted in the State (default is False)
+    :param persist_activities: whether to persist the activities in the State (default is True)
+    :param persist_network: whether to persist the network in the State (default is True)
+    :return: a trajectory, which is a list of States, where each State defines the network and its activities for a
+             particular timestep
+    """
     if initial_conditions is None:
         initial_conditions = {}
 
