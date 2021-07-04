@@ -1,3 +1,7 @@
+<div align="center">
+<img src="https://raw.githubusercontent.com/lantunes/netomaton/master/resources/logo.png" alt="logo"></img>
+</div>
+
 Netomaton
 =========
 
@@ -172,7 +176,7 @@ $ conda env create -f netomaton_dev.yaml
 
 To build the Sphinx documentation, from the `doc` directory:
 ```
-$ make html
+$ make clean html
 ```
 The generated files will be in `_build/html`.
 
