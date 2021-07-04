@@ -2,10 +2,7 @@
 <img src="https://raw.githubusercontent.com/lantunes/netomaton/master/resources/logo.png" alt="logo" width="20%"></img>
 </div>
 
-Netomaton
-=========
-
-Netomaton is a Python framework for exploring discrete dynamical network
+<b>Netomaton</b> is a Python framework for exploring discrete dynamical network
 systems, also known as Network Automata. It is a software abstraction
 meant to aid in the implementation of models of collective computation.
 Examples of such computational models include Cellular Automata and
