@@ -39,7 +39,7 @@ trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network, 
 ntm.animate_activities(trajectory, shape=(60, 60), interval=350)
 ```
 
-<img src="../../resources/fredkin_self_replicating_ca_vonneumann_demo.gif" width="35%"/>
+<img src="../../resources/fredkin_self_replicating_ca_vonneumann_demo.gif" width="45%"/>
 
 The full source code for this example can be found [here](fredkin_self_replicating_ca_vonneumann_demo.py).
 
@@ -74,7 +74,7 @@ trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network, 
 ntm.animate_activities(trajectory, shape=(60, 60), interval=350)
 ```
 
-<img src="../../resources/fredkin_self_replicating_ca_moore_demo.gif" width="35%"/>
+<img src="../../resources/fredkin_self_replicating_ca_moore_demo.gif" width="45%"/>
 
 The full source code for this example can be found [here](fredkin_self_replicating_ca_moore_demo.py).
 
@@ -109,7 +109,7 @@ trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network, 
 ntm.animate_activities(trajectory, shape=(60, 60), interval=350, colormap='viridis')
 ```
 
-<img src="../../resources/fredkin_self_replicating_ca_multicolor_demo.gif" width="35%"/>
+<img src="../../resources/fredkin_self_replicating_ca_multicolor_demo.gif" width="45%"/>
 
 The full source code for this example can be found [here](fredkin_self_replicating_ca_multicolor_demo.py).
 
