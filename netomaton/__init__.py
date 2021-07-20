@@ -14,6 +14,7 @@ from .wolfram_physics_model import *
 from .fungal_growth_model import *
 from .state import *
 from .turtle import *
+from .ctrbl_rule import *
 
 from . import topology
 from . import rules

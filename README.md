@@ -107,6 +107,7 @@ the Netomaton framework. Follow the link to learn more:
 * [2D Cellular Automata](demos/totalistic_ca2d/README.md)
 * [Conway's Game of Life](demos/game_of_life/README.md)
 * [Fredkin's Self-Replicating CA](demos/fredkin_self_replicating_ca/README.md)
+* [Langton's Loops](demos/langtons_loops/README.md)
 * [Gray-Scott Reaction-Diffusion Model](demos/reaction_diffusion/README.md)
 * [Hexagonal Cell Lattices](demos/hexagonal_ca/README.md)
 * [Hopfield Network](demos/hopfield_net/README.md)
