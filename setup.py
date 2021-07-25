@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
 
-packages = find_packages(exclude=("tests", "demos",))
+packages = find_packages(exclude=("tests", "demos", "doc", "resources",))
 
 setup(name="netomaton",
-      version="1.0.0",
+      version="1.1.0",
       description="Netomaton, A Python library for working with Network Automata.",
       long_description="Netomaton is a Python framework for exploring discrete dynamical network systems, "
                        "also known as Network Automata. It is a software abstraction meant to aid in the "
