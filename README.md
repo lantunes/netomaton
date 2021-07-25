@@ -2,11 +2,15 @@
 <img src="https://raw.githubusercontent.com/lantunes/netomaton/master/resources/logo.png" alt="logo"></img>
 </div>
 
-<b>Netomaton</b> is a Python framework for exploring discrete dynamical network
-systems, also known as Network Automata. It is a software abstraction
-meant to aid in the implementation of models of collective computation.
-Examples of such computational models include Cellular Automata and
-Neural Networks.
+<b>Netomaton</b> is a Python framework for exploring discrete dynamical systems. It is a software abstraction
+meant to aid in the implementation of models of collective computation. Examples of such computational models include 
+Cellular Automata and Neural Networks. This also includes some continuous dynamical systems, such as ordinary and 
+partial differential equations, since the simulation of such systems involves the discretization of space and time. 
+Netomaton is also a tool for exploring Complex Systems.
+
+Underlying all discrete dynamical systems (and discretized continuous dynamical systems) are networks of stateful units 
+that obey rules that specify how their states change over time. Netomaton thus considers all dynamical systems as a 
+model of computation known as Functional Network Automata.
 
 ### Getting Started
 
@@ -30,7 +34,7 @@ for Network Automata has stated:
 > Stephen Wolfram's book _A New Kind of Science_, which is primarily concerned with cellular automata, briefly discusses network automata, and suggests (without positive evidence) that the universe might at the very lowest level be a network automaton.
 
 A Network Automaton is a discrete dynamical system comprised of a collection
-of nodes (the computational units) causally connected to eachother, as
+of nodes (the computational units) causally connected to each other, as
 specified by a network-defining adjacency matrix. The nodes adopt states
 at each timestep of the network's evolution, as prescribed by an activity
 function, *f*. Moreover, the network's topology can also change over time, as
@@ -135,7 +139,7 @@ parameters of the `evolve` function, explained [here](demos/timesteps_and_input/
 ### About this project
 
 This project proposes the idea that many popular and well-known
-collective computational models can all be thought of as Network Automata.
+collective computational models can all be thought of as Functional Network Automata.
 Such models include Cellular Automata, Boltzmann Machines, and various
 flavours of Neural Networks, such as the Hopfield Net, and the Multilayer
 Perceptron. This library does not attempt to be a replacement for great
