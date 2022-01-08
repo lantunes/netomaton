@@ -48,7 +48,7 @@ def majority_rule(ctx):
         return np.random.choice(ctx.neighbourhood_activities)
 
 
-def _bits_to_int(bits):
+def bits_to_int(bits):
     total = 0
     for shift, j in enumerate(bits[::-1]):
         if j:
@@ -56,7 +56,7 @@ def _bits_to_int(bits):
     return total
 
 
-def _int_to_bits(num, num_digits):
+def int_to_bits(num, num_digits):
     converted = list(map(int, bin(num)[2:]))
     return np.pad(converted, (num_digits - len(converted), 0), 'constant')
 
@@ -98,9 +98,9 @@ def binary_ca_rule(rule, scheme=None):
 
     def _rule(ctx):
         activities = shift_to_center(ctx.neighbourhood_activities, ctx.neighbour_labels, ctx.node_label)
-        state_int = _bits_to_int(activities)
+        state_int = bits_to_int(activities)
         n = 2**len(activities)
-        rule_bin_array = _int_to_bits(rule, n)
+        rule_bin_array = int_to_bits(rule, n)
         if scheme == 'nks':
             return rule_bin_array[(n-1) - state_int]
         return rule_bin_array[state_int]
