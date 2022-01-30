@@ -49,6 +49,13 @@ def majority_rule(ctx):
 
 
 def bits_to_int(bits):
+    """
+    Converts a binary array representing a binary number into the corresponding int.
+
+    :param bits: a list of 1s and 0s, representing a binary number
+
+    :return: and int representing the corresponding number
+    """
     total = 0
     for shift, j in enumerate(bits[::-1]):
         if j:
@@ -57,11 +64,32 @@ def bits_to_int(bits):
 
 
 def int_to_bits(num, num_digits):
+    """
+    Converts the given number, `num`, to the corresponding binary number in the form of a NumPy array of 1s and 0s
+    comprised of `num_digits` digits.
+
+    :param num: the number, in base 10, to convert into binary
+
+    :param num_digits: the number of digits the binary number should contain
+
+    :return: a NumPy array of 1s and 0s representing the corresponding binary number
+    """
     converted = list(map(int, bin(num)[2:]))
     return np.pad(converted, (num_digits - len(converted), 0), 'constant')
 
 
 def shift_to_center(activities, node_indices, node_index):
+    """
+    Shifts the activities in the given activities list such that the activity of the given node is at the center.
+
+    :param activities: a list of node activities
+
+    :param node_indices: a list of indices of the nodes
+
+    :param node_index: the node index to center on
+
+    :return: a list of activities that has been rotated so that the activity of the given node_index is at the center
+    """
     center = len(activities) // 2
     shifted = deque(activities)
 
@@ -120,6 +148,13 @@ def nks_ca_rule(rule):
 
 
 def game_of_life_rule(ctx):
+    """
+    Conway's Game of Life rule.
+
+    :param ctx: the NodeContext for a node
+
+    :return: the state of the current cell at the next timestep
+    """
     activities = ctx.neighbourhood_activities
     center_cell = activities[len(activities) // 2]
     total = np.sum(activities)
@@ -138,6 +173,13 @@ def game_of_life_rule(ctx):
 
 
 def wireworld_rule(ctx):
+    """
+    The Wireworld rule.
+
+    :param ctx: the NodeContext for a node
+
+    :return: the state of the current cell at the next timestep
+    """
     if ctx.current_activity == 0:  # empty
         return 0
     if ctx.current_activity == 1:  # electron head
