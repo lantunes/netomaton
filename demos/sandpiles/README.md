@@ -19,7 +19,7 @@ trajectory = ntm.evolve(initial_conditions=initial_conditions, network=sandpile.
 ntm.animate_activities(trajectory, shape=(60, 60), interval=150)
 ```
 
-<img src="../../resources/sandpile.gif" width="55%"/>
+<img src="../../resources/sandpile.gif" width="100%"/>
 
 The full source code for this example can be found [here](sandpile_demo.py).
 

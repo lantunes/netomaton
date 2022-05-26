@@ -35,7 +35,7 @@ ntm.animate_network(trajectory, interval=350, with_labels=False)
 
 <img src="../../resources/random_attachment_model.png" width="50%"/>
 
-<img src="../../resources/random_attachment_model.gif" width="50%"/>
+<img src="../../resources/random_attachment_model.gif" width="100%"/>
 
 The full source code for this example can be found [here](random_attachment_model_demo.py).
 

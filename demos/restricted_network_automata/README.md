@@ -60,7 +60,7 @@ pos = nx.spring_layout(ntm.topology.lattice(dim=(1, 6, 6), periodic=False).to_ne
 ntm.animate_network(trajectory, layout=pos, interval=500)
 ``` 
 
-<img src="../../resources/restricted_network_automata.gif" width="50%"/>
+<img src="../../resources/restricted_network_automata.gif" width="100%"/>
 
 The full source code for this example can be found [here](restricted_network_automata_demo.py).
 

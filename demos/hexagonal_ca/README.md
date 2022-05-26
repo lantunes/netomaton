@@ -25,6 +25,6 @@ trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network, 
 ntm.animate_hex(trajectory, shape=(60, 60), interval=150)
 ```
 
-<img src="../../resources/snowflake.gif" width="40%"/>
+<img src="../../resources/snowflake.gif" width="90%"/>
 
 The full source code for this example can be found [here](hexagonal_ca_demo.py).
