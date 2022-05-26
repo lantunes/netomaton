@@ -120,8 +120,15 @@ def nks_ca_rule(rule):
 
 
 def game_of_life_rule(ctx):
+    """
+    Conway's Game of Life rule.
+
+    :param ctx: the NodeContext for a node
+
+    :return: the state of the current cell at the next timestep
+    """
     activities = ctx.neighbourhood_activities
-    center_cell = activities[len(activities) // 2]
+    center_cell = ctx.current_activity
     total = np.sum(activities)
     if center_cell == 1:
         if total - 1 < 2:
