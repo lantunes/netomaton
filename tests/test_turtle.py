@@ -1,3 +1,5 @@
+import numpy as np
+
 import netomaton as ntm
 from .rule_test import *
 
@@ -50,4 +52,4 @@ class TestTurtle(RuleTest):
                     ([33.6743931317467, -34.729635533387565], [9.02302644525301, 196.9615506024345]),
                     ([-34.729635533387565, -2.3305801732931286e-12], [196.9615506024345, -7.247535904753022e-12])]
 
-        self.assertEqual(expected, t.trajectory)
+        np.testing.assert_almost_equal(expected, t.trajectory, decimal=7)
