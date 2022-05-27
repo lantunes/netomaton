@@ -79,4 +79,4 @@ class TestPerturbation(RuleTest):
                                 perturbation=perturb)
 
         activities = ntm.get_activities_over_time_as_list(trajectory)
-        np.testing.assert_almost_equal(expected, activities, decimal=15)
+        np.testing.assert_almost_equal(expected, activities, decimal=12)
