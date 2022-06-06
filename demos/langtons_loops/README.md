@@ -24,7 +24,7 @@ trajectory = ntm.evolve(initial_conditions=initial_conditions,
 ntm.animate_activities(trajectory, shape=dim)
 ```
 
-<img src="../../resources/langtons_loops.gif" width="50%"/>
+<img src="../../resources/langtons_loops.gif" width="100%"/>
 
 The full source code can be found [here](langtons_loops_demo.py).
 

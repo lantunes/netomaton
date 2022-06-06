@@ -33,7 +33,7 @@ class TestGameOfLifeRule(RuleTest):
         initial_conditions[2416] = 1
         initial_conditions[2417] = 1
 
-        trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network, timesteps=60,
+        trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network, timesteps=180,
                                 activity_rule=ntm.rules.game_of_life_rule)
 
         activities = ntm.get_activities_over_time_as_list(trajectory)
@@ -68,7 +68,7 @@ class TestGameOfLifeRule(RuleTest):
         initial_conditions[2416] = 1
         initial_conditions[2417] = 1
 
-        trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network, timesteps=60,
+        trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network, timesteps=180,
                                 activity_rule=ntm.rules.game_of_life_rule, memoize=True,
                                 memoization_key=ntm.rules.CenteringMemoizationKey())
 

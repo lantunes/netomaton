@@ -36,7 +36,7 @@ trajectory = ntm.evolve(network=model.network, initial_conditions=initial_condit
 ntm.animate_activities(trajectory, shape=(width, height), interval=200, colormap="jet")
 ```
 
-<img src="../../resources/fungal_growth.gif" width="50%"/>
+<img src="../../resources/fungal_growth.gif" width="100%"/>
 
 The full source code for this example can be found [here](fungal_growth_demo.py).
 

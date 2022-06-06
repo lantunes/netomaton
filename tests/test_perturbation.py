@@ -36,7 +36,7 @@ class TestPerturbation(RuleTest):
                                 activity_rule=algebraic_rule_30, perturbation=perturbation)
 
         activities = ntm.get_activities_over_time_as_list(trajectory)
-        np.testing.assert_equal(expected, activities)
+        np.testing.assert_almost_equal(expected, activities, decimal=10)
 
     def test_perturbation_reversible(self):
         np.random.seed(0)
@@ -57,7 +57,7 @@ class TestPerturbation(RuleTest):
                                 past_conditions=[initial_conditions])
 
         activities = ntm.get_activities_over_time_as_list(trajectory)
-        np.testing.assert_equal(expected, activities)
+        np.testing.assert_almost_equal(expected, activities, decimal=10)
 
     def test_perturbation_eca(self):
         np.random.seed(0)
@@ -79,4 +79,4 @@ class TestPerturbation(RuleTest):
                                 perturbation=perturb)
 
         activities = ntm.get_activities_over_time_as_list(trajectory)
-        np.testing.assert_equal(expected, activities)
+        np.testing.assert_almost_equal(expected, activities, decimal=10)

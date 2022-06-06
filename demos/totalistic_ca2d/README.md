@@ -21,4 +21,4 @@ ntm.plot_activities(trajectory, shape=(60, 60))
 
 The full source code can be found [here](totalistic_2d_demo.py).
 
-<img src="../../resources/rule126.gif" width="65%"/>
+<img src="../../resources/rule126.gif" width="100%"/>

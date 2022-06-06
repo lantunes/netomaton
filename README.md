@@ -12,6 +12,9 @@ Underlying all discrete dynamical systems (and discretized continuous dynamical 
 that obey rules that specify how their states change over time. Netomaton thus considers all dynamical systems as a 
 model of computation known as Functional Network Automata.
 
+[![testing status](https://github.com/lantunes/netomaton/actions/workflows/python-app.yml/badge.svg?branch=master)](https://github.com/lantunes/netomaton/actions)
+[![latest version](https://img.shields.io/pypi/v/netomaton?style=flat-square&logo=PyPi&logoColor=white&color=blue)](https://pypi.org/project/netomaton/)
+
 ### Getting Started
 
 Netomaton can be installed via pip:
