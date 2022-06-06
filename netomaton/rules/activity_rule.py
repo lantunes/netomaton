@@ -1,6 +1,7 @@
 import numpy as np
 from statistics import mode, StatisticsError
 from collections import deque
+from netomaton.evolution import MemoizationKey
 
 
 def totalistic_ca(k, rule):
@@ -189,3 +190,13 @@ def wireworld_rule(ctx):
     if ctx.current_activity == 3:  # conductor
         electron_head_count = ctx.neighbourhood_activities.count(1)
         return 1 if electron_head_count == 1 or electron_head_count == 2 else 3
+
+
+class BasicMemoizationKey(MemoizationKey):
+    def to_key(self, ctx):
+        return tuple(ctx.neighbourhood_activities)
+
+
+class CenteringMemoizationKey(MemoizationKey):
+    def to_key(self, ctx):
+        return tuple(shift_to_center(ctx.neighbourhood_activities, ctx.neighbour_labels, ctx.node_label))

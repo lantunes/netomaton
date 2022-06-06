@@ -100,7 +100,7 @@ class UpdateOrder(Enum):
 
 def evolve(network, initial_conditions=None, activity_rule=None, timesteps=None, input=None, topology_rule=None,
            perturbation=None, past_conditions=None, update_order=UpdateOrder.ACTIVITIES_FIRST, copy_network=True,
-           compression=False, persist_activities=True, persist_network=True):
+           compression=False, persist_activities=True, persist_network=True, memoize=False, memoization_key=None):
     """
     Evolves the given network with the given initial conditions, for the specified number of timesteps, using the given
     activity and topology rules. Note that if A(t) is the network at timestep t, and S(t) is the network activity vector
@@ -149,6 +149,13 @@ def evolve(network, initial_conditions=None, activity_rule=None, timesteps=None,
     :param compression: whether to compress the network when it is persisted in the State (default is False)
     :param persist_activities: whether to persist the activities in the State (default is True)
     :param persist_network: whether to persist the network in the State (default is True)
+    :param memoize: whether to use memoization during evolution; if True, then the result of applying the rule for a
+                    a given input will be cached, and used on subsequent invocations of the rule; this can result
+                    in a significant improvement to execution speed if the rule is expensive to invoke; NOTE: this
+                    should only be set to True for rules which do not store any state upon invocation (default is False)
+    :param memoization_key: a user-specified key for memoization; by default, no memoization is key is configured, and a
+                            memoization key is expected if `memoize` is True; must be a `MemoizationKey` instance
+                            (default is None)
     :return: a trajectory, which is a list of States, where each State defines the network and its activities for a
              particular timestep
     """
@@ -171,6 +178,13 @@ def evolve(network, initial_conditions=None, activity_rule=None, timesteps=None,
     prev_activities = initial_conditions
     prev_network = network
 
+    memo_table = {}
+
+    # create a neighbourhood map for efficiency if the network never changes (i.e. no topology rule)
+    neighbourhood_map = None
+    if topology_rule is None:
+        neighbourhood_map = _build_neighbourhood_map(network)
+
     t = 1
     while True:
         inp = input_fn(t, prev_activities, prev_network)
@@ -183,25 +197,28 @@ def evolve(network, initial_conditions=None, activity_rule=None, timesteps=None,
 
         if update_order is UpdateOrder.ACTIVITIES_FIRST:
             added_nodes, removed_nodes = evolve_activities(activity_rule, t, inp, curr_activities, prev_activities,
-                                                           trajectory, prev_network, past,
-                                                           perturbation, persist_activities)
+                                                           trajectory, prev_network, past, perturbation, persist_activities,
+                                                           memoize, memo_table, memoization_key, neighbourhood_map)
             curr_network = evolve_topology(topology_rule, t, curr_activities, prev_network,
                                            trajectory, copy_network, persist_network, added_nodes, removed_nodes)
+            if added_nodes or removed_nodes:
+                # re-build the neighbourhood map, since the network has changed
+                neighbourhood_map = _build_neighbourhood_map(curr_network)
 
         elif update_order is UpdateOrder.TOPOLOGY_FIRST:
             curr_network = evolve_topology(topology_rule, t, prev_activities, prev_network,
                                            trajectory, copy_network, persist_network)
             # added and removed nodes are ignore in this case
-            evolve_activities(activity_rule, t, inp, curr_activities, prev_activities,
-                              trajectory, curr_network, past, perturbation, persist_activities)
+            evolve_activities(activity_rule, t, inp, curr_activities, prev_activities, trajectory, curr_network, past,
+                              perturbation, persist_activities, memoize, memo_table, memoization_key, neighbourhood_map)
 
         elif update_order is UpdateOrder.SYNCHRONOUS:
             # TODO create test
             curr_network = evolve_topology(topology_rule, t, prev_activities, prev_network,
                                            trajectory, copy_network, persist_network)
             # added and removed nodes are ignore in this case
-            evolve_activities(activity_rule, t, inp, curr_activities, prev_activities,
-                              trajectory, prev_network, past, perturbation, persist_activities)
+            evolve_activities(activity_rule, t, inp, curr_activities, prev_activities, trajectory, prev_network, past,
+                              perturbation, persist_activities, memoize, memo_table, memoization_key, neighbourhood_map)
 
         else:
             raise Exception("unsupported update_order: %s" % update_order)
@@ -217,12 +234,13 @@ def evolve(network, initial_conditions=None, activity_rule=None, timesteps=None,
 
 
 def evolve_activities(activity_rule, t, inp, curr_activities, prev_activities, trajectory, network,
-                      past, perturbation, persist_activities):
+                      past, perturbation, persist_activities, memoize, memoization_table, memoization_key, neighbourhood_map):
     added_nodes = []
     removed_nodes = []
     if activity_rule:
         added_nodes, removed_nodes = do_activity_rule(t, inp, curr_activities, prev_activities, network,
-                                                      activity_rule, past, perturbation)
+                                                      activity_rule, past, perturbation, memoize, memoization_table,
+                                                      memoization_key, neighbourhood_map)
 
         if added_nodes:
             for state, outgoing_links, node_label in added_nodes:
@@ -234,21 +252,25 @@ def evolve_activities(activity_rule, t, inp, curr_activities, prev_activities, t
     return added_nodes, removed_nodes
 
 
-def do_activity_rule(t, inp, curr_activities, prev_activities, network, activity_rule, past, perturbation):
+def do_activity_rule(t, inp, curr_activities, prev_activities, network, activity_rule, past, perturbation,
+                     memoize, memoization_table, memoization_key, neigh_map):
     added_nodes = []
     removed_nodes = []
 
     for node_label in network.nodes:
         incoming_connections = network.in_edges(node_label)
-        neighbour_labels = [i for i in incoming_connections]
+        neighbour_labels = neigh_map[node_label] if neigh_map is not None else [i for i in incoming_connections]
         current_activity = prev_activities[node_label]
         neighbourhood_activities = [prev_activities[neighbour_label] for neighbour_label in neighbour_labels]
         node_in = None if inp == "__timestep__" else inp[node_label] if _is_indexable(inp) else inp
         ctx = NodeContext(node_label, t, prev_activities, neighbour_labels, neighbourhood_activities,
                           incoming_connections, current_activity, past, node_in)
 
-        new_activity = activity_rule(ctx)
-        new_activity = check_np(new_activity)
+        if memoize:
+            new_activity = _get_memoized(activity_rule, ctx, memoization_table, memoization_key)
+        else:
+            new_activity = activity_rule(ctx)
+            new_activity = check_np(new_activity)
 
         if ctx.added_nodes:
             added_nodes.extend(ctx.added_nodes)
@@ -263,6 +285,22 @@ def do_activity_rule(t, inp, curr_activities, prev_activities, network, activity
             curr_activities[node_label] = perturbation(pctx)
 
     return added_nodes, removed_nodes
+
+
+def _get_memoized(activity_rule, ctx, memoization_table, memoization_key):
+    key = memoization_key.to_key(ctx) if memoization_key is not None else None
+    if key is not None and key in memoization_table:
+        return memoization_table[key]
+    else:
+        result = activity_rule(ctx)
+        result = check_np(result)
+        memoization_table[key] = result
+        return result
+
+
+class MemoizationKey:
+    def to_key(self, ctx):
+        pass
 
 
 def evolve_topology(topology_rule, t, activities, prev_network, trajectory, copy_network,
@@ -307,6 +345,10 @@ def _get_past_activities(past_conditions, trajectory, t):
             last_t -= 1
         return past_activities
     return None
+
+
+def _build_neighbourhood_map(network):
+    return {node_label: [i for i in network.in_edges(node_label)] for node_label in network.nodes}
 
 
 def _get_input_function(timesteps=None, input=None):
