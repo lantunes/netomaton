@@ -10,12 +10,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added `CHANGELOG.md`
+- Added `MemoizationKey` and memoization support
 
 ### Changed
 
 - Moved version to `__netomaton/__init__.py`
 - Explicitly importing symbols instead of using `*` in `__ini__.py` files
 - Making `_bits_to_int` and `_int_to_bits` public
+- Changed `binary_ca_rule`: no longer shifting neighbourhood activities to center
+- Changed `Network`: adding `rotation_system` property
+- Changed `evolution.py`: adding support for memoization and rotation systems
+
+### Removed
+
+- Removed `shift_to_center`
+
+## [1.1.2] - 2022-05-25
+
+### Changed
+
+- Fixed problem in `game_of_life_rule`
 
 ## [1.1.1] - 2021-08-01
 

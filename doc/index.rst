@@ -75,6 +75,12 @@ e.g. consider the following directed hypergraph (from https://en.wikipedia.org/w
 
 - only Python objects are allowed in the Network; no objects like NumPy numbers are allowed
 
+Rotation Systems
+~~~~~~~~~~~~~~~~
+
+- every Network optionally has a Rotation System, which assigns an ordering of the nodes to the neighbourhood
+-- we assign a (not necessarily cyclic) permutation of incident nodes to each node
+
 Time Evolution
 --------------
 

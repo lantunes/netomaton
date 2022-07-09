@@ -4,7 +4,7 @@ import networkx as nx
 
 
 class Network:
-    __slots__ = "_network"
+    __slots__ = ("_network", "_rotation_system")
 
     def __init__(self, n=0):
         """
@@ -13,6 +13,7 @@ class Network:
         :param n: the number of nodes
         """
         self._network = {i: self._new_node() for i in range(n)}
+        self._rotation_system = None
 
     def add_edge(self, i, j, **attr):
         """
@@ -82,6 +83,30 @@ class Network:
         self._decrement_out_degree(i, n=n)
         self._decrement_in_degree(j, n=n)
         self._remove_incoming(i, j)
+
+    @property
+    def rotation_system(self):
+        return self._rotation_system
+
+    @rotation_system.setter
+    def rotation_system(self, rotation_system):
+        """
+        A rotation system specifies an ordering of the nodes connected to any given node. For example, consider the
+        network A<->B<->C, where node A is connected to node B, and node B is connected to node C, and each node is
+        connected to itself. A rotation system for this network could be: {A: (A, B), B: (A, B, C), C: (B, C)}. Another
+        valid rotation system for this network would be: {A: (B, A), B: (C, B, A), C: (C, B)}.
+
+        :param rotation_system: a dictionary mapping each node (as its label) to a sequence of its incident nodes (the
+                                labels of the nodes that are connected to it) and the node itself
+        """
+        # validate that the rotation system is comprised of nodes in the network
+        network_nodes = self.nodes
+        for node_label in rotation_system:
+            assert node_label in network_nodes, "the node '%s' is not in the network" % node_label
+            incoming_nodes = rotation_system[node_label]
+            for incoming_node in incoming_nodes:
+                assert incoming_node in network_nodes, "the incoming node '%s' is not in the network" % incoming_node
+        self._rotation_system = rotation_system
 
     def in_edges(self, node_label):
         return self._network[node_label]["incoming"]

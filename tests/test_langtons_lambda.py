@@ -83,8 +83,8 @@ class TestLangtonsLambda(RuleTest):
 
         np.testing.assert_equal(expected, ca_list)
 
-        expected_avg_node_entropies = [0.17937466820552067, 1.5162287070944118, 1.9874575633815903]
-        expected_avg_mutual_informations = [0.031991025901595936, 0.07739344302346315, 0.03632341781658568]
+        expected_avg_node_entropies = [0.37835928798494195, 1.5076786394760435, 1.985953613326983]
+        expected_avg_mutual_informations = [0.07825277488429445, 0.07752959733790643, 0.038339515020537174]
         for i in range(0, 3):
             self.assertAlmostEqual(expected_avg_node_entropies[i], avg_node_entropies[i])
             self.assertAlmostEqual(expected_avg_mutual_informations[i], avg_mutual_informations[i])

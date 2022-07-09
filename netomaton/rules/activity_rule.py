@@ -1,7 +1,5 @@
-import numpy as np
 from statistics import mode, StatisticsError
-from collections import deque
-from netomaton.evolution import MemoizationKey
+import numpy as np
 
 
 def totalistic_ca(k, rule):
@@ -79,27 +77,6 @@ def int_to_bits(num, num_digits):
     return np.pad(converted, (num_digits - len(converted), 0), 'constant')
 
 
-def shift_to_center(activities, node_indices, node_index):
-    """
-    Shifts the activities in the given activities list such that the activity of the given node is at the center.
-
-    :param activities: a list of node activities
-
-    :param node_indices: a list of indices of the nodes
-
-    :param node_index: the node index to center on
-
-    :return: a list of activities that has been rotated so that the activity of the given node_index is at the center
-    """
-    center = len(activities) // 2
-    shifted = deque(activities)
-
-    def index_of(arr, val):
-        return np.where(arr == val)[0][0] if type(arr) == np.ndarray else arr.index(val)
-    shifted.rotate(center - index_of(node_indices, node_index))
-    return list(shifted)
-
-
 def binary_ca_rule(rule, scheme=None):
     """
     Converts the given rule number to a binary representation, and uses this to determine the value to return.
@@ -126,7 +103,7 @@ def binary_ca_rule(rule, scheme=None):
     # shift the activities so that the current cell's activity is in the center
 
     def _rule(ctx):
-        activities = shift_to_center(ctx.neighbourhood_activities, ctx.neighbour_labels, ctx.node_label)
+        activities = ctx.neighbourhood_activities
         state_int = bits_to_int(activities)
         n = 2**len(activities)
         rule_bin_array = int_to_bits(rule, n)
@@ -190,13 +167,3 @@ def wireworld_rule(ctx):
     if ctx.current_activity == 3:  # conductor
         electron_head_count = ctx.neighbourhood_activities.count(1)
         return 1 if electron_head_count == 1 or electron_head_count == 2 else 3
-
-
-class BasicMemoizationKey(MemoizationKey):
-    def to_key(self, ctx):
-        return tuple(ctx.neighbourhood_activities)
-
-
-class CenteringMemoizationKey(MemoizationKey):
-    def to_key(self, ctx):
-        return tuple(shift_to_center(ctx.neighbourhood_activities, ctx.neighbour_labels, ctx.node_label))
