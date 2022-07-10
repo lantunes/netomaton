@@ -45,6 +45,9 @@ class TestMemoize(RuleTest):
     def test_dependent_unordered_memoized(self):
         """
         current node is not in neighbourhood and rule depends on current node;
+        This is an odd situation, since if the current node depends on itself to determine its value at the next
+        timestep, then there should be a network connection to itself (and it should be in its neighbourhood). The user
+        should provide a custom memoization key for this case.
         For the network
              A
              |
@@ -71,7 +74,8 @@ class TestMemoize(RuleTest):
         initial_conditions = {"A": 0, "B": 1, "C": 0, "D": 1, "E": 0}
 
         trajectory = ntm.evolve(network, initial_conditions=initial_conditions,
-                                activity_rule=activity_rule, timesteps=12, memoize=True)
+                                activity_rule=activity_rule, timesteps=12, memoize=True,
+                                memoization_key=AbsentDependentUnorderedMemoizationKey())
 
         activities = ntm.get_activities_over_time_as_list(trajectory)
         expected = [[0, 1, 0, 1, 0], [0, 1, 2, 1, 0], [0, 1, 4, 1, 0], [0, 1, 6, 1, 0],
@@ -125,6 +129,9 @@ class TestMemoize(RuleTest):
     def test_dependent_ordered_memoized(self):
         """
         current node is not in neighbourhood and rule depends on current node;
+        This is an odd situation, since if the current node depends on itself to determine its value at the next
+        timestep, then there should be a network connection to itself (and it should be in its neighbourhood). The user
+        should provide a custom memoization key for this case.
         For the network
              A
              |
@@ -157,7 +164,8 @@ class TestMemoize(RuleTest):
         initial_conditions = {"A": 0, "B": 1, "C": 0, "D": 1, "E": 0}
 
         trajectory = ntm.evolve(network, initial_conditions=initial_conditions,
-                                activity_rule=activity_rule, timesteps=12, memoize=True)
+                                activity_rule=activity_rule, timesteps=12, memoize=True,
+                                memoization_key=AbsentDependentOrderedMemoizationKey())
 
         activities = ntm.get_activities_over_time_as_list(trajectory)
         expected = [[0, 1, 0, 1, 0], [0, 1, 2, 1, 0], [0, 1, 4, 1, 0], [0, 1, 6, 1, 0],
@@ -227,8 +235,7 @@ class TestMemoize(RuleTest):
         initial_conditions = {"A": 0, "B": 1, "C": 0, "D": 1, "E": 0}
 
         trajectory = ntm.evolve(network, initial_conditions=initial_conditions,
-                                activity_rule=activity_rule, timesteps=12, memoize=True,
-                                memoization_key=AbsentNondependentUnorderedMemoizationKey())
+                                activity_rule=activity_rule, timesteps=12, memoize=True)
 
         activities = ntm.get_activities_over_time_as_list(trajectory)
         expected = [[0, 1, 0, 1, 0], [1, 1, 3, 1, 1], [1, 1, 5, 1, 1], [1, 1, 5, 1, 1],
@@ -281,6 +288,11 @@ class WireworldMemoizationKey(ntm.MemoizationKey):
         return ctx.current_activity, neigh_key
 
 
-class AbsentNondependentUnorderedMemoizationKey(ntm.MemoizationKey):
+class AbsentDependentOrderedMemoizationKey(ntm.MemoizationKey):
     def to_key(self, ctx):
-        return frozenset(collections.Counter(ctx.neighbourhood_activities).items())
+        return tuple([ctx.current_activity] + ctx.neighbourhood_activities)
+
+
+class AbsentDependentUnorderedMemoizationKey(ntm.MemoizationKey):
+    def to_key(self, ctx):
+        return ctx.current_activity, frozenset(collections.Counter(ctx.neighbourhood_activities).items())

@@ -322,18 +322,15 @@ class _OrderedMemoizationKey(MemoizationKey):
     a tuple. This assumes that the ordering of the nodes in the neighbourhood matters, and that the ordering has
     been specified, such as by setting a Rotation System on the network. For example, a CTRBL rule, or an ECA rule,
     would require a Rotation System on the network.
+
+    Note that this implementation doesn't include the current node if it isn't in its neighbourhood. If the rule
+    depends on the current node, but the current node isn't in its neighbourhood, then the user should supply their
+    own memoization key that adds the current node's activity. If the rule doesn't depend on the current node's
+    activity, then we'd be adding cache entries unnecessarily if we added the current node to the key.
+    e.g. [1,0,2], [1,3,2], [1,5,2], etc. all map to 9, so all we really need is a cache entry with [1,2]->9, but
+    instead we'd end up adding the entries [0,1,2]->9, [3,1,2]->9, [5,1,2]->9, etc.
     """
     def to_key(self, ctx):
-        if ctx.node_label not in ctx.neighbour_labels:
-            # include the current activity if the current node is not in the node's neighbourhood, in case the rule
-            #  depends on the current node's activity
-            # If the rule doesn't depend on the current node's activity, then we're adding cache entries
-            #  unnecessarily
-            #  e.g. [1,0,2], [1,3,2], [1,5,2], etc. all map to 9, so all we'd really need is a cache entry
-            #  with [1,2]->9, but instead we end up adding the entries [0,1,2]->9, [3,1,2]->9, [5,1,2]->9, etc.;
-            #  in this case, the user should supply their own memoization key implementation that doesn't incorporate
-            #  the current node's activity
-            return tuple([ctx.current_activity] + ctx.neighbourhood_activities)
         return tuple(ctx.neighbourhood_activities)
 
 
@@ -345,20 +342,16 @@ class _UnorderedMemoizationKey(MemoizationKey):
     It would be less efficient to just return a tuple of the activities here, since we'd end up with needless
     entries in the cache. The rule doesn't depend on node order, so states like (1,0,1) and (0,1,1) should result
     in the same cache hit, and evaluate to the same result.
+
+    Note that this implementation doesn't include the current node if it isn't in its neighbourhood. If the rule
+    depends on the current node, but the current node isn't in its neighbourhood, then the user should supply their
+    own memoization key that adds the current node's activity. If the rule doesn't depend on the current node's
+    activity, then we'd be adding cache entries unnecessarily if we added the current node to the key.
+    e.g. [1,0,2], [2,3,1], [2,5,1], etc. all map to 9, so all we really need is a cache entry with {1,2}->9, but
+    instead we'd end up adding the entries (0,{1,2})->9, (3,{1,2})->9, (5,{1,2})->9, etc.
     """
     def to_key(self, ctx):
-        neigh_key = frozenset(collections.Counter(ctx.neighbourhood_activities).items())
-        if ctx.node_label not in ctx.neighbour_labels:
-            # include the current activity if the current node is not in the node's neighbourhood, in case the rule
-            #  depends on the current node's activity
-            # If the rule doesn't depend on the current node's activity, then we're adding cache entries
-            #  unnecessarily
-            #  e.g. [1,0,2], [2,3,1], [2,5,1], etc. all map to 9, so all we'd really need is a cache entry
-            #  with {1,2}->9, but instead we end up adding the entries (0,{1,2})->9, (3,{1,2})->9, (5,{1,2})->9, etc.;
-            #  in this case, the user should supply their own memoization key implementation that doesn't incorporate
-            #  the current node's activity
-            return ctx.current_activity, neigh_key
-        return neigh_key
+        return frozenset(collections.Counter(ctx.neighbourhood_activities).items())
 
 
 def evolve_topology(topology_rule, t, activities, prev_network, trajectory, copy_network,
