@@ -37,6 +37,22 @@ class Network:
         self._increment_out_degree(i)
         self._add_outgoing(i, j)
 
+    def add_edge_bidir(self, i, j, **attr):
+        """
+        Adds two edges: one from i to j, and one from j to i. The edge attributes (if any
+        are provided) will be identical for both edges.
+
+        :param i:
+
+        :param j:
+
+        :param attr:
+
+        :return:
+        """
+        self.add_edge(i, j, **attr)
+        self.add_edge(j, i, **attr)
+
     def add_node(self, node_label, **attr):
         """
         Add a node. If the node already exists

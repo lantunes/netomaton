@@ -450,3 +450,33 @@ class TestNetwork(RuleTest):
                 "C": ("B", "C", "D")
             }
         self.assertEqual(e.value.args, ("the incoming node 'D' is not in the network",))
+
+    def test_add_edge_bidirectional(self):
+        network = ntm.Network()
+        network.add_edge(1, 2)
+        network.add_edge(2, 1)
+        network.add_edge(3, 2)
+        network.add_edge(2, 3)
+        edges = list(network.edges)
+
+        bidir_network = ntm.Network()
+        bidir_network.add_edge_bidir(1, 2)
+        bidir_network.add_edge_bidir(3, 2)
+        bidir_edges = list(bidir_network.edges)
+
+        self.assertEqual(edges, bidir_edges)
+
+    def test_add_edge_bidirectional_with_attrs(self):
+        network = ntm.Network()
+        network.add_edge(1, 2, foo=1, bar=2)
+        network.add_edge(2, 1, foo=1, bar=2)
+        network.add_edge(3, 2, foo=3, bar=2)
+        network.add_edge(2, 3, foo=3, bar=2)
+        edges = list(network.edges)
+
+        bidir_network = ntm.Network()
+        bidir_network.add_edge_bidir(1, 2, foo=1, bar=2)
+        bidir_network.add_edge_bidir(3, 2, foo=3, bar=2)
+        bidir_edges = list(bidir_network.edges)
+
+        self.assertEqual(edges, bidir_edges)
