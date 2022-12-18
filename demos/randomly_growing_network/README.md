@@ -29,7 +29,7 @@ trajectory = ntm.evolve(initial_conditions=[1], network=network,
 ntm.animate_network(trajectory, interval=350, layout="spring", with_labels=False)
 ```
 
-<img src="../../resources/randomly_growing_network_demo1.gif" width="100%"/>
+<img src="../../resources/randomly_growing_network_demo1.gif" width="50%"/>
 
 The full source code for this example can be found [here](randomly_growing_network_demo1.py).
 
@@ -75,7 +75,7 @@ ntm.animate_network(trajectory, interval=350, layout="spring", with_labels=False
 
 <img src="../../resources/randomly_growing_network_demo2.png" width="50%"/>
 
-<img src="../../resources/randomly_growing_network_demo2.gif" width="100%"/>
+<img src="../../resources/randomly_growing_network_demo2.gif" width="50%"/>
 
 The full source code for this example can be found [here](randomly_growing_network_demo2.py).
 

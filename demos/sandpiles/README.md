@@ -3,6 +3,9 @@
 Netomaton offers an implementation of the Abelian sandpile model.
 
 ```python
+import netomaton as ntm
+import numpy as np
+
 sandpile = ntm.Sandpile(rows=60, cols=60)
 
 initial_conditions = np.random.randint(5, size=3600)
@@ -19,7 +22,7 @@ trajectory = ntm.evolve(initial_conditions=initial_conditions, network=sandpile.
 ntm.animate_activities(trajectory, shape=(60, 60), interval=150)
 ```
 
-<img src="../../resources/sandpile.gif" width="100%"/>
+<img src="../../resources/sandpile.gif" width="50%"/>
 
 The full source code for this example can be found [here](sandpile_demo.py).
 

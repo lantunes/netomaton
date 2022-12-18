@@ -56,7 +56,7 @@ Tank call the _permutation matrix_. The final state of the permutation
 matrix encodes the tour discovered by the network. An example of its
 evolution is depicted below:
 
-<img src="../../resources/tsp.gif" width="100%"/>
+<img src="../../resources/tsp.gif" width="50%"/>
 
 Some of the solutions discovered by this network (and their tour
 lengths) are shown below:

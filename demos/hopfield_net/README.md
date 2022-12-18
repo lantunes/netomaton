@@ -74,7 +74,7 @@ activities = get_activities_over_time_as_list(trajectory)
 animate_activities(activities[::hopfield_net.num_nodes], shape=(6, 5), interval=150)
 ```
 
-<img src="../../resources/hopfield.gif" width="100%"/>
+<img src="../../resources/hopfield.gif" width="50%"/>
 
 The full source code for this example can be found [here](hopfield_net_demo.py).
 
