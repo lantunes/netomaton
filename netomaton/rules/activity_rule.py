@@ -1,6 +1,5 @@
-import numpy as np
 from statistics import mode, StatisticsError
-from collections import deque
+import numpy as np
 
 
 def totalistic_ca(k, rule):
@@ -48,7 +47,14 @@ def majority_rule(ctx):
         return np.random.choice(ctx.neighbourhood_activities)
 
 
-def _bits_to_int(bits):
+def bits_to_int(bits):
+    """
+    Converts a binary array representing a binary number into the corresponding int.
+
+    :param bits: a list of 1s and 0s, representing a binary number
+
+    :return: and int representing the corresponding number
+    """
     total = 0
     for shift, j in enumerate(bits[::-1]):
         if j:
@@ -56,19 +62,19 @@ def _bits_to_int(bits):
     return total
 
 
-def _int_to_bits(num, num_digits):
+def int_to_bits(num, num_digits):
+    """
+    Converts the given number, `num`, to the corresponding binary number in the form of a NumPy array of 1s and 0s
+    comprised of `num_digits` digits.
+
+    :param num: the number, in base 10, to convert into binary
+
+    :param num_digits: the number of digits the binary number should contain
+
+    :return: a NumPy array of 1s and 0s representing the corresponding binary number
+    """
     converted = list(map(int, bin(num)[2:]))
     return np.pad(converted, (num_digits - len(converted), 0), 'constant')
-
-
-def shift_to_center(activities, node_indices, node_index):
-    center = len(activities) // 2
-    shifted = deque(activities)
-
-    def index_of(arr, val):
-        return np.where(arr == val)[0][0] if type(arr) == np.ndarray else arr.index(val)
-    shifted.rotate(center - index_of(node_indices, node_index))
-    return list(shifted)
 
 
 def binary_ca_rule(rule, scheme=None):
@@ -97,10 +103,10 @@ def binary_ca_rule(rule, scheme=None):
     # shift the activities so that the current cell's activity is in the center
 
     def _rule(ctx):
-        activities = shift_to_center(ctx.neighbourhood_activities, ctx.neighbour_labels, ctx.node_label)
-        state_int = _bits_to_int(activities)
+        activities = ctx.neighbourhood_activities
+        state_int = bits_to_int(activities)
         n = 2**len(activities)
-        rule_bin_array = _int_to_bits(rule, n)
+        rule_bin_array = int_to_bits(rule, n)
         if scheme == 'nks':
             return rule_bin_array[(n-1) - state_int]
         return rule_bin_array[state_int]
@@ -145,6 +151,13 @@ def game_of_life_rule(ctx):
 
 
 def wireworld_rule(ctx):
+    """
+    The Wireworld rule.
+
+    :param ctx: the NodeContext for a node
+
+    :return: the state of the current cell at the next timestep
+    """
     if ctx.current_activity == 0:  # empty
         return 0
     if ctx.current_activity == 1:  # electron head

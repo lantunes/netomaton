@@ -2,16 +2,45 @@ from . import adjacency
 import networkx as nx
 import numpy as np
 import netomaton as ntm
+from collections import deque
 
 
-def cellular_automaton(n=200, r=1, periodic=True):
+def _shift_to_center(nodes, node_to_center_on):
+    """
+    Shifts the given node list such that the specified node is at the center.
+    NOTE: this is meant to be used by 1D CA systems, where a node label is simply the index of the node
+
+    :param nodes: a list of nodes (in terms of their labels)
+
+    :param node_to_center_on: the node to center on
+
+    :return: a nodes that has been rotated so that the specified node is at the center
+    """
+    center = len(nodes) // 2
+    shifted = deque(sorted(nodes))
+
+    def index_of(arr, val):
+        return np.where(arr == val)[0][0] if type(arr) == np.ndarray else arr.index(val)
+    shifted.rotate(center - index_of(nodes, node_to_center_on))
+    return list(shifted)
+
+
+def cellular_automaton(n=200, r=1, ordered=True, periodic=True):
     adjacency_matrix = adjacency.cellular_automaton(n, r, boundary="periodic")
-    return from_adjacency_matrix(adjacency_matrix)
+    network = from_adjacency_matrix(adjacency_matrix)
+    if ordered:
+        network.rotation_system = {node: _shift_to_center(list(network.in_edges(node).keys()), node)
+                                   for node in network.nodes}
+    return network
 
 
-def cellular_automaton2d(rows, cols, r=1, neighbourhood='Moore', periodic=True):
+def cellular_automaton2d(rows, cols, r=1, neighbourhood="Moore", ordered=True, periodic=True):
     adjacency_matrix = adjacency.cellular_automaton2d(rows, cols, r, neighbourhood, "periodic")
-    return from_adjacency_matrix(adjacency_matrix)
+    network = from_adjacency_matrix(adjacency_matrix)
+    if ordered:
+        network.rotation_system = {node: _shift_to_center(list(network.in_edges(node).keys()), node)
+                                   for node in network.nodes}
+    return network
 
 
 def lattice(dim, periodic=False, self_loops=False, first_label=0):

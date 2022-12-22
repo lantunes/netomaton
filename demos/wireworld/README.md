@@ -33,7 +33,7 @@ trajectory = ntm.evolve(initial_conditions=initial_conditions, network=network, 
 ntm.animate_activities(trajectory, shape=(13, 14), interval=120, show_grid=True, show_margin=False, scale=0.3,
                        colormap=ListedColormap(["black", "blue", "red", "yellow"]))
 ```
-<img src="../../resources/wireworld_diodes.gif" width="90%"/>
+<img src="../../resources/wireworld_diodes.gif" width="50%"/>
 
 The full source code for this example can be found [here](wireworld_diodes_demo.py).
 
@@ -67,7 +67,7 @@ ntm.animate_activities(trajectory, shape=(13, 24), interval=120, show_grid=True,
                        colormap=ListedColormap(["black", "blue", "red", "yellow"]))
 ```
 
-<img src="../../resources/wireworld_xor.gif" width="100%"/>
+<img src="../../resources/wireworld_xor.gif" width="50%"/>
 
 The full source code for this example can be found [here](wireworld_xor_demo.py).
 

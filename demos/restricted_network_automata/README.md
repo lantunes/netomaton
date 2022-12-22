@@ -10,11 +10,11 @@ underlying network (which does not undergo evolution) specifies which connection
 An example of the Restricted Network Automata version of the Game of Life is given below:
 
 ```python
-import networkx as nx
 import netomaton as ntm
 
-underlying_network = ntm.topology.lattice(dim=(1, 6, 6), periodic=True)
-initial_network = ntm.Network(n=36)
+n_x, n_y = 9, 6
+underlying_network = ntm.topology.lattice(dim=(1, n_y, n_x), periodic=True)
+initial_network = ntm.Network(n=n_x*n_y)
 
 # spaceship
 initial_network.add_edge(9, 10)
@@ -54,13 +54,13 @@ def topology_rule(ctx):
                 new_network.remove_edge(j, i)
     return new_network
 
-trajectory = ntm.evolve(network=initial_network, topology_rule=topology_rule, timesteps=6)
+trajectory = ntm.evolve(network=initial_network, topology_rule=topology_rule, timesteps=13)
 
-pos = nx.spring_layout(ntm.topology.lattice(dim=(1, 6, 6), periodic=False).to_networkx())
-ntm.animate_network(trajectory, layout=pos, interval=500)
+pos = {k: p for k, p in enumerate([(i, j) for i in range(n_x) for j in range(n_y)])}
+ntm.animate_network(trajectory, layout=pos, interval=500, with_labels=False, save=True)
 ``` 
 
-<img src="../../resources/restricted_network_automata.gif" width="100%"/>
+<img src="../../resources/restricted_network_automata.gif" width="50%"/>
 
 The full source code for this example can be found [here](restricted_network_automata_demo.py).
 

@@ -2,7 +2,7 @@
 
 Conway's Game of Life is a well-known 2D Cellular Automaton.
 
-<img src="../../resources/game_of_life.gif" width="100%"/>
+<img src="../../resources/game_of_life.gif" width="50%"/>
 
 It can be defined with the Netomaton framework:
 

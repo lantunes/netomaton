@@ -1,9 +1,20 @@
 from setuptools import setup, find_packages
+import re
+
+INIT_FILE = "netomaton/__init__.py"
+
+with open(INIT_FILE) as fid:
+    file_contents = fid.read()
+    match = re.search(r"^__version__\s?=\s?['\"]([^'\"]*)['\"]", file_contents, re.M)
+    if match:
+        version = match.group(1)
+    else:
+        raise RuntimeError("Unable to find version string in %s" % INIT_FILE)
 
 packages = find_packages(exclude=("tests", "demos", "doc", "resources",))
 
 setup(name="netomaton",
-      version="1.1.2",
+      version=version,
       description="Netomaton, A Python library for working with Network Automata.",
       long_description="Netomaton is a Python framework for exploring discrete dynamical network systems, "
                        "also known as Network Automata. It is a software abstraction meant to aid in the "

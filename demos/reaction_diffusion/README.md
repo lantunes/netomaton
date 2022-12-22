@@ -20,7 +20,7 @@ modelled.) This is an example of a system that is in a constant state
 of disequilibrium: it is kept in chemical non-equilibrium by virtue of
 the fact that the substrate is constantly being replenished.
 
-<img src="../../resources/gray_scott.gif" width="100%"/>
+<img src="../../resources/gray_scott.gif" width="50%"/>
 
 The full source code for this example can be found [here](reaction_diffusion_demo.py).
 

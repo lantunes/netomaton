@@ -20,18 +20,21 @@ class CTRBLRule:
 
         :param add_rotations: whether rotations in the rule table are implied, and should be included (default is False)
         """
-        self._network = cellular_automaton2d(dim[0], dim[1], r=1, neighbourhood="von Neumann")
+        self._network = cellular_automaton2d(dim[0], dim[1], r=1, neighbourhood="von Neumann", ordered=False)
         self._neighbourhood_map = self._init_neighbourhood_map(dim)
+
+        # set the rotation system so that it follows the (C,T,R,B,L) convention
+        rotation_system = {}
+        for node in self._network.nodes:
+            neigh = self._neighbourhood_map[node]
+            rotation_system[node] = (neigh.center, neigh.top, neigh.right, neigh.bottom, neigh.left)
+        self._network.rotation_system = rotation_system
+
         self._rule_table = self._init_rule_table(rule_table, add_rotations)
 
     def activity_rule(self, ctx):
-        neighbourhood = self._neighbourhood_map[ctx.node_label]
-        c = ctx.current_activity
-        t = ctx.activity_of(neighbourhood.top)
-        r = ctx.activity_of(neighbourhood.right)
-        b = ctx.activity_of(neighbourhood.bottom)
-        l = ctx.activity_of(neighbourhood.left)
-        key = (c, t, r, b, l)
+        # via the network's rotation system, these activities will follow the CTRBL convention
+        key = tuple(ctx.neighbourhood_activities)
         if key not in self._rule_table:
             raise Exception("neighbourhood state (%s, %s, %s, %s, %s) not in rule table" % key)
         return self._rule_table[key]

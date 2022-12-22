@@ -65,7 +65,7 @@ ntm.animate_L_system(state=trajectory[-1], turtle=t, bindings={
 }, repeat=True, interval=1)
 ```
 
-<img src="../../resources/fractalplant.gif" width="100%"/>
+<img src="../../resources/fractalplant.gif" width="50%"/>
 
 The full source code for this example can be found [here](fractal_plant_demo.py).
 

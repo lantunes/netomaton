@@ -73,8 +73,8 @@ class TestCTRBLRule(unittest.TestCase):
         activity = rule.activity_rule(ntm.NodeContext(node_label=4, timestep=1,
                                                       activities={
                                                           0: 0, 1: 1, 2: 0, 3: 4, 4: 0, 5: 2, 6: 0, 7: 3, 8: 0
-                                                      }, neighbour_labels=[1, 3, 4, 5, 7],
-                                                      neighbourhood_activities=[1, 4, 0, 2, 3],
+                                                      }, neighbour_labels=[4, 1, 5, 7, 3],
+                                                      neighbourhood_activities=[0, 1, 2, 3, 4],
                                                       connection_states={}, current_activity=0,
                                                       past_activities=None, input=None))
         self.assertEqual("a", activity)
@@ -88,8 +88,8 @@ class TestCTRBLRule(unittest.TestCase):
             rule.activity_rule(ntm.NodeContext(node_label=4, timestep=1,
                                                activities={
                                                    0: 0, 1: 1, 2: 0, 3: 4, 4: 0, 5: 2, 6: 0, 7: 3, 8: 0
-                                               }, neighbour_labels=[1, 3, 4, 5, 7],
-                                               neighbourhood_activities=[1, 4, 0, 2, 3],
+                                               }, neighbour_labels=[4, 1, 5, 7, 3],
+                                               neighbourhood_activities=[0, 1, 2, 3, 4],
                                                connection_states={}, current_activity=0,
                                                past_activities=None, input=None))
         self.assertEqual(e.value.args, ("neighbourhood state (0, 1, 2, 3, 4) not in rule table",))

@@ -8,6 +8,7 @@ if __name__ == '__main__':
     initial_conditions = [0] * 100 + [1] + [0] * 99
 
     trajectory = ntm.evolve(network=network, initial_conditions=initial_conditions,
-                            activity_rule=ntm.rules.nks_ca_rule(30), timesteps=100)
+                            activity_rule=ntm.rules.nks_ca_rule(30), timesteps=100,
+                            memoize=True)
 
     ntm.plot_activities(trajectory)
