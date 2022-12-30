@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added demo for flocking
+
+### Changed
+
+- Changed `animate_network`: added `with_timesteps` and `show` parameters
+
 ## [1.2.0] - 2022-12-22
 
 ### Added

@@ -170,13 +170,16 @@ def plot_network(network, layout="shell", with_labels=True, node_color="#1f78b4"
 
 
 def animate_network(trajectory, save=False, interval=50, dpi=80, layout="shell",
-                    with_labels=True, with_arrows=True, node_color="b", node_size=30):
+                    with_labels=True, with_arrows=True, node_color="b", node_size=30, with_timestep=False, show=True):
     fig, ax = plt.subplots()
 
     def update(arg):
         ax.clear()
 
         i, state = arg
+
+        if with_timestep:
+            ax.set_title("timestep: %s" % (i+1))
 
         color = node_color[i] if type(node_color) == dict else node_color
 
@@ -206,7 +209,10 @@ def animate_network(trajectory, save=False, interval=50, dpi=80, layout="shell",
                                   save_count=len(trajectory))
     if save:
         ani.save('evolved.gif', dpi=dpi, writer="imagemagick")
-    plt.show()
+    if show:
+        plt.show()
+
+    return ani
 
 
 def plot1D(x, y, color=None, label=None, xlabel=None, ylabel=None, xlim=None, ylim=None, twinx=False,
