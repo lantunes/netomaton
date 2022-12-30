@@ -8,8 +8,8 @@ in turn influences the network, and so on.
 
 To construct the network automaton, we define both an `activity_rule` and a `topology_rule`. The `topology_rule` simply
 determines the distance between each individual, and connects them if they are within visual range. The `activity_rule`
-is applied to each individual during a timestep, and obtains the state of each individual (i.e. their position and 
-velocity) in the visual range, and updates the position and velocity accordingly.
+is applied to each individual during a timestep: it obtains the state of each neighbour (i.e. their position and 
+velocity) in the visual range, and updates the individual's position and velocity accordingly.
 
 Below are plots resulting from a simulation with 10 Boids:
 
