@@ -25,7 +25,9 @@ The full source code for this example can be found [here](flocking_demo.py).
 For more information, please refer to the following resources:
 
 https://en.wikipedia.org/wiki/Boids
+
 https://people.ece.cornell.edu/land/courses/ece4760/labs/s2021/Boids/Boids.html
+
 http://rits.github-pages.ucl.ac.uk/doctoral-programming-intro/02-novice/100Boids.html
 
 > Reynolds, C. W. (1987, August). Flocks, herds and schools: A distributed behavioral model. In Proceedings of the 14th 
