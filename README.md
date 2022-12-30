@@ -131,6 +131,8 @@ the Netomaton framework. Follow the link to learn more:
 * [Random Attachment Model](demos/random_attachment_model/README.md)
 * [Randomly Growing Network](demos/randomly_growing_network/README.md)
 * [Restricted Network Automata](demos/restricted_network_automata/README.md)
+* [Functional Network Automata](demos/functional_network_automata/README.md)
+* [Evolving Networks](demos/evolving_networks/README.md)
 * [Fungal Growth Model](demos/fungal_growth/README.md)
 * [Flocking](demos/flocking/README.md)
 * [Wolfram Physics Model](demos/wolfram_physics/README.md)

@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added demo for flocking
+- Added link to evolving networks demo to README
+- Added link to functional network automata demo to README
 
 ### Changed
 
