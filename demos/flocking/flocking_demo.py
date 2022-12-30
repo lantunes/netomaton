@@ -57,8 +57,8 @@ def extract_frames(trajectory):
 if __name__ == '__main__':
     num_boids = 10
     timesteps = 500
-    visual_range = 50
-    protected_range = 5
+    visual_range = 70
+    protected_range = 12
     turn_factor = 2
     centering_factor = 0.0005
     avoid_factor = 0.05
@@ -156,8 +156,8 @@ if __name__ == '__main__':
                             timesteps=timesteps, update_order=ntm.UpdateOrder.TOPOLOGY_FIRST)
 
     anim1 = animate_flock(trajectory, num_step=timesteps)
-    anim2 = ntm.animate_network(trajectory, with_arrows=False, node_color="w",
-                                with_timestep=True, interval=1, show=False)
+    anim2 = ntm.animate_network(trajectory, with_arrows=False, node_color="burlywood",
+                                node_size=150, with_timestep=True, interval=1, show=False)
 
     # to save the animations
     # anim1.save('anim1.gif', dpi=80, writer="imagemagick")
