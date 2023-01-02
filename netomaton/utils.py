@@ -76,7 +76,8 @@ def plot_grid_multiple(ca_list, shape=None, slice=-1, titles=None, colormap='Gre
 
 
 def animate_activities(trajectory_or_activities, title='', shape=None, save=False, interval=50, colormap='Greys',
-                       vmin=None, vmax=None, show_grid=False, show_margin=True, scale=0.6, dpi=80):
+                       vmin=None, vmax=None, show_grid=False, show_margin=True, scale=0.6, dpi=80, blit=True,
+                       with_timestep=False):
     if len(trajectory_or_activities) is 0:
         raise Exception("there are no activities")
     if isinstance(trajectory_or_activities[0], State):
@@ -88,7 +89,7 @@ def animate_activities(trajectory_or_activities, title='', shape=None, save=Fals
         activities = _reshape_for_animation(activities, shape)
     cmap = plt.get_cmap(colormap)
     fig, ax = plt.subplots()
-    plt.title(title)
+    title_text = plt.title(title)
     if not show_margin:
         fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
 
@@ -117,8 +118,10 @@ def animate_activities(trajectory_or_activities, title='', shape=None, save=Fals
         if i['index'] == len(activities):
             i['index'] = 0
         im.set_array(activities[i['index']])
-        return im, grid
-    ani = animation.FuncAnimation(fig, updatefig, interval=interval, blit=True, save_count=len(activities))
+        if with_timestep:
+            title_text.set_text("timestep: %s" % (i['index']+1))
+        return im, grid, title_text
+    ani = animation.FuncAnimation(fig, updatefig, interval=interval, blit=blit, save_count=len(activities))
     if save:
         ani.save('evolved.gif', dpi=dpi, writer="imagemagick")
     plt.show()

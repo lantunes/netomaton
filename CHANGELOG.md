@@ -10,12 +10,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added demo for flocking
+- Added demo for restricted Boltzmann machine
+- Added `bipartite` function to topology module
 - Added link to evolving networks demo to README
 - Added link to functional network automata demo to README
+- Added link to restricted Boltzmann machine demo to README
 
 ### Changed
 
 - Changed `animate_network`: added `with_timesteps` and `show` parameters
+- Changed `animate_activities`: added `with_timesteps` and `blit` parameters
 
 ## [1.2.0] - 2022-12-22
 
