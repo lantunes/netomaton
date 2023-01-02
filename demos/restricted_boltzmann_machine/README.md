@@ -1,7 +1,7 @@
 # Restricted Boltzmann Machine
 
 The Restricted Boltzmann Machine (RBM) is a stochastic neural network that is often used in machine learning tasks, such 
-as classification and generative modelling. The original Boltzmann Machine can be thought of as a stochastic version 
+as in classification and generative modelling. The original Boltzmann Machine can be thought of as a stochastic version 
 of a Hopfield Network, with the novel element of consisting of separate "visible" and "hidden" units. The RBM further 
 introduces the constraint that connections can only exist between visible and hidden units, and not between units of the 
 same type. The resulting network thus adopts a bipartite graph topology.
