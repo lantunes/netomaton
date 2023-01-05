@@ -143,3 +143,16 @@ def bipartite(set1, set2, edge_attributes=None):
                 attrs = edge_attributes[node1][node2]
                 network.add_edge_bidir(node1, node2, **attrs)
     return network
+
+
+def complete(n):
+    """
+    Returns a fully connected Network (i.e. a complete graph) with `n` nodes.
+
+    :param n: the number of nodes in the Network
+
+    :return: a fully-connected Network
+    """
+    G = nx.complete_graph(n)
+    adjacency = nx.adjacency_matrix(G).todense().tolist()
+    return from_adjacency_matrix(adjacency)

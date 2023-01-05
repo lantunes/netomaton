@@ -9,12 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `bipartite` function to topology module
+- Added `complete` function to topology module
 - Added demo for flocking
 - Added demo for restricted Boltzmann machine
-- Added `bipartite` function to topology module
+- Added demo for optimizing particle swarms
 - Added link to evolving networks demo to README
 - Added link to functional network automata demo to README
+- Added link to flocking demo to README
 - Added link to restricted Boltzmann machine demo to README
+- Added link to optimizing particle swarms demo to README
 
 ### Changed
 

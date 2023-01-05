@@ -136,6 +136,7 @@ the Netomaton framework. Follow the link to learn more:
 * [Evolving Networks](demos/evolving_networks/README.md)
 * [Fungal Growth Model](demos/fungal_growth/README.md)
 * [Flocking](demos/flocking/README.md)
+* [Optimizing Particle Swarms](demos/optimizing_particle_swarms/README.md)
 * [Wolfram Physics Model](demos/wolfram_physics/README.md)
 
 Additionally, this library includes a number of utility functions for
