@@ -56,7 +56,7 @@ if __name__ == '__main__':
     def activity_rule(ctx):
         x_i, p_i, v_i = ctx.current_activity
 
-        # figure out g: the best solution in the node's neighbourhood
+        # determine g: the best solution in the node's neighbourhood
         g = None
         for _, p, _ in ctx.neighbourhood_activities:
             if g is None or f(p) < f(g):
