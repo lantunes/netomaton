@@ -69,12 +69,14 @@ if __name__ == '__main__':
 
     # read the weights into memory; this MLP consists only of weights and no biases
     initial_weights = read_weights("./mlp_layer1-2_weights.csv")
+    # a map from the timestep to which weights to use at that timestep
     timestep_to_weights = {
         1: read_weights("./mlp_layer2-3_weights.csv"),
         2: read_weights("./mlp_layer3-4_weights.csv"),
         3: {}
     }
 
+    # a map from the timestep to which activation function to use that timestep
     timestep_to_activation = {
         1: relu,
         2: relu,
