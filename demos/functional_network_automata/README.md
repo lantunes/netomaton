@@ -34,11 +34,10 @@ trajectory = ntm.evolve(network=network, initial_conditions=initial_conditions,
                         topology_rule=topology_rule, activity_rule=activity_rule,
                         timesteps=14, update_order=ntm.UpdateOrder.ACTIVITIES_FIRST)
 
-pos = {k: p for k, p in enumerate([(i, j) for i in range(n_x) for j in range(n_y)])}
+pos = ntm.vis.lattice_pos(n_x, n_y)
 colors = {i: ["red" if state.activities[node] == 1 else "black" for node in state.network.nodes]
           for i, state in enumerate(trajectory)}
-ntm.animate_network(trajectory, layout=pos, interval=500, with_labels=False, 
-                    node_color=colors, save=True)
+ntm.animate_network(trajectory, layout=pos, interval=500, with_labels=False, node_color=colors)
 ```
 
 <img src="../../resources/fna.gif" width="50%"/>

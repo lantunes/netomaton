@@ -39,7 +39,7 @@ def topology_rule(ctx):
 trajectory = ntm.evolve(network, topology_rule=topology_rule, timesteps=4)
 
 ntm.animate_network(trajectory, with_labels=False, with_arrows=False,
-                    layout=["planar"] + ["kamada-kawai"]*3, interval=500, save=True)
+                    layout=["planar"] + ["kamada-kawai"]*3, interval=500)
 ```
 
 <img src="../../resources/evolving_networks.gif" width="50%"/>

@@ -3,6 +3,20 @@ import webbrowser
 import networkx as nx
 
 
+def lattice_pos(n_x, n_y):
+    """
+    Returns a dict with node labels as keys and node positions as values
+    for the nodes in a regular lattice.
+
+    :param n_x: the size of the x-dimension of the lattice
+
+    :param n_y: the size of the y-dimension of the lattice
+
+    :return: a dict with node labels as keys and node positions as values
+    """
+    return {k: p for k, p in enumerate([(i, j) for i in range(n_x) for j in range(n_y)])}
+
+
 def configuration_to_nx(config):
     G = nx.MultiDiGraph()
     for relation in config:

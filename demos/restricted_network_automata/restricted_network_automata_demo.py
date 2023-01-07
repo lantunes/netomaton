@@ -57,5 +57,5 @@ if __name__ == '__main__':
 
     trajectory = ntm.evolve(network=initial_network, topology_rule=topology_rule, timesteps=13)
 
-    pos = {k: p for k, p in enumerate([(i, j) for i in range(n_x) for j in range(n_y)])}
-    ntm.animate_network(trajectory, layout=pos, interval=500, with_labels=False, save=True)
+    pos = ntm.vis.lattice_pos(n_x, n_y)
+    ntm.animate_network(trajectory, layout=pos, interval=500, with_labels=False)

@@ -120,6 +120,7 @@ the Netomaton framework. Follow the link to learn more:
 * [Hexagonal Cell Lattices](demos/hexagonal_ca/README.md)
 * [Hopfield Network](demos/hopfield_net/README.md)
 * [Restricted Boltzmann Machine](demos/restricted_boltzmann_machine/README.md)
+* [Multilayer Perceptron](demos/mlp/README.md)
 * [Perturbations](demos/perturbation_demo/README.md)
 * [Sandpiles](demos/sandpiles/README.md)
 * [Continuous-Time Models](demos/continuous_time_models/README.md)
