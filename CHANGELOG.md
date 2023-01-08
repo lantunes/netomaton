@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added demo for restricted Boltzmann machine
 - Added demo for optimizing particle swarms
 - Added demo for multilayer perceptron
+- Added demo for Lorenz attractor
 
 ### Changed
 

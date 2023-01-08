@@ -126,6 +126,7 @@ the Netomaton framework. Follow the link to learn more:
 * [Continuous-Time Models](demos/continuous_time_models/README.md)
 * [Travelling Salesman Problem with the Hopfield-Tank Neural Net](demos/hopfield_tank_tsp/README.md)
 * [Logistic Map](demos/logistic_map/README.md)
+* [Lorenz Attractor](demos/lorenz_attractor/README.md)
 * [Collatz Conjecture](demos/collatz_conjecture/README.md)
 * [Substitution Systems](demos/substitution_systems/README.md)
 * [Lindenmayer Systems](demos/lindenmayer_systems/README.md)
