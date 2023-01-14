@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added `bipartite` function to topology module
+- Added `complete` function to topology module
+- Added `lattice_pos` function to vis module
+- Added demo for flocking
+- Added demo for restricted Boltzmann machine
+- Added demo for optimizing particle swarms
+- Added demo for multilayer perceptron
+- Added demo for Lorenz attractor
+
+### Changed
+
+- Changed `animate_network`: added `with_timesteps` and `show` parameters
+- Changed `animate_activities`: added `with_timesteps` and `blit` parameters
+
 ## [1.2.0] - 2022-12-22
 
 ### Added

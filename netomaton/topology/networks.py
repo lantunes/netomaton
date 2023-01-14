@@ -103,8 +103,56 @@ def watts_strogatz_graph(n, k, p, seed=None):
 
     :param seed: integer, random_state, or None (default); a random seed to use for random number generation
 
-    :return: as Network
+    :return: a Network
     """
     G = nx.watts_strogatz_graph(n, k, p, seed)
+    adjacency = nx.adjacency_matrix(G).todense().tolist()
+    return from_adjacency_matrix(adjacency)
+
+
+def bipartite(set1, set2, edge_attributes=None):
+    """
+    Returns a bipartite graph as a Network, with bidirectional edges.
+
+    To supply attributes for the edges, use the `edge_attributes` parameter. For example:
+    ```
+    edge_attributes = {
+        0: {3: {"weight": 0.1}, 4: {"weight": 0.2}},
+        1: {3: {"weight": 0.3}, 4: {"weight": 0.4}},
+        2: {3: {"weight": 0.5}, 4: {"weight": 0.6}}
+    }
+    ```
+    The example above implies that `set1` contains {0, 1, 2} and `set2` contains {3, 4}. The "weight"
+    attribute is set on each edge accordingly.
+
+    :param set1: the node labels of the first set
+
+    :param set2: the node labels of the second set
+
+    :param edge_attributes: a dict where each key is a node label from set1, and each value is a dict where each key
+                            is a node label from set2 and each value is a dict with the attributes
+
+    :return: a Network
+    """
+    network = ntm.Network()
+    for node1 in set1:
+        for node2 in set2:
+            if edge_attributes is None:
+                network.add_edge_bidir(node1, node2)
+            else:
+                attrs = edge_attributes[node1][node2]
+                network.add_edge_bidir(node1, node2, **attrs)
+    return network
+
+
+def complete(n):
+    """
+    Returns a fully connected Network (i.e. a complete graph) with `n` nodes.
+
+    :param n: the number of nodes in the Network
+
+    :return: a fully-connected Network
+    """
+    G = nx.complete_graph(n)
     adjacency = nx.adjacency_matrix(G).todense().tolist()
     return from_adjacency_matrix(adjacency)
