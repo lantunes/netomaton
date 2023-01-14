@@ -1,4 +1,4 @@
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 
 from .evolution import evolve_topology, init_simple2d, init_random, check_np, do_activity_rule, evolve_activities, \
     NodeContext, UpdateOrder, init_simple, evolve, TopologyContext, PerturbationContext, MemoizationKey
