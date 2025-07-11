@@ -418,7 +418,7 @@ def _get_input_function(timesteps=None, input=None):
 
 
 def _is_indexable(obj):
-    return isinstance(obj, collections.Sequence)
+    return isinstance(obj, collections.abc.Sequence)
 
 
 class _TimestepInputFunction:
@@ -441,7 +441,7 @@ class _ListInputFunction:
         return self._input_list[t-1]
 
 
-def init_simple(size, val=1, dtype=np.int):
+def init_simple(size, val=1, dtype=int):
     """
     Returns an array initialized with zeroes, with its center value set to the specified value, or 1 by default.
     :param size: the size of the array to be created
@@ -454,7 +454,7 @@ def init_simple(size, val=1, dtype=np.int):
     return x.tolist()
 
 
-def init_random(size, k=2, n_randomized=None, empty_value=0, dtype=np.int):
+def init_random(size, k=2, n_randomized=None, empty_value=0, dtype=int):
     """
     Returns a randomly initialized array with values consisting of numbers in {0,...,k - 1}, where k = 2 by default.
     If dtype is not an integer type, then values will be uniformly distributed over the half-open interval [0, k - 1).
@@ -480,7 +480,7 @@ def init_random(size, k=2, n_randomized=None, empty_value=0, dtype=np.int):
     return np.array(np.pad(np.array(rand_nums), (pad_left, pad_right), 'constant', constant_values=empty_value)).tolist()
 
 
-def init_simple2d(rows, cols, val=1, dtype=np.int):
+def init_simple2d(rows, cols, val=1, dtype=int):
     """
     Returns a list initialized with zeroes, with its center value set to the specified value, or 1 by default, when the
     list is reshaped according to the given number of rows and columns.
@@ -497,5 +497,5 @@ def init_simple2d(rows, cols, val=1, dtype=np.int):
 
 def check_np(obj):
     if isinstance(obj, np.generic):
-        return np.asscalar(obj)
+        return obj.item()
     return obj

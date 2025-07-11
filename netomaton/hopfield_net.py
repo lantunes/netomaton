@@ -21,7 +21,7 @@ class HopfieldNet:
         adjacency matrix. Therefore, before the network can be used to evaluate a pattern, it must be trained.
         :param P: the set of training patterns, as a list of lists
         """
-        self._adjacency_matrix = np.zeros((len(P[0]), len(P[0])), dtype=np.int)
+        self._adjacency_matrix = np.zeros((len(P[0]), len(P[0])), dtype=int)
         for p in P:
             for i in range(len(p)):
                 for j in range(len(p)):

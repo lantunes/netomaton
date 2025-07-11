@@ -18,7 +18,7 @@ class RuleTest(unittest.TestCase):
         content = content.replace('{', '')
         content = content.replace('},', ';')
         content = [[dtype(i) for i in x.split(',')] for x in content.split(';')]
-        return np.array(content, dtype=np.int)
+        return np.array(content, dtype=int)
 
     def _convert_to_matrix2d(self, filename, dtype=int):
         with open(os.path.join(THIS_DIR, 'resources', filename), 'r') as content_file:
@@ -30,7 +30,7 @@ class RuleTest(unittest.TestCase):
         content = [x.split('},') for x in content.split('}},')]
         content = [[h.split(',') for h in x] for x in content]
         content = [[[dtype(i) for i in h] for h in x] for x in content]
-        return np.array(content, dtype=np.int)
+        return np.array(content, dtype=int)
 
     def _convert_to_list_of_lists(self, filename, strings=False, dtype=int):
         with open(os.path.join(THIS_DIR, 'resources', filename), 'r') as content_file:

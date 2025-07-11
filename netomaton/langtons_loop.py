@@ -251,7 +251,7 @@ class LangtonsLoop(CTRBLRule):
         :return: the initial conditions
         """
 
-        initial_conditions = np.zeros(self._dim, dtype=np.int)
+        initial_conditions = np.zeros(self._dim, dtype=int)
         for i in range(n):
             row_i = row[i]
             col_i = col[i]
